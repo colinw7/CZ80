@@ -12,11 +12,16 @@ BIN_DIR = ../bin
 all: $(BIN_DIR)/CZ80Test
 
 SRC = \
-CZ80Test.cpp
+CZ80Test.cpp \
+CTempFile.cpp
 
 OBJS = $(patsubst %.cpp,$(OBJ_DIR)/%.o,$(SRC))
 
+LIBS = -lCZ80 -lCArgs -lCFile -lCOS -lCStrUtil
+
 CPPFLAGS = -I$(INC_DIR) -I.
+
+LFLAGS = -L$(LIB_DIR)
 
 clean:
 	$(RM) -f $(OBJ_DIR)/*.o
@@ -28,4 +33,4 @@ clean:
 	$(CC) -c $< -o $(OBJ_DIR)/$*.o $(CPPFLAGS)
 
 $(BIN_DIR)/CZ80Test: $(OBJS) $(LIB_DIR)/libCZ80.a
-	$(CC) $(LDEBUG) -o $(BIN_DIR)/CZ80Test $(OBJS) -lCZ80 -L$(LIB_DIR)
+	$(CC) $(LDEBUG) -o $(BIN_DIR)/CZ80Test $(OBJS) $(LFLAGS) $(LIBS)

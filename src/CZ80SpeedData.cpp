@@ -1,7 +1,8 @@
 #include <CZ80.h>
 #include <CZ80Op.h>
 #include <CStrUtil.h>
-#include <COS.h>
+#include <COSTime.h>
+#include <COSTimer.h>
 
 void
 CZ80SpeedData::
@@ -10,7 +11,7 @@ init()
   static bool initialized = false;
 
   if (! initialized) {
-    COS::getHRTime(&secs_, &usecs_);
+    COSTime::getHRTime(&secs_, &usecs_);
 
     initialized = true;
   }
@@ -34,18 +35,18 @@ calcMhz()
 
   init();
 
-  COS::getHRTime(&secs, &usecs);
+  COSTime::getHRTime(&secs, &usecs);
 
-  COS::diffHRTime(secs_, usecs_, secs, usecs, &dsecs, &dusecs);
+  COSTime::diffHRTime(secs_, usecs_, secs, usecs, &dsecs, &dusecs);
 
   long dusecs1 = dusecs + 1000000*dsecs;
 
   if (dusecs1 < itime) {
-    COS::msleep(itime - dusecs1);
+    COSTimer::msleep(itime - dusecs1);
 
-    COS::getHRTime(&secs, &usecs);
+    COSTime::getHRTime(&secs, &usecs);
 
-    COS::diffHRTime(secs_, usecs_, secs, usecs, &dsecs, &dusecs);
+    COSTime::diffHRTime(secs_, usecs_, secs, usecs, &dsecs, &dusecs);
 
     dusecs1 = dusecs + 1000000*dsecs;
   }

@@ -1,5 +1,6 @@
 #include <CZ80.h>
 #include <CArgs.h>
+#include <CFile.h>
 #include <CTempFile.h>
 #include <CAtExit.h>
 #include <CStrUtil.h>

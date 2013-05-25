@@ -24,7 +24,9 @@ CZ80Op.cpp \
 CZ80OpData.cpp \
 CZ80Rst.cpp \
 CZ80Snapshot.cpp \
-CZ80SpeedData.cpp
+CZ80SpeedData.cpp \
+CFileParse.cpp \
+COStreamFile.cpp \
 
 OBJS = $(patsubst %.cpp,$(OBJ_DIR)/%.o,$(SRC))
 

@@ -8,6 +8,8 @@
 #include <cstring>
 #include <iostream>
 
+#include <CKeyType.h>
+
 //-----------------
 
 #define SET_FLAG(v,f)  ((v) |=  (f))
@@ -115,7 +117,6 @@ enum CZ80Reg {
 class  CFile;
 class  CFileBase;
 class  CFileParse;
-class  CKeyEvent;
 class  CZ80;
 struct CZ80Op;
 struct CZ80OpData;
@@ -406,8 +407,8 @@ class CZ80 {
 
   // Port
 
-  void keyPress  (const CKeyEvent &kevent);
-  void keyRelease(const CKeyEvent &kevent);
+  void keyPress  (CKeyType key_type);
+  void keyRelease(CKeyType key_type);
 
   // -----------
 
@@ -2020,8 +2021,8 @@ class CZ80PortData {
   virtual void out(uchar, uchar) { }
   virtual uchar in(uchar, uchar) { return 0; }
 
-  virtual void keyPress  (const CKeyEvent &) { }
-  virtual void keyRelease(const CKeyEvent &) { }
+  virtual void keyPress  (CKeyType) { }
+  virtual void keyRelease(CKeyType) { }
 
  protected:
   CZ80 &z80;

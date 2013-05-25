@@ -278,18 +278,18 @@ getBreakpoints(std::vector<ushort> &addrs)
 
 void
 CZ80::
-keyPress(const CKeyEvent &kevent)
+keyPress(CKeyType key_type)
 {
   if (port_data_ != NULL)
-    port_data_->keyPress(kevent);
+    port_data_->keyPress(key_type);
 }
 
 void
 CZ80::
-keyRelease(const CKeyEvent &kevent)
+keyRelease(CKeyType key_type)
 {
   if (port_data_ != NULL)
-    port_data_->keyRelease(kevent);
+    port_data_->keyRelease(key_type);
 }
 
 //------------

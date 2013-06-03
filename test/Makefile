@@ -13,7 +13,6 @@ all: $(BIN_DIR)/CZ80Test
 
 SRC = \
 CZ80Test.cpp \
-CTempFile.cpp
 
 OBJS = $(patsubst %.cpp,$(OBJ_DIR)/%.o,$(SRC))
 

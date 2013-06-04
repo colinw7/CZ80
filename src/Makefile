@@ -25,12 +25,16 @@ CZ80OpData.cpp \
 CZ80Rst.cpp \
 CZ80Snapshot.cpp \
 CZ80SpeedData.cpp \
-CFileParse.cpp \
-COStreamFile.cpp \
 
 OBJS = $(patsubst %.cpp,$(OBJ_DIR)/%.o,$(SRC))
 
-CPPFLAGS = -I$(INC_DIR) -I.
+CPPFLAGS = \
+-I$(INC_DIR) \
+-I../../CFile/include \
+-I../../CStrUtil/include \
+-I../../COS/include \
+-I../../CUtil/include \
+-I.
 
 clean:
 	$(RM) -f $(OBJ_DIR)/*.o

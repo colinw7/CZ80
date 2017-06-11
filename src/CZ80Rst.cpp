@@ -1,5 +1,4 @@
-#include <CZ80.h>
-#include <CStrUtil.h>
+#include <CZ80Rst.h>
 
 void
 CZ80StdRstData::

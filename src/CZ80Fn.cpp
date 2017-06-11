@@ -1,5 +1,4 @@
-#include <CZ80.h>
-#include <CZ80Op.h>
+#include <CZ80Fn.h>
 
 //#define OP_DEBUG 1
 

@@ -1,5 +1,4 @@
-#include <CZ80.h>
-#include <CStrUtil.h>
+#include <CZ80DebugData.h>
 
 #define CZ80_CALL_TRACE_PROC(n) { \
 TraceList::iterator ps = trace_list_.begin(); \

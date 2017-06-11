@@ -1,7 +1,4 @@
-#include <CZ80.h>
-#include <CZ80Op.h>
-#include <CFile.h>
-#include <CStrUtil.h>
+#include <CZ80Load.h>
 
 bool
 CZ80::

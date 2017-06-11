@@ -1,6 +1,4 @@
-#include <CZ80.h>
-#include <CZ80Op.h>
-#include <CStrUtil.h>
+#include <CZ80Disassemble.h>
 
 bool
 CZ80::

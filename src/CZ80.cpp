@@ -20,23 +20,11 @@ CZ80()
   htz_ = 50.0;
   t_   = 0;
 
-  allow_interrupts_ = true;
+  allowInterrupts_ = true;
 
   im2_ = 0xfe;
 
   ifreq_ = int(mhz_*1e6/htz_);
-
-  port_data_  = NULL;
-  screen_     = NULL;
-  rst_data_   = NULL;
-  debug_data_ = NULL;
-  mem_data_   = NULL;
-  speed_data_ = NULL;
-
-  dump_      = false;
-  dump_file_ = NULL;
-
-  verbose_ = false;
 
   setWord(0x0000, 0x76);
   setWord(0x0008, 0x76);
@@ -51,8 +39,6 @@ CZ80()
   load_len_ = 65536;
 
   initOpInds();
-
-  halt_ = false;
 
   reset();
 
@@ -71,7 +57,9 @@ CZ80::
 #endif
 
   delete dump_file_;
+
   delete [] memory_;
+  delete [] flags_;
 }
 
 void
@@ -80,12 +68,12 @@ setDump(bool dump)
 {
   dump_ = dump;
 
-  if      (  dump_ && dump_file_ == NULL)
+  if      (  dump_ && dump_file_ == nullptr)
     dump_file_ = new CFile("CZ80.dump");
-  else if (! dump_ && dump_file_ != NULL) {
+  else if (! dump_ && dump_file_ != nullptr) {
     delete dump_file_;
 
-    dump_file_ = NULL;
+    dump_file_ = nullptr;
   }
 }
 
@@ -112,12 +100,12 @@ reset()
 
   setHalt(false);
 
-  stop_ = false;
+  setStop(false);
 
-  if (debug_data_ != NULL) {
-    debug_data_->removeAllBreakpoints();
+  if (debugData_) {
+    debugData_->removeAllBreakpoints();
 
-    debug_data_->callPostStepProcs();
+    debugData_->callPostStepProcs();
   }
 }
 
@@ -151,9 +139,16 @@ resetRegisters()
 
 void
 CZ80::
-setPortData(CZ80PortData *port_data)
+setMemData(CZ80MemData *memData)
 {
-  port_data_ = port_data;
+  memData_ = memData;
+}
+
+void
+CZ80::
+setPortData(CZ80PortData *portData)
+{
+  portData_ = portData;
 }
 
 void
@@ -165,30 +160,23 @@ setScreen(CZ80Screen *screen)
 
 void
 CZ80::
-setRstData(CZ80RstData *rst_data)
+setRstData(CZ80RstData *rstData)
 {
-  rst_data_ = rst_data;
+  rstData_ = rstData;
 }
 
 void
 CZ80::
-setDebugData(CZ80DebugData *debug_data)
+setDebugData(CZ80DebugData *debugData)
 {
-  debug_data_ = debug_data;
+  debugData_ = debugData;
 }
 
 void
 CZ80::
-setMemData(CZ80MemData *mem_data)
+setSpeedData(CZ80SpeedData *speedData)
 {
-  mem_data_ = mem_data;
-}
-
-void
-CZ80::
-setSpeedData(CZ80SpeedData *speed_data)
-{
-  speed_data_ = speed_data;
+  speedData_ = speedData;
 }
 
 //------------
@@ -217,7 +205,7 @@ void
 CZ80::
 setAssembleStream(bool stream)
 {
-  assemble_data_.setStream(stream);
+  assembleData_.setStream(stream);
 }
 
 //------------
@@ -226,42 +214,42 @@ void
 CZ80::
 addTrace(CZ80Trace *trace)
 {
-  if (debug_data_ == NULL)
-    debug_data_ = new CZ80DebugData(*this);
+  if (! debugData_)
+    debugData_ = new CZ80DebugData(*this);
 
-  debug_data_->addTrace(trace);
+  debugData_->addTrace(trace);
 }
 
 void
 CZ80::
 addBreakpoint(ushort pc)
 {
-  if (debug_data_ != NULL)
-    debug_data_->addBreakpoint(pc);
+  if (debugData_)
+    debugData_->addBreakpoint(pc);
 }
 
 void
 CZ80::
 removeBreakpoint(ushort pc)
 {
-  if (debug_data_ != NULL)
-    debug_data_->removeBreakpoint(pc);
+  if (debugData_)
+    debugData_->removeBreakpoint(pc);
 }
 
 void
 CZ80::
 removeAllBreakpoints()
 {
-  if (debug_data_ != NULL)
-    debug_data_->removeAllBreakpoints();
+  if (debugData_)
+    debugData_->removeAllBreakpoints();
 }
 
 bool
 CZ80::
 isBreakpoint(ushort pc)
 {
-  if (debug_data_ != NULL)
-    return debug_data_->isBreakpoint(pc);
+  if (debugData_)
+    return debugData_->isBreakpoint(pc);
   else
     return false;
 }
@@ -270,8 +258,8 @@ void
 CZ80::
 getBreakpoints(std::vector<ushort> &addrs)
 {
-  if (debug_data_ != NULL)
-    debug_data_->getBreakpoints(addrs);
+  if (debugData_)
+    debugData_->getBreakpoints(addrs);
 }
 
 //------------
@@ -280,16 +268,16 @@ void
 CZ80::
 keyPress(CKeyType key_type)
 {
-  if (port_data_ != NULL)
-    port_data_->keyPress(key_type);
+  if (portData_)
+    portData_->keyPress(key_type);
 }
 
 void
 CZ80::
 keyRelease(CKeyType key_type)
 {
-  if (port_data_ != NULL)
-    port_data_->keyRelease(key_type);
+  if (portData_)
+    portData_->keyRelease(key_type);
 }
 
 //------------
@@ -300,8 +288,8 @@ setA(uchar a)
 {
   registers_.a_ = a;
 
-  if (debug_data_ != NULL)
-    debug_data_->setAFChanged(true);
+  if (debugData_)
+    debugData_->setAFChanged(true);
 }
 
 void
@@ -310,8 +298,8 @@ setF(uchar f)
 {
   registers_.f_ = f;
 
-  if (debug_data_ != NULL)
-    debug_data_->setAFChanged(true);
+  if (debugData_)
+    debugData_->setAFChanged(true);
 }
 
 void
@@ -320,8 +308,8 @@ setB(uchar b)
 {
   registers_.b_ = b;
 
-  if (debug_data_ != NULL)
-    debug_data_->setBCChanged(true);
+  if (debugData_)
+    debugData_->setBCChanged(true);
 }
 
 void
@@ -330,8 +318,8 @@ setC(uchar c)
 {
   registers_.c_ = c;
 
-  if (debug_data_ != NULL)
-    debug_data_->setBCChanged(true);
+  if (debugData_)
+    debugData_->setBCChanged(true);
 }
 
 void
@@ -340,8 +328,8 @@ setD(uchar d)
 {
   registers_.d_ = d;
 
-  if (debug_data_ != NULL)
-    debug_data_->setDEChanged(true);
+  if (debugData_)
+    debugData_->setDEChanged(true);
 }
 
 void
@@ -350,8 +338,8 @@ setE(uchar e)
 {
   registers_.e_ = e;
 
-  if (debug_data_ != NULL)
-    debug_data_->setDEChanged(true);
+  if (debugData_)
+    debugData_->setDEChanged(true);
 }
 
 void
@@ -360,8 +348,8 @@ setH(uchar h)
 {
   registers_.h_ = h;
 
-  if (debug_data_ != NULL)
-    debug_data_->setHLChanged(true);
+  if (debugData_)
+    debugData_->setHLChanged(true);
 }
 
 void
@@ -370,8 +358,8 @@ setL(uchar l)
 {
   registers_.l_ = l;
 
-  if (debug_data_ != NULL)
-    debug_data_->setHLChanged(true);
+  if (debugData_)
+    debugData_->setHLChanged(true);
 }
 
 void
@@ -380,8 +368,8 @@ setI(uchar i)
 {
   registers_.i_ = i;
 
-  if (debug_data_ != NULL)
-    debug_data_->setIChanged(true);
+  if (debugData_)
+    debugData_->setIChanged(true);
 }
 
 void
@@ -390,8 +378,8 @@ setAF(ushort af)
 {
   registers_.af_ = af;
 
-  if (debug_data_ != NULL)
-    debug_data_->setAFChanged(true);
+  if (debugData_)
+    debugData_->setAFChanged(true);
 }
 
 void
@@ -400,8 +388,8 @@ setBC(ushort bc)
 {
   registers_.bc_ = bc;
 
-  if (debug_data_ != NULL)
-    debug_data_->setBCChanged(true);
+  if (debugData_)
+    debugData_->setBCChanged(true);
 }
 
 void
@@ -410,8 +398,8 @@ setDE(ushort de)
 {
   registers_.de_ = de;
 
-  if (debug_data_ != NULL)
-    debug_data_->setDEChanged(true);
+  if (debugData_)
+    debugData_->setDEChanged(true);
 }
 
 void
@@ -420,8 +408,8 @@ setHL(ushort hl)
 {
   registers_.hl_ = hl;
 
-  if (debug_data_ != NULL)
-    debug_data_->setHLChanged(true);
+  if (debugData_)
+    debugData_->setHLChanged(true);
 }
 
 void
@@ -430,8 +418,8 @@ setSP(ushort sp)
 {
   registers_.sp_ = sp;
 
-  if (debug_data_ != NULL)
-    debug_data_->setSPChanged(true);
+  if (debugData_)
+    debugData_->setSPChanged(true);
 }
 
 void
@@ -442,8 +430,8 @@ setPC(ushort pc)
 
   setHalt(false);
 
-  if (debug_data_ != NULL)
-    debug_data_->setPCChanged(true);
+  if (debugData_)
+    debugData_->setPCChanged(true);
 }
 
 void
@@ -452,8 +440,8 @@ setIX(ushort ix)
 {
   registers_.ix_ = ix;
 
-  if (debug_data_ != NULL)
-    debug_data_->setIXChanged(true);
+  if (debugData_)
+    debugData_->setIXChanged(true);
 }
 
 void
@@ -462,8 +450,8 @@ setIY(ushort iy)
 {
   registers_.iy_ = iy;
 
-  if (debug_data_ != NULL)
-    debug_data_->setIYChanged(true);
+  if (debugData_)
+    debugData_->setIYChanged(true);
 }
 
 void
@@ -472,8 +460,8 @@ setIXH(uchar ixh)
 {
   registers_.ixh_ = ixh;
 
-  if (debug_data_ != NULL)
-    debug_data_->setIXChanged(true);
+  if (debugData_)
+    debugData_->setIXChanged(true);
 }
 
 void
@@ -482,8 +470,8 @@ setIXL(uchar ixl)
 {
   registers_.ixl_ = ixl;
 
-  if (debug_data_ != NULL)
-    debug_data_->setIXChanged(true);
+  if (debugData_)
+    debugData_->setIXChanged(true);
 }
 
 void
@@ -492,8 +480,8 @@ setIYH(uchar iyh)
 {
   registers_.iyh_ = iyh;
 
-  if (debug_data_ != NULL)
-    debug_data_->setIYChanged(true);
+  if (debugData_)
+    debugData_->setIYChanged(true);
 }
 
 void
@@ -502,8 +490,8 @@ setIYL(uchar iyl)
 {
   registers_.iyl_ = iyl;
 
-  if (debug_data_ != NULL)
-    debug_data_->setIYChanged(true);
+  if (debugData_)
+    debugData_->setIYChanged(true);
 }
 
 void
@@ -512,8 +500,8 @@ setIFF(ushort iff)
 {
   registers_.iff_ = iff;
 
-  if (debug_data_ != NULL)
-    debug_data_->setIFFChanged(true);
+  if (debugData_)
+    debugData_->setIFFChanged(true);
 }
 
 void
@@ -522,8 +510,8 @@ setIFF1(uchar iff1)
 {
   registers_.iff1_ = iff1;
 
-  if (debug_data_ != NULL)
-    debug_data_->setIFFChanged(true);
+  if (debugData_)
+    debugData_->setIFFChanged(true);
 }
 
 void
@@ -532,8 +520,8 @@ setIFF2(uchar iff2)
 {
   registers_.iff2_ = iff2;
 
-  if (debug_data_ != NULL)
-    debug_data_->setIFFChanged(true);
+  if (debugData_)
+    debugData_->setIFFChanged(true);
 }
 
 void
@@ -542,8 +530,8 @@ setAF1(ushort af)
 {
   registers_.af_1_ = af;
 
-  if (debug_data_ != NULL)
-    debug_data_->setAF1Changed(true);
+  if (debugData_)
+    debugData_->setAF1Changed(true);
 }
 
 void
@@ -552,8 +540,8 @@ setBC1(ushort bc)
 {
   registers_.bc_1_ = bc;
 
-  if (debug_data_ != NULL)
-    debug_data_->setBC1Changed(true);
+  if (debugData_)
+    debugData_->setBC1Changed(true);
 }
 
 void
@@ -562,8 +550,8 @@ setDE1(ushort de)
 {
   registers_.de_1_ = de;
 
-  if (debug_data_ != NULL)
-    debug_data_->setDE1Changed(true);
+  if (debugData_)
+    debugData_->setDE1Changed(true);
 }
 
 void
@@ -572,8 +560,8 @@ setHL1(ushort hl)
 {
   registers_.hl_1_ = hl;
 
-  if (debug_data_ != NULL)
-    debug_data_->setHL1Changed(true);
+  if (debugData_)
+    debugData_->setHL1Changed(true);
 }
 
 void
@@ -585,8 +573,8 @@ setIM(uchar im)
 //if (registers_.im_ == 1)
 //  call(0x0038);
 
-  if (debug_data_ != NULL)
-    debug_data_->setIMChanged(true);
+  if (debugData_)
+    debugData_->setIMChanged(true);
 }
 
 void
@@ -626,9 +614,9 @@ setPOIY(schar o, uchar iy)
 
 void
 CZ80::
-setPSP2(ushort sp)
+setPSP2(ushort w)
 {
-  setWord(getSP(), sp);
+  setWord(getSP(), w);
 }
 
 //---------
@@ -639,8 +627,8 @@ setFlag(uchar bit)
 {
   SET_BIT(registers_.f_, bit);
 
-  if (debug_data_ != NULL)
-    debug_data_->setAFChanged(true);
+  if (debugData_)
+    debugData_->setAFChanged(true);
 }
 
 void
@@ -649,8 +637,8 @@ resFlag(uchar bit)
 {
   RST_BIT(registers_.f_, bit);
 
-  if (debug_data_ != NULL)
-    debug_data_->setAFChanged(true);
+  if (debugData_)
+    debugData_->setAFChanged(true);
 }
 
 uchar
@@ -703,11 +691,11 @@ int
 CZ80::
 interrupt()
 {
-  if (! allow_interrupts_)
+  if (! allowInterrupts_)
     return 0;
 
-  if (speed_data_)
-    speed_data_->interrupt();
+  if (speedData_)
+    speedData_->interrupt();
 
   // If not a non-maskable interrupt
 
@@ -798,17 +786,17 @@ setBytes(uchar *c, ushort pos, ushort len)
 
   // debugger hook
 
-  if (debug_data_ != NULL)
-    debug_data_->memChanged(pos, len);
+  if (debugData_)
+    debugData_->memChanged(pos, len);
 
   // mem notify
 
-  if (mem_data_ != NULL)
-    mem_data_->memWrite(c, pos, len);
+  if (memData_)
+    memData_->memWrite(c, pos, len);
 
   // update screen
 
-  if (screen_ != NULL) {
+  if (screen_) {
     ushort pos1 = pos;
     ushort pos2 = pos + len - 1;
 
@@ -863,7 +851,7 @@ void
 CZ80::
 getBytes(uchar *c, ushort pos, ushort len) const
 {
-  if (mem_data_ == NULL || ! mem_data_->memRead(c, pos, len))
+  if (! memData_ || ! memData_->memRead(c, pos, len))
     memcpy(c, &memory_[pos], len);
 }
 
@@ -2489,10 +2477,10 @@ void
 CZ80::
 rst(ushort id)
 {
-  if (rst_data_ != NULL) {
+  if (rstData_) {
     pushPC();
 
-    rst_data_->rst(id);
+    rstData_->rst(id);
 
     popPC();
   }
@@ -3026,7 +3014,7 @@ ldir()
 
     incT(21);
 
-    // TODO: check interrupr
+    // TODO: check interrupt
 
     incR(2);
   }
@@ -3177,13 +3165,13 @@ void
 CZ80::
 out(uchar port, uchar value)
 {
-  if (port_data_ == NULL) {
+  if (! portData_) {
     std::cerr << "No port defined" << std::endl;
     halt();
     return;
   }
 
-  port_data_->out(port, value);
+  portData_->out(port, value);
 }
 
 uchar
@@ -3206,13 +3194,13 @@ uchar
 CZ80::
 in(uchar port, uchar qual)
 {
-  if (port_data_ == NULL) {
+  if (! portData_) {
     std::cerr << "No port defined" << std::endl;
     halt();
     return 0;
   }
 
-  return port_data_->in(port, qual);
+  return portData_->in(port, qual);
 }
 
 //---------
@@ -3259,28 +3247,28 @@ bool
 CZ80::
 isLabelName(const std::string &name)
 {
-  return label_data_.isLabelName(name);
+  return labelData_.isLabelName(name);
 }
 
 void
 CZ80::
 setLabelValue(const std::string &name, uint value)
 {
-  label_data_.setLabelValue(name, value);
+  labelData_.setLabelValue(name, value);
 }
 
 bool
 CZ80::
 getLabelValue(const std::string &name, uint *value)
 {
-  return label_data_.getLabelValue(name, value);
+  return labelData_.getLabelValue(name, value);
 }
 
 bool
 CZ80::
 getValueLabel(uint value, std::string &name)
 {
-  return label_data_.getValueLabel(value, name);
+  return labelData_.getValueLabel(value, name);
 }
 
 //---------
@@ -3289,15 +3277,15 @@ bool
 CZ80::
 undump(CFile *file, std::ostream &os)
 {
-  CZ80OpData op_data;
+  CZ80OpData opData;
 
-  op_data.z80 = this;
+  opData.z80 = this;
 
   while (! file->eof()) {
-    if (! op_data.undump(file))
+    if (! opData.undump(file))
       return false;
 
-    op_data.printStr(os);
+    opData.printStr(os);
 
     os << std::endl;
   }
@@ -3309,12 +3297,12 @@ undump(CFile *file, std::ostream &os)
 
 void
 CZ80::
-getOpData(CZ80OpData *op_data)
+getOpData(CZ80OpData *opData)
 {
   ushort pc   = getPC();
   bool   halt = getHalt();
 
-  readOpData(op_data);
+  readOpData(opData);
 
   setPC(pc);
 
@@ -3323,19 +3311,19 @@ getOpData(CZ80OpData *op_data)
 
 void
 CZ80::
-readOpData(CZ80OpData *op_data)
+readOpData(CZ80OpData *opData)
 {
-  op_data->z80 = this;
-  op_data->op  = readOp();
+  opData->z80 = this;
+  opData->op  = readOp();
 
-  if (op_data->op == NULL) {
+  if (! opData->op) {
     halt();
     return;
   }
 
-  readOpValues(op_data->op,
-               op_data->values1, &op_data->num_values1,
-               op_data->values2, &op_data->num_values2);
+  readOpValues(opData->op,
+               opData->values1, &opData->num_values1,
+               opData->values2, &opData->num_values2);
 }
 
 CZ80Op *
@@ -3348,17 +3336,18 @@ readOp()
 
   CZ80Op *op = &op_normal[c];
 
-  if (op->func == NULL) {
+  if (! op->func) {
     uchar c1 = getByte();
 
     incPC();
 
-    if      (c == 0xCB)
+    if      (c == 0xCB) {
       op = &op_cb[c1];
+    }
     else if (c == 0xDD) {
       op = &op_dd[c1];
 
-      if (op->func == NULL) {
+      if (! op->func) {
         uchar c2 = getByte();
 
         incPC();
@@ -3374,12 +3363,13 @@ readOp()
         }
       }
     }
-    else if (c == 0xED)
+    else if (c == 0xED) {
       op = &op_ed[c1];
+    }
     else if (c == 0xFD) {
       op = &op_fd[c1];
 
-      if (op->func == NULL) {
+      if (! op->func) {
         uchar c2 = getByte();
 
         incPC();
@@ -3725,7 +3715,7 @@ getIndOp(uint ind)
   else if (ind < 1792) return &op_fd_cb [ind - 1536];
   else {
     std::cerr << "Invalid op id " << ind << std::endl;
-    return NULL;
+    return nullptr;
   }
 }
 

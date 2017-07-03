@@ -128,7 +128,7 @@ class  CZ80DebugData;
 class  CZ80MemData;
 struct CZ80SpeedData;
 
-typedef void (CZ80OpProc)(CZ80OpData *op_data);
+typedef void (CZ80OpProc)(CZ80OpData *opData);
 
 typedef CZ80OpProc *CZ80OpProcP;
 
@@ -286,40 +286,40 @@ class CZ80 {
  private:
   typedef std::map<std::string,CZ80Macro> MacroMap;
 
-  bool halt_;
-  bool stop_;
-  bool allow_interrupts_;
+  bool halt_            { false };
+  bool stop_            { false };
+  bool allowInterrupts_ { false };
 
-  uchar         *memory_;
-  uchar         *flags_;
+  uchar         *memory_ { nullptr };
+  uchar         *flags_  { nullptr };
   CZ80Registers  registers_;
 
   CircBuffer pc_buffer_;
 
-  double mhz_;
-  double htz_;
-  ushort ifreq_;
-  ushort t_;
-  ushort im2_;
+  double mhz_   { 4 };
+  double htz_   { 60 };
+  ushort ifreq_ { 0 };
+  ushort t_     { 0 };
+  ushort im2_   { 0 };
 
-  ushort load_pos_;
-  uint   load_len_;
+  ushort load_pos_ { 0 };
+  uint   load_len_ { 0 };
 
-  bool verbose_;
+  bool verbose_ { false };
 
-  CZ80PortData  *port_data_;
-  CZ80Screen    *screen_;
-  CZ80RstData   *rst_data_;
-  CZ80DebugData *debug_data_;
-  CZ80MemData   *mem_data_;
-  CZ80SpeedData *speed_data_;
+  CZ80PortData  *portData_  { nullptr };
+  CZ80Screen    *screen_    { nullptr };
+  CZ80RstData   *rstData_   { nullptr };
+  CZ80DebugData *debugData_ { nullptr };
+  CZ80MemData   *memData_   { nullptr };
+  CZ80SpeedData *speedData_ { nullptr };
 
-  bool   dump_;
-  CFile *dump_file_;
+  bool   dump_      { false };
+  CFile *dump_file_ { nullptr };
 
-  CZ80AssembleData assemble_data_;
+  CZ80AssembleData assembleData_;
   MacroMap         assemble_macros_;
-  CZ80LabelData    label_data_;
+  CZ80LabelData    labelData_;
 
  public:
   CZ80();
@@ -346,19 +346,19 @@ class CZ80 {
   void setVerbose(bool verbose) { verbose_ = verbose; }
   bool getVerbose() { return verbose_; }
 
-  void setPortData(CZ80PortData *port_data);
+  void setPortData(CZ80PortData *portData);
 
   void setScreen(CZ80Screen *screen);
 
   CZ80Screen *getScreen() const { return screen_; }
 
-  void setRstData(CZ80RstData *rst_data);
+  void setRstData(CZ80RstData *rstData);
 
-  void setDebugData(CZ80DebugData *debug_data);
+  void setDebugData(CZ80DebugData *debugData);
 
-  void setMemData(CZ80MemData *mem_data);
+  void setMemData(CZ80MemData *memData);
 
-  void setSpeedData(CZ80SpeedData *speed_data);
+  void setSpeedData(CZ80SpeedData *speedData);
 
   void setHalt(bool halt);
   bool getHalt() const;
@@ -399,7 +399,7 @@ class CZ80 {
 
   // Interrupts
 
-  void setAllowInterrups(bool allow) { allow_interrupts_ = allow; }
+  void setAllowInterrups(bool allow) { allowInterrupts_ = allow; }
 
   void setIM2(ushort im2) { im2_ = im2; }
 
@@ -962,9 +962,9 @@ class CZ80 {
   // Read Next Memory Op
 
  public:
-  void getOpData(CZ80OpData *op_data);
+  void getOpData(CZ80OpData *opData);
 
-  void readOpData(CZ80OpData *op_data);
+  void readOpData(CZ80OpData *opData);
 
  private:
   CZ80Op *readOp();
@@ -1516,20 +1516,20 @@ class CZ80 {
   static CZ80OpProc f_res_po_iy_h_n;
   static CZ80OpProc f_res_po_iy_l_n;
 
-  static void f_res_po_ix_a_n(CZ80OpData *op_data, uchar o);
-  static void f_res_po_ix_b_n(CZ80OpData *op_data, uchar o);
-  static void f_res_po_ix_c_n(CZ80OpData *op_data, uchar o);
-  static void f_res_po_ix_d_n(CZ80OpData *op_data, uchar o);
-  static void f_res_po_ix_e_n(CZ80OpData *op_data, uchar o);
-  static void f_res_po_ix_h_n(CZ80OpData *op_data, uchar o);
-  static void f_res_po_ix_l_n(CZ80OpData *op_data, uchar o);
-  static void f_res_po_iy_a_n(CZ80OpData *op_data, uchar o);
-  static void f_res_po_iy_b_n(CZ80OpData *op_data, uchar o);
-  static void f_res_po_iy_c_n(CZ80OpData *op_data, uchar o);
-  static void f_res_po_iy_d_n(CZ80OpData *op_data, uchar o);
-  static void f_res_po_iy_e_n(CZ80OpData *op_data, uchar o);
-  static void f_res_po_iy_h_n(CZ80OpData *op_data, uchar o);
-  static void f_res_po_iy_l_n(CZ80OpData *op_data, uchar o);
+  static void f_res_po_ix_a_n(CZ80OpData *opData, uchar o);
+  static void f_res_po_ix_b_n(CZ80OpData *opData, uchar o);
+  static void f_res_po_ix_c_n(CZ80OpData *opData, uchar o);
+  static void f_res_po_ix_d_n(CZ80OpData *opData, uchar o);
+  static void f_res_po_ix_e_n(CZ80OpData *opData, uchar o);
+  static void f_res_po_ix_h_n(CZ80OpData *opData, uchar o);
+  static void f_res_po_ix_l_n(CZ80OpData *opData, uchar o);
+  static void f_res_po_iy_a_n(CZ80OpData *opData, uchar o);
+  static void f_res_po_iy_b_n(CZ80OpData *opData, uchar o);
+  static void f_res_po_iy_c_n(CZ80OpData *opData, uchar o);
+  static void f_res_po_iy_d_n(CZ80OpData *opData, uchar o);
+  static void f_res_po_iy_e_n(CZ80OpData *opData, uchar o);
+  static void f_res_po_iy_h_n(CZ80OpData *opData, uchar o);
+  static void f_res_po_iy_l_n(CZ80OpData *opData, uchar o);
 
   // ret
 
@@ -1723,20 +1723,20 @@ class CZ80 {
   static CZ80OpProc f_set_po_iy_h_n;
   static CZ80OpProc f_set_po_iy_l_n;
 
-  static void f_set_po_ix_a_n(CZ80OpData *op_data, uchar o);
-  static void f_set_po_ix_b_n(CZ80OpData *op_data, uchar o);
-  static void f_set_po_ix_c_n(CZ80OpData *op_data, uchar o);
-  static void f_set_po_ix_d_n(CZ80OpData *op_data, uchar o);
-  static void f_set_po_ix_e_n(CZ80OpData *op_data, uchar o);
-  static void f_set_po_ix_h_n(CZ80OpData *op_data, uchar o);
-  static void f_set_po_ix_l_n(CZ80OpData *op_data, uchar o);
-  static void f_set_po_iy_a_n(CZ80OpData *op_data, uchar o);
-  static void f_set_po_iy_b_n(CZ80OpData *op_data, uchar o);
-  static void f_set_po_iy_c_n(CZ80OpData *op_data, uchar o);
-  static void f_set_po_iy_d_n(CZ80OpData *op_data, uchar o);
-  static void f_set_po_iy_e_n(CZ80OpData *op_data, uchar o);
-  static void f_set_po_iy_h_n(CZ80OpData *op_data, uchar o);
-  static void f_set_po_iy_l_n(CZ80OpData *op_data, uchar o);
+  static void f_set_po_ix_a_n(CZ80OpData *opData, uchar o);
+  static void f_set_po_ix_b_n(CZ80OpData *opData, uchar o);
+  static void f_set_po_ix_c_n(CZ80OpData *opData, uchar o);
+  static void f_set_po_ix_d_n(CZ80OpData *opData, uchar o);
+  static void f_set_po_ix_e_n(CZ80OpData *opData, uchar o);
+  static void f_set_po_ix_h_n(CZ80OpData *opData, uchar o);
+  static void f_set_po_ix_l_n(CZ80OpData *opData, uchar o);
+  static void f_set_po_iy_a_n(CZ80OpData *opData, uchar o);
+  static void f_set_po_iy_b_n(CZ80OpData *opData, uchar o);
+  static void f_set_po_iy_c_n(CZ80OpData *opData, uchar o);
+  static void f_set_po_iy_d_n(CZ80OpData *opData, uchar o);
+  static void f_set_po_iy_e_n(CZ80OpData *opData, uchar o);
+  static void f_set_po_iy_h_n(CZ80OpData *opData, uchar o);
+  static void f_set_po_iy_l_n(CZ80OpData *opData, uchar o);
 
   // sla
 

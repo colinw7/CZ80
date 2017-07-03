@@ -13,16 +13,16 @@ execute(ushort pos)
 {
   setPC(pos);
 
-  if (debug_data_ != NULL)
-    debug_data_->callInitProcs();
+  if (debugData_ != NULL)
+    debugData_->callInitProcs();
 
   if (speed_data_ != NULL)
     speed_data_->init();
 
   execute1(true);
 
-  if (debug_data_ != NULL)
-    debug_data_->callTermProcs();
+  if (debugData_ != NULL)
+    debugData_->callTermProcs();
 
   return true;
 }
@@ -43,16 +43,16 @@ next()
   setPC  (pc);
   setHalt(halt);
 
-  if (debug_data_ != NULL) {
-    debug_data_->addBreakpoint(pc1);
+  if (debugData_ != NULL) {
+    debugData_->addBreakpoint(pc1);
 
-    debug_data_->callPreStepProcs();
+    debugData_->callPreStepProcs();
   }
 
   execute1(false);
 
-  if (debug_data_ != NULL) {
-    debug_data_->callPostStepProcs();
+  if (debugData_ != NULL) {
+    debugData_->callPostStepProcs();
 
     removeBreakpoint(getPC());
   }
@@ -64,13 +64,13 @@ bool
 CZ80::
 cont()
 {
-  if (debug_data_ != NULL)
-    debug_data_->callPreStepProcs();
+  if (debugData_ != NULL)
+    debugData_->callPreStepProcs();
 
   execute1(true);
 
-  if (debug_data_ != NULL)
-    debug_data_->callPostStepProcs();
+  if (debugData_ != NULL)
+    debugData_->callPostStepProcs();
 
   return true;
 }
@@ -85,8 +85,8 @@ execute1(bool notify)
     if (getHalt() || getStop())
       break;
 
-    if (debug_data_ != NULL) {
-      if (debug_data_->isBreakpoint(getPC()))
+    if (debugData_ != NULL) {
+      if (debugData_->isBreakpoint(getPC()))
         break;
     }
   }
@@ -107,8 +107,8 @@ bool
 CZ80::
 step1(bool notify)
 {
-  if (notify && debug_data_ != NULL)
-    debug_data_->callPreStepProcs();
+  if (notify && debugData_ != NULL)
+    debugData_->callPreStepProcs();
 
   if (! getHalt()) {
     CZ80OpData op_data;
@@ -128,8 +128,8 @@ step1(bool notify)
     incT(4);
   }
 
-  if (notify && debug_data_ != NULL)
-    debug_data_->callPostStepProcs();
+  if (notify && debugData_ != NULL)
+    debugData_->callPostStepProcs();
 
   return true;
 }

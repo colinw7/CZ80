@@ -1,0 +1,6960 @@
+1000 c3 28 10    ; jp   0x1028
+1003 00          ; nop
+1004 00          ; nop
+1005 00          ; nop
+1006 00          ; nop
+1007 00          ; nop
+1008 00          ; nop
+1009 00          ; nop
+100a 00          ; nop
+100b 00          ; nop
+100c 00          ; nop
+100d 00          ; nop
+100e 00          ; nop
+100f 00          ; nop
+1010 00          ; nop
+1011 00          ; nop
+1012 00          ; nop
+1013 d5          ; push DE
+1014 f5          ; push AF
+1015 1a          ; ld   A, (DE)
+1016 fe 24       ; cp   0x24
+1018 28 04       ; jr   Z, +0x04
+101a f7          ; rst  0x30
+101b 13          ; inc  DE
+101c 18 f7       ; jr   -0x09
+101e f1          ; pop  AF
+101f d1          ; pop  DE
+1020 c9          ; ret
+1021 f5          ; push AF
+1022 d5          ; push DE
+1023 7b          ; ld   A, E
+1024 f7          ; rst  0x30
+1025 d1          ; pop  DE
+1026 f1          ; pop  AF
+1027 c9          ; ret
+1028 31 00 10    ; ld   SP, 0x1000
+102b 11 dc 2c    ; ld   DE, 0x2cdc
+102e cd 13 10    ; call 0x1013
+1031 21 4f 10    ; ld   HL, 0x104f
+1034 7e          ; ld   A, (HL)
+1035 23          ; inc  HL
+1036 b6          ; or   (HL)
+1037 ca 41 10    ; jp   Z, 0x1041
+103a 2b          ; dec  HL
+103b cd f7 29    ; call 0x29f7
+103e c3 34 10    ; jp   0x1034
+1041 11 46 2d    ; ld   DE, 0x2d46
+1044 cd 13 10    ; call 0x1013
+1047 11 64 2d    ; ld   DE, 0x2d64
+104a cd 13 10    ; call 0x1013
+104d df          ; rst  0x18
+104e 5b          ; ld   E, E
+104f d7          ; rst  0x10
+1050 13          ; inc  DE
+1051 37          ; scf
+1052 14          ; inc  D
+1053 97          ; sub  A
+1054 14          ; inc  D
+1055 f7          ; rst  0x30
+1056 14          ; inc  D
+1057 57          ; ld   D, A
+1058 15          ; dec  D
+1059 b7          ; or   A
+105a 15          ; dec  D
+105b 17          ; rla
+105c 16 77       ; ld   D, 0x77
+105e 16 d7       ; ld   D, 0xd7
+1060 16 37       ; ld   D, 0x37
+1062 17          ; rla
+1063 97          ; sub  A
+1064 17          ; rla
+1065 f7          ; rst  0x30
+1066 17          ; rla
+1067 57          ; ld   D, A
+1068 18 b7       ; jr   -0x49
+106a 18 17       ; jr   +0x17
+106c 19          ; add  HL, DE
+106d 77          ; ld   (HL), A
+106e 19          ; add  HL, DE
+106f d7          ; rst  0x10
+1070 19          ; add  HL, DE
+1071 37          ; scf
+1072 1a          ; ld   A, (DE)
+1073 97          ; sub  A
+1074 1a          ; ld   A, (DE)
+1075 f7          ; rst  0x30
+1076 1a          ; ld   A, (DE)
+1077 57          ; ld   D, A
+1078 1b          ; dec  DE
+1079 b7          ; or   A
+107a 1b          ; dec  DE
+107b 17          ; rla
+107c 1c          ; inc  E
+107d 77          ; ld   (HL), A
+107e 1c          ; inc  E
+107f d7          ; rst  0x10
+1080 1c          ; inc  E
+1081 37          ; scf
+1082 1d          ; dec  E
+1083 97          ; sub  A
+1084 1d          ; dec  E
+1085 f7          ; rst  0x30
+1086 1d          ; dec  E
+1087 57          ; ld   D, A
+1088 1e b7       ; ld   E, 0xb7
+108a 1e 17       ; ld   E, 0x17
+108c 1f          ; rra
+108d 77          ; ld   (HL), A
+108e 1f          ; rra
+108f d7          ; rst  0x10
+1090 1f          ; rra
+1091 37          ; scf
+1092 20 97       ; jr   NZ, -0x69
+1094 20 f7       ; jr   NZ, -0x09
+1096 20 57       ; jr   NZ, +0x57
+1098 21 b7 21    ; ld   HL, 0x21b7
+109b 17          ; rla
+109c 22 77 22    ; ld   (0x2277), HL
+109f d7          ; rst  0x10
+10a0 22 37 23    ; ld   (0x2337), HL
+10a3 97          ; sub  A
+10a4 23          ; inc  HL
+10a5 f7          ; rst  0x30
+10a6 23          ; inc  HL
+10a7 57          ; ld   D, A
+10a8 24          ; inc  H
+10a9 b7          ; or   A
+10aa 24          ; inc  H
+10ab 17          ; rla
+10ac 25          ; dec  H
+10ad 77          ; ld   (HL), A
+10ae 25          ; dec  H
+10af d7          ; rst  0x10
+10b0 25          ; dec  H
+10b1 37          ; scf
+10b2 26 97       ; ld   H, 0x97
+10b4 26 f7       ; ld   H, 0xf7
+10b6 26 57       ; ld   H, 0x57
+10b8 27          ; daa
+10b9 b7          ; or   A
+10ba 27          ; daa
+10bb 17          ; rla
+10bc 28 77       ; jr   Z, +0x77
+10be 28 d7       ; jr   Z, -0x29
+10c0 28 37       ; jr   Z, +0x37
+10c2 29          ; add  HL, HL
+10c3 97          ; sub  A
+10c4 29          ; add  HL, HL
+10c5 d7          ; rst  0x10
+10c6 10 37       ; djnz +0x37
+10c8 11 97 11    ; ld   DE, 0x1197
+10cb f7          ; rst  0x30
+10cc 11 57 12    ; ld   DE, 0x1257
+10cf b7          ; or   A
+10d0 12          ; ld   (DE), A
+10d1 17          ; rla
+10d2 13          ; inc  DE
+10d3 77          ; ld   (HL), A
+10d4 13          ; inc  DE
+10d5 00          ; nop
+10d6 00          ; nop
+10d7 ff          ; rst  0x38
+10d8 ed 42       ; sbc  HL, BC
+10da 00          ; nop
+10db 00          ; nop
+10dc 2c          ; inc  L
+10dd 83          ; add  A, E
+10de 88          ; adc  A, B
+10df 4f          ; ld   C, A
+10e0 2b          ; dec  HL
+10e1 f2 39 b3    ; jp   P, 0xb339
+10e4 1f          ; rra
+10e5 7e          ; ld   A, (HL)
+10e6 63          ; ld   H, E
+10e7 15          ; dec  D
+10e8 d3 89       ; out  (0x89), A
+10ea 5e          ; ld   E, (HL)
+10eb 46          ; ld   B, (HL)
+10ec 00          ; nop
+10ed 38 00       ; jr   C, +0x00
+10ef 00          ; nop
+10f0 00          ; nop
+10f1 00          ; nop
+10f2 00          ; nop
+10f3 00          ; nop
+10f4 00          ; nop
+10f5 00          ; nop
+10f6 21 f8 00    ; ld   HL, 0x00f8
+10f9 00          ; nop
+10fa 00          ; nop
+10fb 00          ; nop
+10fc 00          ; nop
+10fd 00          ; nop
+10fe 00          ; nop
+10ff 00          ; nop
+1100 00          ; nop
+1101 00          ; nop
+1102 00          ; nop
+1103 00          ; nop
+1104 00          ; nop
+1105 00          ; nop
+1106 00          ; nop
+1107 00          ; nop
+1108 00          ; nop
+1109 00          ; nop
+110a ff          ; rst  0x38
+110b ff          ; rst  0x38
+110c ff          ; rst  0x38
+110d ff          ; rst  0x38
+110e ff          ; rst  0x38
+110f ff          ; rst  0x38
+1110 d7          ; rst  0x10
+1111 00          ; nop
+1112 ff          ; rst  0x38
+1113 ff          ; rst  0x38
+1114 d4 8a d5    ; call NC, 0xd58a
+1117 19          ; add  HL, DE
+1118 3c          ; inc  A
+1119 61          ; ld   H, C
+111a 64          ; ld   H, H
+111b 63          ; ld   H, E
+111c 2c          ; inc  L
+111d 73          ; ld   (HL), E
+111e 62          ; ld   H, D
+111f 63          ; ld   H, E
+1120 3e 20       ; ld   A, 0x20
+1122 68          ; ld   L, B
+1123 6c          ; ld   L, H
+1124 2c          ; inc  L
+1125 3c          ; inc  A
+1126 62          ; ld   H, D
+1127 63          ; ld   H, E
+1128 2c          ; inc  L
+1129 64          ; ld   H, H
+112a 65          ; ld   H, L
+112b 2c          ; inc  L
+112c 68          ; ld   L, B
+112d 6c          ; ld   L, H
+112e 2c          ; inc  L
+112f 73          ; ld   (HL), E
+1130 70          ; ld   (HL), B
+1131 3e 2e       ; ld   A, 0x2e
+1133 2e 2e       ; ld   L, 0x2e
+1135 2e 24       ; ld   L, 0x24
+1137 ff          ; rst  0x38
+1138 09          ; add  HL, BC
+1139 00          ; nop
+113a 00          ; nop
+113b 00          ; nop
+113c a5          ; and  L
+113d c4 c7 c4    ; call NZ, 0xc4c7
+1140 26 d2       ; ld   H, 0xd2
+1142 50          ; ld   D, B
+1143 a0          ; and  B
+1144 ea 58 66    ; jp   PE, 0x6658
+1147 85          ; add  A, L
+1148 c6 de       ; add  A, 0xde
+114a c9          ; ret
+114b 9b          ; sbc  A, E
+114c 30 00       ; jr   NC, +0x00
+114e 00          ; nop
+114f 00          ; nop
+1150 00          ; nop
+1151 00          ; nop
+1152 00          ; nop
+1153 00          ; nop
+1154 00          ; nop
+1155 00          ; nop
+1156 21 f8 00    ; ld   HL, 0x00f8
+1159 00          ; nop
+115a 00          ; nop
+115b 00          ; nop
+115c 00          ; nop
+115d 00          ; nop
+115e 00          ; nop
+115f 00          ; nop
+1160 00          ; nop
+1161 00          ; nop
+1162 00          ; nop
+1163 00          ; nop
+1164 00          ; nop
+1165 00          ; nop
+1166 00          ; nop
+1167 00          ; nop
+1168 00          ; nop
+1169 00          ; nop
+116a ff          ; rst  0x38
+116b ff          ; rst  0x38
+116c ff          ; rst  0x38
+116d ff          ; rst  0x38
+116e ff          ; rst  0x38
+116f ff          ; rst  0x38
+1170 d7          ; rst  0x10
+1171 00          ; nop
+1172 ff          ; rst  0x38
+1173 ff          ; rst  0x38
+1174 d9          ; exx
+1175 a4          ; and  H
+1176 ca 05 61    ; jp   Z, 0x6105
+1179 64          ; ld   H, H
+117a 64          ; ld   H, H
+117b 20 68       ; jr   NZ, +0x68
+117d 6c          ; ld   L, H
+117e 2c          ; inc  L
+117f 3c          ; inc  A
+1180 62          ; ld   H, D
+1181 63          ; ld   H, E
+1182 2c          ; inc  L
+1183 64          ; ld   H, H
+1184 65          ; ld   H, L
+1185 2c          ; inc  L
+1186 68          ; ld   L, B
+1187 6c          ; ld   L, H
+1188 2c          ; inc  L
+1189 73          ; ld   (HL), E
+118a 70          ; ld   (HL), B
+118b 3e 2e       ; ld   A, 0x2e
+118d 2e 2e       ; ld   L, 0x2e
+118f 2e 2e       ; ld   L, 0x2e
+1191 2e 2e       ; ld   L, 0x2e
+1193 2e 2e       ; ld   L, 0x2e
+1195 2e 24       ; ld   L, 0x24
+1197 ff          ; rst  0x38
+1198 dd 09       ; add  IX, BC
+119a 00          ; nop
+119b 00          ; nop
+119c ac          ; xor  H
+119d dd 94       ; sub  IXh
+119f c2 5b 63    ; jp   NZ, 0x635b
+11a2 d3 33       ; out  (0x33), A
+11a4 76          ; halt
+11a5 6a          ; ld   L, D
+11a6 20 fa       ; jr   NZ, -0x06
+11a8 94          ; sub  H
+11a9 68          ; ld   L, B
+11aa f5          ; push AF
+11ab 36 00       ; ld   (HL), 0x00
+11ad 30 00       ; jr   NC, +0x00
+11af 00          ; nop
+11b0 00          ; nop
+11b1 00          ; nop
+11b2 00          ; nop
+11b3 00          ; nop
+11b4 21 f8 00    ; ld   HL, 0x00f8
+11b7 00          ; nop
+11b8 00          ; nop
+11b9 00          ; nop
+11ba 00          ; nop
+11bb 00          ; nop
+11bc 00          ; nop
+11bd 00          ; nop
+11be 00          ; nop
+11bf 00          ; nop
+11c0 00          ; nop
+11c1 00          ; nop
+11c2 00          ; nop
+11c3 00          ; nop
+11c4 00          ; nop
+11c5 00          ; nop
+11c6 00          ; nop
+11c7 00          ; nop
+11c8 ff          ; rst  0x38
+11c9 ff          ; rst  0x38
+11ca 00          ; nop
+11cb 00          ; nop
+11cc ff          ; rst  0x38
+11cd ff          ; rst  0x38
+11ce ff          ; rst  0x38
+11cf ff          ; rst  0x38
+11d0 d7          ; rst  0x10
+11d1 00          ; nop
+11d2 ff          ; rst  0x38
+11d3 ff          ; rst  0x38
+11d4 b1          ; or   C
+11d5 df          ; rst  0x18
+11d6 8e          ; adc  A, (HL)
+11d7 c0          ; ret  NZ
+11d8 61          ; ld   H, C
+11d9 64          ; ld   H, H
+11da 64          ; ld   H, H
+11db 20 69       ; jr   NZ, +0x69
+11dd 78          ; ld   A, B
+11de 2c          ; inc  L
+11df 3c          ; inc  A
+11e0 62          ; ld   H, D
+11e1 63          ; ld   H, E
+11e2 2c          ; inc  L
+11e3 64          ; ld   H, H
+11e4 65          ; ld   H, L
+11e5 2c          ; inc  L
+11e6 69          ; ld   L, C
+11e7 78          ; ld   A, B
+11e8 2c          ; inc  L
+11e9 73          ; ld   (HL), E
+11ea 70          ; ld   (HL), B
+11eb 3e 2e       ; ld   A, 0x2e
+11ed 2e 2e       ; ld   L, 0x2e
+11ef 2e 2e       ; ld   L, 0x2e
+11f1 2e 2e       ; ld   L, 0x2e
+11f3 2e 2e       ; ld   L, 0x2e
+11f5 2e 24       ; ld   L, 0x24
+11f7 ff          ; rst  0x38
+11f8 fd 09       ; add  IY, BC
+11fa 00          ; nop
+11fb 00          ; nop
+11fc c2 c7 07    ; jp   NZ, 0x07c7
+11ff f4 c1 51    ; call P, 0x51c1
+1202 96          ; sub  (HL)
+1203 3e f4       ; ld   A, 0xf4
+1205 0b          ; dec  BC
+1206 0f          ; rrca
+1207 51          ; ld   D, C
+1208 92          ; sub  D
+1209 1e ea       ; ld   E, 0xea
+120b 71          ; ld   (HL), C
+120c 00          ; nop
+120d 30 00       ; jr   NC, +0x00
+120f 00          ; nop
+1210 00          ; nop
+1211 00          ; nop
+1212 21 f8 00    ; ld   HL, 0x00f8
+1215 00          ; nop
+1216 00          ; nop
+1217 00          ; nop
+1218 00          ; nop
+1219 00          ; nop
+121a 00          ; nop
+121b 00          ; nop
+121c 00          ; nop
+121d 00          ; nop
+121e 00          ; nop
+121f 00          ; nop
+1220 00          ; nop
+1221 00          ; nop
+1222 00          ; nop
+1223 00          ; nop
+1224 00          ; nop
+1225 00          ; nop
+1226 ff          ; rst  0x38
+1227 ff          ; rst  0x38
+1228 00          ; nop
+1229 00          ; nop
+122a 00          ; nop
+122b 00          ; nop
+122c ff          ; rst  0x38
+122d ff          ; rst  0x38
+122e ff          ; rst  0x38
+122f ff          ; rst  0x38
+1230 d7          ; rst  0x10
+1231 00          ; nop
+1232 ff          ; rst  0x38
+1233 ff          ; rst  0x38
+1234 39          ; add  HL, SP
+1235 c8          ; ret  Z
+1236 58          ; ld   E, B
+1237 9b          ; sbc  A, E
+1238 61          ; ld   H, C
+1239 64          ; ld   H, H
+123a 64          ; ld   H, H
+123b 20 69       ; jr   NZ, +0x69
+123d 79          ; ld   A, C
+123e 2c          ; inc  L
+123f 3c          ; inc  A
+1240 62          ; ld   H, D
+1241 63          ; ld   H, E
+1242 2c          ; inc  L
+1243 64          ; ld   H, H
+1244 65          ; ld   H, L
+1245 2c          ; inc  L
+1246 69          ; ld   L, C
+1247 79          ; ld   A, C
+1248 2c          ; inc  L
+1249 73          ; ld   (HL), E
+124a 70          ; ld   (HL), B
+124b 3e 2e       ; ld   A, 0x2e
+124d 2e 2e       ; ld   L, 0x2e
+124f 2e 2e       ; ld   L, 0x2e
+1251 2e 2e       ; ld   L, 0x2e
+1253 2e 2e       ; ld   L, 0x2e
+1255 2e 24       ; ld   L, 0x24
+1257 ff          ; rst  0x38
+1258 c6 00       ; add  A, 0x00
+125a 00          ; nop
+125b 00          ; nop
+125c 40          ; ld   B, B
+125d 91          ; sub  C
+125e 3c          ; inc  A
+125f 7e          ; ld   A, (HL)
+1260 67          ; ld   H, A
+1261 7a          ; ld   A, D
+1262 6d          ; ld   L, L
+1263 df          ; rst  0x18
+1264 61          ; ld   H, C
+1265 5b          ; ld   E, E
+1266 29          ; add  HL, HL
+1267 0b          ; dec  BC
+1268 10 66       ; djnz +0x66
+126a b2          ; or   D
+126b 85          ; add  A, L
+126c 38 00       ; jr   C, +0x00
+126e 00          ; nop
+126f 00          ; nop
+1270 00          ; nop
+1271 00          ; nop
+1272 00          ; nop
+1273 00          ; nop
+1274 00          ; nop
+1275 00          ; nop
+1276 00          ; nop
+1277 00          ; nop
+1278 00          ; nop
+1279 00          ; nop
+127a 00          ; nop
+127b 00          ; nop
+127c 00          ; nop
+127d ff          ; rst  0x38
+127e 00          ; nop
+127f 00          ; nop
+1280 00          ; nop
+1281 ff          ; rst  0x38
+1282 00          ; nop
+1283 00          ; nop
+1284 00          ; nop
+1285 00          ; nop
+1286 00          ; nop
+1287 00          ; nop
+1288 00          ; nop
+1289 00          ; nop
+128a 00          ; nop
+128b 00          ; nop
+128c 00          ; nop
+128d 00          ; nop
+128e 00          ; nop
+128f 00          ; nop
+1290 d7          ; rst  0x10
+1291 00          ; nop
+1292 00          ; nop
+1293 00          ; nop
+1294 51          ; ld   D, C
+1295 c1          ; pop  BC
+1296 9c          ; sbc  A, H
+1297 2e 61       ; ld   L, 0x61
+1299 6c          ; ld   L, H
+129a 75          ; ld   (HL), L
+129b 6f          ; ld   L, A
+129c 70          ; ld   (HL), B
+129d 20 61       ; jr   NZ, +0x61
+129f 2c          ; inc  L
+12a0 6e          ; ld   L, (HL)
+12a1 6e          ; ld   L, (HL)
+12a2 2e 2e       ; ld   L, 0x2e
+12a4 2e 2e       ; ld   L, 0x2e
+12a6 2e 2e       ; ld   L, 0x2e
+12a8 2e 2e       ; ld   L, 0x2e
+12aa 2e 2e       ; ld   L, 0x2e
+12ac 2e 2e       ; ld   L, 0x2e
+12ae 2e 2e       ; ld   L, 0x2e
+12b0 2e 2e       ; ld   L, 0x2e
+12b2 2e 2e       ; ld   L, 0x2e
+12b4 2e 2e       ; ld   L, 0x2e
+12b6 24          ; inc  H
+12b7 ff          ; rst  0x38
+12b8 80          ; add  A, B
+12b9 00          ; nop
+12ba 00          ; nop
+12bb 00          ; nop
+12bc 3e c5       ; ld   A, 0xc5
+12be 3a 57 4d    ; ld   A, (0x4d57)
+12c1 4c          ; ld   C, H
+12c2 03          ; inc  BC
+12c3 10 09       ; djnz +0x09
+12c5 e3          ; ex   (SP), HL
+12c6 66          ; ld   H, (HL)
+12c7 a6          ; and  (HL)
+12c8 d0          ; ret  NC
+12c9 3b          ; dec  SP
+12ca bb          ; cp   E
+12cb ad          ; xor  L
+12cc 3f          ; ccf
+12cd 00          ; nop
+12ce 00          ; nop
+12cf 00          ; nop
+12d0 00          ; nop
+12d1 00          ; nop
+12d2 00          ; nop
+12d3 00          ; nop
+12d4 00          ; nop
+12d5 00          ; nop
+12d6 00          ; nop
+12d7 00          ; nop
+12d8 00          ; nop
+12d9 00          ; nop
+12da 00          ; nop
+12db 00          ; nop
+12dc 00          ; nop
+12dd ff          ; rst  0x38
+12de 00          ; nop
+12df 00          ; nop
+12e0 00          ; nop
+12e1 00          ; nop
+12e2 00          ; nop
+12e3 00          ; nop
+12e4 ff          ; rst  0x38
+12e5 00          ; nop
+12e6 00          ; nop
+12e7 00          ; nop
+12e8 00          ; nop
+12e9 00          ; nop
+12ea 00          ; nop
+12eb 00          ; nop
+12ec ff          ; rst  0x38
+12ed ff          ; rst  0x38
+12ee ff          ; rst  0x38
+12ef ff          ; rst  0x38
+12f0 d7          ; rst  0x10
+12f1 00          ; nop
+12f2 00          ; nop
+12f3 00          ; nop
+12f4 3a 28 64    ; ld   A, (0x6428)
+12f7 1a          ; ld   A, (DE)
+12f8 61          ; ld   H, C
+12f9 6c          ; ld   L, H
+12fa 75          ; ld   (HL), L
+12fb 6f          ; ld   L, A
+12fc 70          ; ld   (HL), B
+12fd 20 61       ; jr   NZ, +0x61
+12ff 2c          ; inc  L
+1300 3c          ; inc  A
+1301 62          ; ld   H, D
+1302 2c          ; inc  L
+1303 63          ; ld   H, E
+1304 2c          ; inc  L
+1305 64          ; ld   H, H
+1306 2c          ; inc  L
+1307 65          ; ld   H, L
+1308 2c          ; inc  L
+1309 68          ; ld   L, B
+130a 2c          ; inc  L
+130b 6c          ; ld   L, H
+130c 2c          ; inc  L
+130d 28 68       ; jr   Z, +0x68
+130f 6c          ; ld   L, H
+1310 29          ; add  HL, HL
+1311 2c          ; inc  L
+1312 61          ; ld   H, C
+1313 3e 2e       ; ld   A, 0x2e
+1315 2e 24       ; ld   L, 0x24
+1317 ff          ; rst  0x38
+1318 dd 84       ; add  A, IXh
+131a 00          ; nop
+131b 00          ; nop
+131c f7          ; rst  0x30
+131d d6 6e       ; sub  0x6e
+131f c7          ; rst  0x00
+1320 cf          ; rst  0x08
+1321 ac          ; xor  H
+1322 47          ; ld   B, A
+1323 28 dd       ; jr   Z, -0x23
+1325 22 35 c0    ; ld   (0xc035), HL
+1328 c5          ; push BC
+1329 38 4b       ; jr   C, +0x4b
+132b 23          ; inc  HL
+132c 20 39       ; jr   NZ, +0x39
+132e 00          ; nop
+132f 00          ; nop
+1330 00          ; nop
+1331 00          ; nop
+1332 00          ; nop
+1333 00          ; nop
+1334 00          ; nop
+1335 00          ; nop
+1336 00          ; nop
+1337 00          ; nop
+1338 00          ; nop
+1339 00          ; nop
+133a 00          ; nop
+133b 00          ; nop
+133c 00          ; nop
+133d ff          ; rst  0x38
+133e 00          ; nop
+133f 00          ; nop
+1340 00          ; nop
+1341 00          ; nop
+1342 00          ; nop
+1343 00          ; nop
+1344 ff          ; rst  0x38
+1345 00          ; nop
+1346 00          ; nop
+1347 00          ; nop
+1348 00          ; nop
+1349 00          ; nop
+134a 00          ; nop
+134b 00          ; nop
+134c ff          ; rst  0x38
+134d ff          ; rst  0x38
+134e ff          ; rst  0x38
+134f ff          ; rst  0x38
+1350 d7          ; rst  0x10
+1351 00          ; nop
+1352 00          ; nop
+1353 00          ; nop
+1354 a8          ; xor  B
+1355 86          ; add  A, (HL)
+1356 cc 44 61    ; call Z, 0x6144
+1359 6c          ; ld   L, H
+135a 75          ; ld   (HL), L
+135b 6f          ; ld   L, A
+135c 70          ; ld   (HL), B
+135d 20 61       ; jr   NZ, +0x61
+135f 2c          ; inc  L
+1360 3c          ; inc  A
+1361 69          ; ld   L, C
+1362 78          ; ld   A, B
+1363 68          ; ld   L, B
+1364 2c          ; inc  L
+1365 69          ; ld   L, C
+1366 78          ; ld   A, B
+1367 6c          ; ld   L, H
+1368 2c          ; inc  L
+1369 69          ; ld   L, C
+136a 79          ; ld   A, C
+136b 68          ; ld   L, B
+136c 2c          ; inc  L
+136d 69          ; ld   L, C
+136e 79          ; ld   A, C
+136f 6c          ; ld   L, H
+1370 3e 2e       ; ld   A, 0x2e
+1372 2e 2e       ; ld   L, 0x2e
+1374 2e 2e       ; ld   L, 0x2e
+1376 24          ; inc  H
+1377 ff          ; rst  0x38
+1378 dd 86 01    ; add  A, (IX+0x01)
+137b 00          ; nop
+137c b7          ; or   A
+137d 90          ; sub  B
+137e 02          ; ld   (BC), A
+137f 10 02       ; djnz +0x02
+1381 10 fd       ; djnz -0x03
+1383 32 6e 40    ; ld   (0x406e), A
+1386 dc c1 45    ; call C, 0x45c1
+1389 6e          ; ld   L, (HL)
+138a fa e5 20    ; jp   M, 0x20e5
+138d 38 00       ; jr   C, +0x00
+138f 00          ; nop
+1390 00          ; nop
+1391 00          ; nop
+1392 01 00 01    ; ld   BC, 0x0100
+1395 00          ; nop
+1396 00          ; nop
+1397 00          ; nop
+1398 00          ; nop
+1399 00          ; nop
+139a 00          ; nop
+139b 00          ; nop
+139c 00          ; nop
+139d ff          ; rst  0x38
+139e 00          ; nop
+139f 00          ; nop
+13a0 00          ; nop
+13a1 00          ; nop
+13a2 00          ; nop
+13a3 00          ; nop
+13a4 ff          ; rst  0x38
+13a5 00          ; nop
+13a6 00          ; nop
+13a7 00          ; nop
+13a8 00          ; nop
+13a9 00          ; nop
+13aa 00          ; nop
+13ab 00          ; nop
+13ac 00          ; nop
+13ad 00          ; nop
+13ae 00          ; nop
+13af 00          ; nop
+13b0 d7          ; rst  0x10
+13b1 00          ; nop
+13b2 00          ; nop
+13b3 00          ; nop
+13b4 37          ; scf
+13b5 d0          ; ret  NC
+13b6 a2          ; and  D
+13b7 de 61       ; sbc  A, 0x61
+13b9 6c          ; ld   L, H
+13ba 75          ; ld   (HL), L
+13bb 6f          ; ld   L, A
+13bc 70          ; ld   (HL), B
+13bd 20 61       ; jr   NZ, +0x61
+13bf 2c          ; inc  L
+13c0 28 3c       ; jr   Z, +0x3c
+13c2 69          ; ld   L, C
+13c3 78          ; ld   A, B
+13c4 2c          ; inc  L
+13c5 69          ; ld   L, C
+13c6 79          ; ld   A, C
+13c7 3e 2b       ; ld   A, 0x2b
+13c9 31 29 2e    ; ld   SP, 0x2e29
+13cc 2e 2e       ; ld   L, 0x2e
+13ce 2e 2e       ; ld   L, 0x2e
+13d0 2e 2e       ; ld   L, 0x2e
+13d2 2e 2e       ; ld   L, 0x2e
+13d4 2e 2e       ; ld   L, 0x2e
+13d6 24          ; inc  H
+13d7 ff          ; rst  0x38
+13d8 dd cb 01 46 ; rlc  (IX+0x46)->C
+13dc 75          ; ld   (HL), L
+13dd 20 02       ; jr   NZ, +0x02
+13df 10 02       ; djnz +0x02
+13e1 10 fc       ; djnz -0x04
+13e3 3c          ; inc  A
+13e4 9a          ; sbc  A, D
+13e5 a7          ; and  A
+13e6 74          ; ld   (HL), H
+13e7 3d          ; dec  A
+13e8 51          ; ld   D, C
+13e9 27          ; daa
+13ea 14          ; inc  D
+13eb ca 20 00    ; jp   Z, 0x0020
+13ee 00          ; nop
+13ef 38 00       ; jr   C, +0x00
+13f1 00          ; nop
+13f2 00          ; nop
+13f3 00          ; nop
+13f4 00          ; nop
+13f5 00          ; nop
+13f6 00          ; nop
+13f7 00          ; nop
+13f8 00          ; nop
+13f9 00          ; nop
+13fa 00          ; nop
+13fb 00          ; nop
+13fc 53          ; ld   D, E
+13fd 00          ; nop
+13fe 00          ; nop
+13ff 00          ; nop
+1400 00          ; nop
+1401 00          ; nop
+1402 00          ; nop
+1403 00          ; nop
+1404 ff          ; rst  0x38
+1405 00          ; nop
+1406 00          ; nop
+1407 00          ; nop
+1408 00          ; nop
+1409 00          ; nop
+140a 00          ; nop
+140b 00          ; nop
+140c 00          ; nop
+140d 00          ; nop
+140e 00          ; nop
+140f 00          ; nop
+1410 00          ; nop
+1411 00          ; nop
+1412 00          ; nop
+1413 00          ; nop
+1414 8b          ; adc  A, E
+1415 0d          ; dec  C
+1416 27          ; daa
+1417 25          ; dec  H
+1418 62          ; ld   H, D
+1419 69          ; ld   L, C
+141a 74          ; ld   (HL), H
+141b 20 6e       ; jr   NZ, +0x6e
+141d 2c          ; inc  L
+141e 28 3c       ; jr   Z, +0x3c
+1420 69          ; ld   L, C
+1421 78          ; ld   A, B
+1422 2c          ; inc  L
+1423 69          ; ld   L, C
+1424 79          ; ld   A, C
+1425 3e 2b       ; ld   A, 0x2b
+1427 31 29 2e    ; ld   SP, 0x2e29
+142a 2e 2e       ; ld   L, 0x2e
+142c 2e 2e       ; ld   L, 0x2e
+142e 2e 2e       ; ld   L, 0x2e
+1430 2e 2e       ; ld   L, 0x2e
+1432 2e 2e       ; ld   L, 0x2e
+1434 2e 2e       ; ld   L, 0x2e
+1436 24          ; inc  H
+1437 ff          ; rst  0x38
+1438 cb 40       ; bit  0x00, B
+143a 00          ; nop
+143b 00          ; nop
+143c f1          ; pop  AF
+143d 3e fc       ; ld   A, 0xfc
+143f 9d          ; sbc  A, L
+1440 cc 7a 03    ; call Z, 0x037a
+1443 10 61       ; djnz +0x61
+1445 be          ; cp   (HL)
+1446 86          ; add  A, (HL)
+1447 7a          ; ld   A, D
+1448 50          ; ld   D, B
+1449 24          ; inc  H
+144a 98          ; sbc  A, B
+144b 19          ; add  HL, DE
+144c 00          ; nop
+144d 3f          ; ccf
+144e 00          ; nop
+144f 00          ; nop
+1450 00          ; nop
+1451 00          ; nop
+1452 00          ; nop
+1453 00          ; nop
+1454 00          ; nop
+1455 00          ; nop
+1456 00          ; nop
+1457 00          ; nop
+1458 00          ; nop
+1459 00          ; nop
+145a 00          ; nop
+145b 00          ; nop
+145c 53          ; ld   D, E
+145d 00          ; nop
+145e 00          ; nop
+145f 00          ; nop
+1460 00          ; nop
+1461 00          ; nop
+1462 00          ; nop
+1463 00          ; nop
+1464 ff          ; rst  0x38
+1465 00          ; nop
+1466 00          ; nop
+1467 00          ; nop
+1468 00          ; nop
+1469 00          ; nop
+146a 00          ; nop
+146b 00          ; nop
+146c ff          ; rst  0x38
+146d ff          ; rst  0x38
+146e ff          ; rst  0x38
+146f ff          ; rst  0x38
+1470 00          ; nop
+1471 ff          ; rst  0x38
+1472 00          ; nop
+1473 00          ; nop
+1474 76          ; halt
+1475 70          ; ld   (HL), B
+1476 31 33 62    ; ld   SP, 0x6233
+1479 69          ; ld   L, C
+147a 74          ; ld   (HL), H
+147b 20 6e       ; jr   NZ, +0x6e
+147d 2c          ; inc  L
+147e 3c          ; inc  A
+147f 62          ; ld   H, D
+1480 2c          ; inc  L
+1481 63          ; ld   H, E
+1482 2c          ; inc  L
+1483 64          ; ld   H, H
+1484 2c          ; inc  L
+1485 65          ; ld   H, L
+1486 2c          ; inc  L
+1487 68          ; ld   L, B
+1488 2c          ; inc  L
+1489 6c          ; ld   L, H
+148a 2c          ; inc  L
+148b 28 68       ; jr   Z, +0x68
+148d 6c          ; ld   L, H
+148e 29          ; add  HL, HL
+148f 2c          ; inc  L
+1490 61          ; ld   H, C
+1491 3e 2e       ; ld   A, 0x2e
+1493 2e 2e       ; ld   L, 0x2e
+1495 2e 24       ; ld   L, 0x24
+1497 ff          ; rst  0x38
+1498 ed a9       ; cpd
+149a 00          ; nop
+149b 00          ; nop
+149c b6          ; or   (HL)
+149d c7          ; rst  0x00
+149e b4          ; or   H
+149f 72          ; ld   (HL), D
+14a0 f6 18       ; or   0x18
+14a2 14          ; inc  D
+14a3 10 bd       ; djnz -0x43
+14a5 8d          ; adc  A, L
+14a6 01 00 c0    ; ld   BC, 0xc000
+14a9 30 a3       ; jr   NC, -0x5d
+14ab 94          ; sub  H
+14ac 00          ; nop
+14ad 10 00       ; djnz +0x00
+14af 00          ; nop
+14b0 00          ; nop
+14b1 00          ; nop
+14b2 00          ; nop
+14b3 00          ; nop
+14b4 00          ; nop
+14b5 00          ; nop
+14b6 00          ; nop
+14b7 00          ; nop
+14b8 00          ; nop
+14b9 00          ; nop
+14ba 0a          ; ld   A, (BC)
+14bb 00          ; nop
+14bc 00          ; nop
+14bd ff          ; rst  0x38
+14be 00          ; nop
+14bf 00          ; nop
+14c0 00          ; nop
+14c1 00          ; nop
+14c2 00          ; nop
+14c3 00          ; nop
+14c4 00          ; nop
+14c5 00          ; nop
+14c6 00          ; nop
+14c7 00          ; nop
+14c8 00          ; nop
+14c9 00          ; nop
+14ca 00          ; nop
+14cb 00          ; nop
+14cc 00          ; nop
+14cd 00          ; nop
+14ce 00          ; nop
+14cf 00          ; nop
+14d0 d7          ; rst  0x10
+14d1 00          ; nop
+14d2 00          ; nop
+14d3 00          ; nop
+14d4 3c          ; inc  A
+14d5 9d          ; sbc  A, L
+14d6 54          ; ld   D, H
+14d7 12          ; ld   (DE), A
+14d8 63          ; ld   H, E
+14d9 70          ; ld   (HL), B
+14da 64          ; ld   H, H
+14db 3c          ; inc  A
+14dc 72          ; ld   (HL), D
+14dd 3e 2e       ; ld   A, 0x2e
+14df 2e 2e       ; ld   L, 0x2e
+14e1 2e 2e       ; ld   L, 0x2e
+14e3 2e 2e       ; ld   L, 0x2e
+14e5 2e 2e       ; ld   L, 0x2e
+14e7 2e 2e       ; ld   L, 0x2e
+14e9 2e 2e       ; ld   L, 0x2e
+14eb 2e 2e       ; ld   L, 0x2e
+14ed 2e 2e       ; ld   L, 0x2e
+14ef 2e 2e       ; ld   L, 0x2e
+14f1 2e 2e       ; ld   L, 0x2e
+14f3 2e 2e       ; ld   L, 0x2e
+14f5 2e 24       ; ld   L, 0x24
+14f7 ff          ; rst  0x38
+14f8 ed a1       ; cpi
+14fa 00          ; nop
+14fb 00          ; nop
+14fc 48          ; ld   C, B
+14fd 4d          ; ld   C, L
+14fe 4a          ; ld   C, D
+14ff af          ; xor  A
+1500 6b          ; ld   L, E
+1501 90          ; sub  B
+1502 03          ; inc  BC
+1503 10 71       ; djnz +0x71
+1505 4e          ; ld   C, (HL)
+1506 01 00 93    ; ld   BC, 0x9300
+1509 6a          ; ld   L, D
+150a 7c          ; ld   A, H
+150b 90          ; sub  B
+150c 00          ; nop
+150d 10 00       ; djnz +0x00
+150f 00          ; nop
+1510 00          ; nop
+1511 00          ; nop
+1512 00          ; nop
+1513 00          ; nop
+1514 00          ; nop
+1515 00          ; nop
+1516 00          ; nop
+1517 00          ; nop
+1518 00          ; nop
+1519 00          ; nop
+151a 0a          ; ld   A, (BC)
+151b 00          ; nop
+151c 00          ; nop
+151d ff          ; rst  0x38
+151e 00          ; nop
+151f 00          ; nop
+1520 00          ; nop
+1521 00          ; nop
+1522 00          ; nop
+1523 00          ; nop
+1524 00          ; nop
+1525 00          ; nop
+1526 00          ; nop
+1527 00          ; nop
+1528 00          ; nop
+1529 00          ; nop
+152a 00          ; nop
+152b 00          ; nop
+152c 00          ; nop
+152d 00          ; nop
+152e 00          ; nop
+152f 00          ; nop
+1530 d7          ; rst  0x10
+1531 00          ; nop
+1532 00          ; nop
+1533 00          ; nop
+1534 05          ; dec  B
+1535 17          ; rla
+1536 f8          ; ret  M
+1537 a4          ; and  H
+1538 63          ; ld   H, E
+1539 70          ; ld   (HL), B
+153a 69          ; ld   L, C
+153b 3c          ; inc  A
+153c 72          ; ld   (HL), D
+153d 3e 2e       ; ld   A, 0x2e
+153f 2e 2e       ; ld   L, 0x2e
+1541 2e 2e       ; ld   L, 0x2e
+1543 2e 2e       ; ld   L, 0x2e
+1545 2e 2e       ; ld   L, 0x2e
+1547 2e 2e       ; ld   L, 0x2e
+1549 2e 2e       ; ld   L, 0x2e
+154b 2e 2e       ; ld   L, 0x2e
+154d 2e 2e       ; ld   L, 0x2e
+154f 2e 2e       ; ld   L, 0x2e
+1551 2e 2e       ; ld   L, 0x2e
+1553 2e 2e       ; ld   L, 0x2e
+1555 2e 24       ; ld   L, 0x24
+1557 ff          ; rst  0x38
+1558 27          ; daa
+1559 00          ; nop
+155a 00          ; nop
+155b 00          ; nop
+155c 41          ; ld   B, C
+155d 21 fa 09    ; ld   HL, 0x09fa
+1560 60          ; ld   H, B
+1561 1d          ; dec  E
+1562 59          ; ld   E, C
+1563 a5          ; and  L
+1564 5b          ; ld   E, E
+1565 8d          ; adc  A, L
+1566 79          ; ld   A, C
+1567 90          ; sub  B
+1568 04          ; inc  B
+1569 8e          ; adc  A, (HL)
+156a 9d          ; sbc  A, L
+156b 29          ; add  HL, HL
+156c 18 00       ; jr   +0x00
+156e 00          ; nop
+156f 00          ; nop
+1570 00          ; nop
+1571 00          ; nop
+1572 00          ; nop
+1573 00          ; nop
+1574 00          ; nop
+1575 00          ; nop
+1576 00          ; nop
+1577 00          ; nop
+1578 00          ; nop
+1579 00          ; nop
+157a 00          ; nop
+157b 00          ; nop
+157c d7          ; rst  0x10
+157d ff          ; rst  0x38
+157e 00          ; nop
+157f 00          ; nop
+1580 00          ; nop
+1581 00          ; nop
+1582 00          ; nop
+1583 00          ; nop
+1584 00          ; nop
+1585 00          ; nop
+1586 00          ; nop
+1587 00          ; nop
+1588 00          ; nop
+1589 00          ; nop
+158a 00          ; nop
+158b 00          ; nop
+158c 00          ; nop
+158d 00          ; nop
+158e 00          ; nop
+158f 00          ; nop
+1590 00          ; nop
+1591 00          ; nop
+1592 00          ; nop
+1593 00          ; nop
+1594 6d          ; ld   L, L
+1595 2d          ; dec  L
+1596 d2 13 3c    ; jp   NC, 0x3c13
+1599 64          ; ld   H, H
+159a 61          ; ld   H, C
+159b 61          ; ld   H, C
+159c 2c          ; inc  L
+159d 63          ; ld   H, E
+159e 70          ; ld   (HL), B
+159f 6c          ; ld   L, H
+15a0 2c          ; inc  L
+15a1 73          ; ld   (HL), E
+15a2 63          ; ld   H, E
+15a3 66          ; ld   H, (HL)
+15a4 2c          ; inc  L
+15a5 63          ; ld   H, E
+15a6 63          ; ld   H, E
+15a7 66          ; ld   H, (HL)
+15a8 3e 2e       ; ld   A, 0x2e
+15aa 2e 2e       ; ld   L, 0x2e
+15ac 2e 2e       ; ld   L, 0x2e
+15ae 2e 2e       ; ld   L, 0x2e
+15b0 2e 2e       ; ld   L, 0x2e
+15b2 2e 2e       ; ld   L, 0x2e
+15b4 2e 2e       ; ld   L, 0x2e
+15b6 24          ; inc  H
+15b7 ff          ; rst  0x38
+15b8 3c          ; inc  A
+15b9 00          ; nop
+15ba 00          ; nop
+15bb 00          ; nop
+15bc df          ; rst  0x18
+15bd 4a          ; ld   C, D
+15be d8          ; ret  C
+15bf d5          ; push DE
+15c0 98          ; sbc  A, B
+15c1 e5          ; push HL
+15c2 2b          ; dec  HL
+15c3 8a          ; adc  A, D
+15c4 b0          ; or   B
+15c5 a7          ; and  A
+15c6 1b          ; dec  DE
+15c7 43          ; ld   B, E
+15c8 44          ; ld   B, H
+15c9 5a          ; ld   E, D
+15ca 30 d0       ; jr   NC, -0x30
+15cc 01 00 00    ; ld   BC, 0x0000
+15cf 00          ; nop
+15d0 00          ; nop
+15d1 00          ; nop
+15d2 00          ; nop
+15d3 00          ; nop
+15d4 00          ; nop
+15d5 00          ; nop
+15d6 00          ; nop
+15d7 00          ; nop
+15d8 00          ; nop
+15d9 00          ; nop
+15da 00          ; nop
+15db 00          ; nop
+15dc 00          ; nop
+15dd ff          ; rst  0x38
+15de 00          ; nop
+15df 00          ; nop
+15e0 00          ; nop
+15e1 00          ; nop
+15e2 00          ; nop
+15e3 00          ; nop
+15e4 00          ; nop
+15e5 00          ; nop
+15e6 00          ; nop
+15e7 00          ; nop
+15e8 00          ; nop
+15e9 00          ; nop
+15ea 00          ; nop
+15eb 00          ; nop
+15ec 00          ; nop
+15ed 00          ; nop
+15ee 00          ; nop
+15ef 00          ; nop
+15f0 d7          ; rst  0x10
+15f1 00          ; nop
+15f2 00          ; nop
+15f3 00          ; nop
+15f4 81          ; add  A, C
+15f5 fa 81 00    ; jp   M, 0x0081
+15f8 3c          ; inc  A
+15f9 69          ; ld   L, C
+15fa 6e          ; ld   L, (HL)
+15fb 63          ; ld   H, E
+15fc 2c          ; inc  L
+15fd 64          ; ld   H, H
+15fe 65          ; ld   H, L
+15ff 63          ; ld   H, E
+1600 3e 20       ; ld   A, 0x20
+1602 61          ; ld   H, C
+1603 2e 2e       ; ld   L, 0x2e
+1605 2e 2e       ; ld   L, 0x2e
+1607 2e 2e       ; ld   L, 0x2e
+1609 2e 2e       ; ld   L, 0x2e
+160b 2e 2e       ; ld   L, 0x2e
+160d 2e 2e       ; ld   L, 0x2e
+160f 2e 2e       ; ld   L, 0x2e
+1611 2e 2e       ; ld   L, 0x2e
+1613 2e 2e       ; ld   L, 0x2e
+1615 2e 24       ; ld   L, 0x24
+1617 ff          ; rst  0x38
+1618 04          ; inc  B
+1619 00          ; nop
+161a 00          ; nop
+161b 00          ; nop
+161c 23          ; inc  HL
+161d d6 2d       ; sub  0x2d
+161f 43          ; ld   B, E
+1620 61          ; ld   H, C
+1621 7a          ; ld   A, D
+1622 80          ; add  A, B
+1623 81          ; add  A, C
+1624 86          ; add  A, (HL)
+1625 5a          ; ld   E, D
+1626 85          ; add  A, L
+1627 1e 86       ; ld   E, 0x86
+1629 58          ; ld   E, B
+162a bb          ; cp   E
+162b 9b          ; sbc  A, E
+162c 01 00 00    ; ld   BC, 0x0000
+162f 00          ; nop
+1630 00          ; nop
+1631 00          ; nop
+1632 00          ; nop
+1633 00          ; nop
+1634 00          ; nop
+1635 00          ; nop
+1636 00          ; nop
+1637 00          ; nop
+1638 00          ; nop
+1639 00          ; nop
+163a 00          ; nop
+163b ff          ; rst  0x38
+163c 00          ; nop
+163d 00          ; nop
+163e 00          ; nop
+163f 00          ; nop
+1640 00          ; nop
+1641 00          ; nop
+1642 00          ; nop
+1643 00          ; nop
+1644 00          ; nop
+1645 00          ; nop
+1646 00          ; nop
+1647 00          ; nop
+1648 00          ; nop
+1649 00          ; nop
+164a 00          ; nop
+164b 00          ; nop
+164c 00          ; nop
+164d 00          ; nop
+164e 00          ; nop
+164f 00          ; nop
+1650 d7          ; rst  0x10
+1651 00          ; nop
+1652 00          ; nop
+1653 00          ; nop
+1654 77          ; ld   (HL), A
+1655 f3          ; di
+1656 5a          ; ld   E, D
+1657 73          ; ld   (HL), E
+1658 3c          ; inc  A
+1659 69          ; ld   L, C
+165a 6e          ; ld   L, (HL)
+165b 63          ; ld   H, E
+165c 2c          ; inc  L
+165d 64          ; ld   H, H
+165e 65          ; ld   H, L
+165f 63          ; ld   H, E
+1660 3e 20       ; ld   A, 0x20
+1662 62          ; ld   H, D
+1663 2e 2e       ; ld   L, 0x2e
+1665 2e 2e       ; ld   L, 0x2e
+1667 2e 2e       ; ld   L, 0x2e
+1669 2e 2e       ; ld   L, 0x2e
+166b 2e 2e       ; ld   L, 0x2e
+166d 2e 2e       ; ld   L, 0x2e
+166f 2e 2e       ; ld   L, 0x2e
+1671 2e 2e       ; ld   L, 0x2e
+1673 2e 2e       ; ld   L, 0x2e
+1675 2e 24       ; ld   L, 0x24
+1677 ff          ; rst  0x38
+1678 03          ; inc  BC
+1679 00          ; nop
+167a 00          ; nop
+167b 00          ; nop
+167c 97          ; sub  A
+167d cd ab 44    ; call 0x44ab
+1680 c9          ; ret
+1681 8d          ; adc  A, L
+1682 e3          ; ex   (SP), HL
+1683 e3          ; ex   (SP), HL
+1684 cc 11 a4    ; call Z, 0xa411
+1687 e8          ; ret  PE
+1688 02          ; ld   (BC), A
+1689 49          ; ld   C, C
+168a 4d          ; ld   C, L
+168b 2a 08 00    ; ld   HL, (0x0008)
+168e 00          ; nop
+168f 00          ; nop
+1690 00          ; nop
+1691 00          ; nop
+1692 00          ; nop
+1693 00          ; nop
+1694 00          ; nop
+1695 00          ; nop
+1696 00          ; nop
+1697 00          ; nop
+1698 00          ; nop
+1699 00          ; nop
+169a 21 f8 00    ; ld   HL, 0x00f8
+169d 00          ; nop
+169e 00          ; nop
+169f 00          ; nop
+16a0 00          ; nop
+16a1 00          ; nop
+16a2 00          ; nop
+16a3 00          ; nop
+16a4 00          ; nop
+16a5 00          ; nop
+16a6 00          ; nop
+16a7 00          ; nop
+16a8 00          ; nop
+16a9 00          ; nop
+16aa 00          ; nop
+16ab 00          ; nop
+16ac 00          ; nop
+16ad 00          ; nop
+16ae 00          ; nop
+16af 00          ; nop
+16b0 d7          ; rst  0x10
+16b1 00          ; nop
+16b2 00          ; nop
+16b3 00          ; nop
+16b4 d2 ae 3b    ; jp   NC, 0x3bae
+16b7 ec 3c 69    ; call PE, 0x693c
+16ba 6e          ; ld   L, (HL)
+16bb 63          ; ld   H, E
+16bc 2c          ; inc  L
+16bd 64          ; ld   H, H
+16be 65          ; ld   H, L
+16bf 63          ; ld   H, E
+16c0 3e 20       ; ld   A, 0x20
+16c2 62          ; ld   H, D
+16c3 63          ; ld   H, E
+16c4 2e 2e       ; ld   L, 0x2e
+16c6 2e 2e       ; ld   L, 0x2e
+16c8 2e 2e       ; ld   L, 0x2e
+16ca 2e 2e       ; ld   L, 0x2e
+16cc 2e 2e       ; ld   L, 0x2e
+16ce 2e 2e       ; ld   L, 0x2e
+16d0 2e 2e       ; ld   L, 0x2e
+16d2 2e 2e       ; ld   L, 0x2e
+16d4 2e 2e       ; ld   L, 0x2e
+16d6 24          ; inc  H
+16d7 ff          ; rst  0x38
+16d8 0c          ; inc  C
+16d9 00          ; nop
+16da 00          ; nop
+16db 00          ; nop
+16dc 89          ; adc  A, C
+16dd d7          ; rst  0x10
+16de 35          ; dec  (HL)
+16df 09          ; add  HL, BC
+16e0 5b          ; ld   E, E
+16e1 05          ; dec  B
+16e2 85          ; add  A, L
+16e3 9f          ; sbc  A, A
+16e4 27          ; daa
+16e5 8b          ; adc  A, E
+16e6 08          ; ex   AF, AF'
+16e7 d2 95 05    ; jp   NC, 0x0595
+16ea 60          ; ld   H, B
+16eb 06 01       ; ld   B, 0x01
+16ed 00          ; nop
+16ee 00          ; nop
+16ef 00          ; nop
+16f0 00          ; nop
+16f1 00          ; nop
+16f2 00          ; nop
+16f3 00          ; nop
+16f4 00          ; nop
+16f5 00          ; nop
+16f6 00          ; nop
+16f7 00          ; nop
+16f8 00          ; nop
+16f9 00          ; nop
+16fa ff          ; rst  0x38
+16fb 00          ; nop
+16fc 00          ; nop
+16fd 00          ; nop
+16fe 00          ; nop
+16ff 00          ; nop
+1700 00          ; nop
+1701 00          ; nop
+1702 00          ; nop
+1703 00          ; nop
+1704 00          ; nop
+1705 00          ; nop
+1706 00          ; nop
+1707 00          ; nop
+1708 00          ; nop
+1709 00          ; nop
+170a 00          ; nop
+170b 00          ; nop
+170c 00          ; nop
+170d 00          ; nop
+170e 00          ; nop
+170f 00          ; nop
+1710 d7          ; rst  0x10
+1711 00          ; nop
+1712 00          ; nop
+1713 00          ; nop
+1714 1a          ; ld   A, (DE)
+1715 f6 12       ; or   0x12
+1717 a7          ; and  A
+1718 3c          ; inc  A
+1719 69          ; ld   L, C
+171a 6e          ; ld   L, (HL)
+171b 63          ; ld   H, E
+171c 2c          ; inc  L
+171d 64          ; ld   H, H
+171e 65          ; ld   H, L
+171f 63          ; ld   H, E
+1720 3e 20       ; ld   A, 0x20
+1722 63          ; ld   H, E
+1723 2e 2e       ; ld   L, 0x2e
+1725 2e 2e       ; ld   L, 0x2e
+1727 2e 2e       ; ld   L, 0x2e
+1729 2e 2e       ; ld   L, 0x2e
+172b 2e 2e       ; ld   L, 0x2e
+172d 2e 2e       ; ld   L, 0x2e
+172f 2e 2e       ; ld   L, 0x2e
+1731 2e 2e       ; ld   L, 0x2e
+1733 2e 2e       ; ld   L, 0x2e
+1735 2e 24       ; ld   L, 0x24
+1737 ff          ; rst  0x38
+1738 14          ; inc  D
+1739 00          ; nop
+173a 00          ; nop
+173b 00          ; nop
+173c ea a0 ba    ; jp   PE, 0xbaa0
+173f 5f          ; ld   E, A
+1740 fb          ; ei
+1741 65          ; ld   H, L
+1742 1c          ; inc  E
+1743 98          ; sbc  A, B
+1744 cc 38 bc    ; call Z, 0xbc38
+1747 de 43       ; sbc  A, 0x43
+1749 5c          ; ld   E, H
+174a bd          ; cp   L
+174b 03          ; inc  BC
+174c 01 00 00    ; ld   BC, 0x0000
+174f 00          ; nop
+1750 00          ; nop
+1751 00          ; nop
+1752 00          ; nop
+1753 00          ; nop
+1754 00          ; nop
+1755 00          ; nop
+1756 00          ; nop
+1757 00          ; nop
+1758 00          ; nop
+1759 ff          ; rst  0x38
+175a 00          ; nop
+175b 00          ; nop
+175c 00          ; nop
+175d 00          ; nop
+175e 00          ; nop
+175f 00          ; nop
+1760 00          ; nop
+1761 00          ; nop
+1762 00          ; nop
+1763 00          ; nop
+1764 00          ; nop
+1765 00          ; nop
+1766 00          ; nop
+1767 00          ; nop
+1768 00          ; nop
+1769 00          ; nop
+176a 00          ; nop
+176b 00          ; nop
+176c 00          ; nop
+176d 00          ; nop
+176e 00          ; nop
+176f 00          ; nop
+1770 d7          ; rst  0x10
+1771 00          ; nop
+1772 00          ; nop
+1773 00          ; nop
+1774 d1          ; pop  DE
+1775 46          ; ld   B, (HL)
+1776 bf          ; cp   A
+1777 51          ; ld   D, C
+1778 3c          ; inc  A
+1779 69          ; ld   L, C
+177a 6e          ; ld   L, (HL)
+177b 63          ; ld   H, E
+177c 2c          ; inc  L
+177d 64          ; ld   H, H
+177e 65          ; ld   H, L
+177f 63          ; ld   H, E
+1780 3e 20       ; ld   A, 0x20
+1782 64          ; ld   H, H
+1783 2e 2e       ; ld   L, 0x2e
+1785 2e 2e       ; ld   L, 0x2e
+1787 2e 2e       ; ld   L, 0x2e
+1789 2e 2e       ; ld   L, 0x2e
+178b 2e 2e       ; ld   L, 0x2e
+178d 2e 2e       ; ld   L, 0x2e
+178f 2e 2e       ; ld   L, 0x2e
+1791 2e 2e       ; ld   L, 0x2e
+1793 2e 2e       ; ld   L, 0x2e
+1795 2e 24       ; ld   L, 0x24
+1797 ff          ; rst  0x38
+1798 13          ; inc  DE
+1799 00          ; nop
+179a 00          ; nop
+179b 00          ; nop
+179c 2e 34       ; ld   L, 0x34
+179e 1d          ; dec  E
+179f 13          ; inc  DE
+17a0 c9          ; ret
+17a1 28 ca       ; jr   Z, -0x36
+17a3 0a          ; ld   A, (BC)
+17a4 67          ; ld   H, A
+17a5 99          ; sbc  A, C
+17a6 2e 3a       ; ld   L, 0x3a
+17a8 92          ; sub  D
+17a9 f6 54       ; or   0x54
+17ab 9d          ; sbc  A, L
+17ac 08          ; ex   AF, AF'
+17ad 00          ; nop
+17ae 00          ; nop
+17af 00          ; nop
+17b0 00          ; nop
+17b1 00          ; nop
+17b2 00          ; nop
+17b3 00          ; nop
+17b4 00          ; nop
+17b5 00          ; nop
+17b6 00          ; nop
+17b7 00          ; nop
+17b8 21 f8 00    ; ld   HL, 0x00f8
+17bb 00          ; nop
+17bc 00          ; nop
+17bd 00          ; nop
+17be 00          ; nop
+17bf 00          ; nop
+17c0 00          ; nop
+17c1 00          ; nop
+17c2 00          ; nop
+17c3 00          ; nop
+17c4 00          ; nop
+17c5 00          ; nop
+17c6 00          ; nop
+17c7 00          ; nop
+17c8 00          ; nop
+17c9 00          ; nop
+17ca 00          ; nop
+17cb 00          ; nop
+17cc 00          ; nop
+17cd 00          ; nop
+17ce 00          ; nop
+17cf 00          ; nop
+17d0 d7          ; rst  0x10
+17d1 00          ; nop
+17d2 00          ; nop
+17d3 00          ; nop
+17d4 ae          ; xor  (HL)
+17d5 c6 d4       ; add  A, 0xd4
+17d7 2c          ; inc  L
+17d8 3c          ; inc  A
+17d9 69          ; ld   L, C
+17da 6e          ; ld   L, (HL)
+17db 63          ; ld   H, E
+17dc 2c          ; inc  L
+17dd 64          ; ld   H, H
+17de 65          ; ld   H, L
+17df 63          ; ld   H, E
+17e0 3e 20       ; ld   A, 0x20
+17e2 64          ; ld   H, H
+17e3 65          ; ld   H, L
+17e4 2e 2e       ; ld   L, 0x2e
+17e6 2e 2e       ; ld   L, 0x2e
+17e8 2e 2e       ; ld   L, 0x2e
+17ea 2e 2e       ; ld   L, 0x2e
+17ec 2e 2e       ; ld   L, 0x2e
+17ee 2e 2e       ; ld   L, 0x2e
+17f0 2e 2e       ; ld   L, 0x2e
+17f2 2e 2e       ; ld   L, 0x2e
+17f4 2e 2e       ; ld   L, 0x2e
+17f6 24          ; inc  H
+17f7 ff          ; rst  0x38
+17f8 1c          ; inc  E
+17f9 00          ; nop
+17fa 00          ; nop
+17fb 00          ; nop
+17fc 2f          ; cpl
+17fd 60          ; ld   H, B
+17fe 0d          ; dec  C
+17ff 4c          ; ld   C, H
+1800 02          ; ld   (BC), A
+1801 24          ; inc  H
+1802 f5          ; push AF
+1803 e2 f4 a0    ; jp   PO, 0xa0f4
+1806 0a          ; ld   A, (BC)
+1807 a1          ; and  C
+1808 13          ; inc  DE
+1809 32 25 59    ; ld   (0x5925), A
+180c 01 00 00    ; ld   BC, 0x0000
+180f 00          ; nop
+1810 00          ; nop
+1811 00          ; nop
+1812 00          ; nop
+1813 00          ; nop
+1814 00          ; nop
+1815 00          ; nop
+1816 00          ; nop
+1817 00          ; nop
+1818 ff          ; rst  0x38
+1819 00          ; nop
+181a 00          ; nop
+181b 00          ; nop
+181c 00          ; nop
+181d 00          ; nop
+181e 00          ; nop
+181f 00          ; nop
+1820 00          ; nop
+1821 00          ; nop
+1822 00          ; nop
+1823 00          ; nop
+1824 00          ; nop
+1825 00          ; nop
+1826 00          ; nop
+1827 00          ; nop
+1828 00          ; nop
+1829 00          ; nop
+182a 00          ; nop
+182b 00          ; nop
+182c 00          ; nop
+182d 00          ; nop
+182e 00          ; nop
+182f 00          ; nop
+1830 d7          ; rst  0x10
+1831 00          ; nop
+1832 00          ; nop
+1833 00          ; nop
+1834 ca 8c 6a    ; jp   Z, 0x6a8c
+1837 c2 3c 69    ; jp   NZ, 0x693c
+183a 6e          ; ld   L, (HL)
+183b 63          ; ld   H, E
+183c 2c          ; inc  L
+183d 64          ; ld   H, H
+183e 65          ; ld   H, L
+183f 63          ; ld   H, E
+1840 3e 20       ; ld   A, 0x20
+1842 65          ; ld   H, L
+1843 2e 2e       ; ld   L, 0x2e
+1845 2e 2e       ; ld   L, 0x2e
+1847 2e 2e       ; ld   L, 0x2e
+1849 2e 2e       ; ld   L, 0x2e
+184b 2e 2e       ; ld   L, 0x2e
+184d 2e 2e       ; ld   L, 0x2e
+184f 2e 2e       ; ld   L, 0x2e
+1851 2e 2e       ; ld   L, 0x2e
+1853 2e 2e       ; ld   L, 0x2e
+1855 2e 24       ; ld   L, 0x24
+1857 ff          ; rst  0x38
+1858 24          ; inc  H
+1859 00          ; nop
+185a 00          ; nop
+185b 00          ; nop
+185c 06 15       ; ld   B, 0x15
+185e eb          ; ex   DE, HL
+185f f2 dd e8    ; jp   P, 0xe8dd
+1862 2b          ; dec  HL
+1863 26 a6       ; ld   H, 0xa6
+1865 11 1a bc    ; ld   DE, 0xbc1a
+1868 17          ; rla
+1869 06 18       ; ld   B, 0x18
+186b 28 01       ; jr   Z, +0x01
+186d 00          ; nop
+186e 00          ; nop
+186f 00          ; nop
+1870 00          ; nop
+1871 00          ; nop
+1872 00          ; nop
+1873 00          ; nop
+1874 00          ; nop
+1875 00          ; nop
+1876 00          ; nop
+1877 ff          ; rst  0x38
+1878 00          ; nop
+1879 00          ; nop
+187a 00          ; nop
+187b 00          ; nop
+187c 00          ; nop
+187d 00          ; nop
+187e 00          ; nop
+187f 00          ; nop
+1880 00          ; nop
+1881 00          ; nop
+1882 00          ; nop
+1883 00          ; nop
+1884 00          ; nop
+1885 00          ; nop
+1886 00          ; nop
+1887 00          ; nop
+1888 00          ; nop
+1889 00          ; nop
+188a 00          ; nop
+188b 00          ; nop
+188c 00          ; nop
+188d 00          ; nop
+188e 00          ; nop
+188f 00          ; nop
+1890 d7          ; rst  0x10
+1891 00          ; nop
+1892 00          ; nop
+1893 00          ; nop
+1894 56          ; ld   D, (HL)
+1895 0f          ; rrca
+1896 95          ; sub  L
+1897 5e          ; ld   E, (HL)
+1898 3c          ; inc  A
+1899 69          ; ld   L, C
+189a 6e          ; ld   L, (HL)
+189b 63          ; ld   H, E
+189c 2c          ; inc  L
+189d 64          ; ld   H, H
+189e 65          ; ld   H, L
+189f 63          ; ld   H, E
+18a0 3e 20       ; ld   A, 0x20
+18a2 68          ; ld   L, B
+18a3 2e 2e       ; ld   L, 0x2e
+18a5 2e 2e       ; ld   L, 0x2e
+18a7 2e 2e       ; ld   L, 0x2e
+18a9 2e 2e       ; ld   L, 0x2e
+18ab 2e 2e       ; ld   L, 0x2e
+18ad 2e 2e       ; ld   L, 0x2e
+18af 2e 2e       ; ld   L, 0x2e
+18b1 2e 2e       ; ld   L, 0x2e
+18b3 2e 2e       ; ld   L, 0x2e
+18b5 2e 24       ; ld   L, 0x24
+18b7 ff          ; rst  0x38
+18b8 23          ; inc  HL
+18b9 00          ; nop
+18ba 00          ; nop
+18bb 00          ; nop
+18bc f4 c3 a5    ; call P, 0xa5c3
+18bf 07          ; rlca
+18c0 6d          ; ld   L, L
+18c1 1b          ; dec  DE
+18c2 04          ; inc  B
+18c3 4f          ; ld   C, A
+18c4 c2 e2 2a    ; jp   NZ, 0x2ae2
+18c7 82          ; add  A, D
+18c8 57          ; ld   D, A
+18c9 e0          ; ret  PO
+18ca e1          ; pop  HL
+18cb c3 08 00    ; jp   0x0008
+18ce 00          ; nop
+18cf 00          ; nop
+18d0 00          ; nop
+18d1 00          ; nop
+18d2 00          ; nop
+18d3 00          ; nop
+18d4 00          ; nop
+18d5 00          ; nop
+18d6 21 f8 00    ; ld   HL, 0x00f8
+18d9 00          ; nop
+18da 00          ; nop
+18db 00          ; nop
+18dc 00          ; nop
+18dd 00          ; nop
+18de 00          ; nop
+18df 00          ; nop
+18e0 00          ; nop
+18e1 00          ; nop
+18e2 00          ; nop
+18e3 00          ; nop
+18e4 00          ; nop
+18e5 00          ; nop
+18e6 00          ; nop
+18e7 00          ; nop
+18e8 00          ; nop
+18e9 00          ; nop
+18ea 00          ; nop
+18eb 00          ; nop
+18ec 00          ; nop
+18ed 00          ; nop
+18ee 00          ; nop
+18ef 00          ; nop
+18f0 d7          ; rst  0x10
+18f1 00          ; nop
+18f2 00          ; nop
+18f3 00          ; nop
+18f4 fc 0d 6d    ; call M, 0x6d0d
+18f7 4a          ; ld   C, D
+18f8 3c          ; inc  A
+18f9 69          ; ld   L, C
+18fa 6e          ; ld   L, (HL)
+18fb 63          ; ld   H, E
+18fc 2c          ; inc  L
+18fd 64          ; ld   H, H
+18fe 65          ; ld   H, L
+18ff 63          ; ld   H, E
+1900 3e 20       ; ld   A, 0x20
+1902 68          ; ld   L, B
+1903 6c          ; ld   L, H
+1904 2e 2e       ; ld   L, 0x2e
+1906 2e 2e       ; ld   L, 0x2e
+1908 2e 2e       ; ld   L, 0x2e
+190a 2e 2e       ; ld   L, 0x2e
+190c 2e 2e       ; ld   L, 0x2e
+190e 2e 2e       ; ld   L, 0x2e
+1910 2e 2e       ; ld   L, 0x2e
+1912 2e 2e       ; ld   L, 0x2e
+1914 2e 2e       ; ld   L, 0x2e
+1916 24          ; inc  H
+1917 ff          ; rst  0x38
+1918 dd 23       ; inc  IX
+191a 00          ; nop
+191b 00          ; nop
+191c 3c          ; inc  A
+191d bc          ; cp   H
+191e 9b          ; sbc  A, E
+191f 0d          ; dec  C
+1920 81          ; add  A, C
+1921 e0          ; ret  PO
+1922 fd ad       ; xor  IYl
+1924 7f          ; ld   A, A
+1925 9a          ; sbc  A, D
+1926 e5          ; push HL
+1927 96          ; sub  (HL)
+1928 13          ; inc  DE
+1929 85          ; add  A, L
+192a e2 0b 00    ; jp   PO, 0x000b
+192d 08          ; ex   AF, AF'
+192e 00          ; nop
+192f 00          ; nop
+1930 00          ; nop
+1931 00          ; nop
+1932 00          ; nop
+1933 00          ; nop
+1934 21 f8 00    ; ld   HL, 0x00f8
+1937 00          ; nop
+1938 00          ; nop
+1939 00          ; nop
+193a 00          ; nop
+193b 00          ; nop
+193c 00          ; nop
+193d 00          ; nop
+193e 00          ; nop
+193f 00          ; nop
+1940 00          ; nop
+1941 00          ; nop
+1942 00          ; nop
+1943 00          ; nop
+1944 00          ; nop
+1945 00          ; nop
+1946 00          ; nop
+1947 00          ; nop
+1948 00          ; nop
+1949 00          ; nop
+194a 00          ; nop
+194b 00          ; nop
+194c 00          ; nop
+194d 00          ; nop
+194e 00          ; nop
+194f 00          ; nop
+1950 d7          ; rst  0x10
+1951 00          ; nop
+1952 00          ; nop
+1953 00          ; nop
+1954 a5          ; and  L
+1955 4d          ; ld   C, L
+1956 be          ; cp   (HL)
+1957 31 3c 69    ; ld   SP, 0x693c
+195a 6e          ; ld   L, (HL)
+195b 63          ; ld   H, E
+195c 2c          ; inc  L
+195d 64          ; ld   H, H
+195e 65          ; ld   H, L
+195f 63          ; ld   H, E
+1960 3e 20       ; ld   A, 0x20
+1962 69          ; ld   L, C
+1963 78          ; ld   A, B
+1964 2e 2e       ; ld   L, 0x2e
+1966 2e 2e       ; ld   L, 0x2e
+1968 2e 2e       ; ld   L, 0x2e
+196a 2e 2e       ; ld   L, 0x2e
+196c 2e 2e       ; ld   L, 0x2e
+196e 2e 2e       ; ld   L, 0x2e
+1970 2e 2e       ; ld   L, 0x2e
+1972 2e 2e       ; ld   L, 0x2e
+1974 2e 2e       ; ld   L, 0x2e
+1976 24          ; inc  H
+1977 ff          ; rst  0x38
+1978 fd 23       ; inc  IY
+197a 00          ; nop
+197b 00          ; nop
+197c 02          ; ld   (BC), A
+197d 94          ; sub  H
+197e 7a          ; ld   A, D
+197f 63          ; ld   H, E
+1980 82          ; add  A, D
+1981 31 5a c6    ; ld   SP, 0xc65a
+1984 e9          ; jp   HL
+1985 b2          ; or   D
+1986 b4          ; or   H
+1987 ab          ; xor  E
+1988 16 f2       ; ld   D, 0xf2
+198a 05          ; dec  B
+198b 6d          ; ld   L, L
+198c 00          ; nop
+198d 08          ; ex   AF, AF'
+198e 00          ; nop
+198f 00          ; nop
+1990 00          ; nop
+1991 00          ; nop
+1992 21 f8 00    ; ld   HL, 0x00f8
+1995 00          ; nop
+1996 00          ; nop
+1997 00          ; nop
+1998 00          ; nop
+1999 00          ; nop
+199a 00          ; nop
+199b 00          ; nop
+199c 00          ; nop
+199d 00          ; nop
+199e 00          ; nop
+199f 00          ; nop
+19a0 00          ; nop
+19a1 00          ; nop
+19a2 00          ; nop
+19a3 00          ; nop
+19a4 00          ; nop
+19a5 00          ; nop
+19a6 00          ; nop
+19a7 00          ; nop
+19a8 00          ; nop
+19a9 00          ; nop
+19aa 00          ; nop
+19ab 00          ; nop
+19ac 00          ; nop
+19ad 00          ; nop
+19ae 00          ; nop
+19af 00          ; nop
+19b0 d7          ; rst  0x10
+19b1 00          ; nop
+19b2 00          ; nop
+19b3 00          ; nop
+19b4 50          ; ld   D, B
+19b5 5d          ; ld   E, L
+19b6 51          ; ld   D, C
+19b7 a3          ; and  E
+19b8 3c          ; inc  A
+19b9 69          ; ld   L, C
+19ba 6e          ; ld   L, (HL)
+19bb 63          ; ld   H, E
+19bc 2c          ; inc  L
+19bd 64          ; ld   H, H
+19be 65          ; ld   H, L
+19bf 63          ; ld   H, E
+19c0 3e 20       ; ld   A, 0x20
+19c2 69          ; ld   L, C
+19c3 79          ; ld   A, C
+19c4 2e 2e       ; ld   L, 0x2e
+19c6 2e 2e       ; ld   L, 0x2e
+19c8 2e 2e       ; ld   L, 0x2e
+19ca 2e 2e       ; ld   L, 0x2e
+19cc 2e 2e       ; ld   L, 0x2e
+19ce 2e 2e       ; ld   L, 0x2e
+19d0 2e 2e       ; ld   L, 0x2e
+19d2 2e 2e       ; ld   L, 0x2e
+19d4 2e 2e       ; ld   L, 0x2e
+19d6 24          ; inc  H
+19d7 ff          ; rst  0x38
+19d8 2c          ; inc  L
+19d9 00          ; nop
+19da 00          ; nop
+19db 00          ; nop
+19dc 31 80 20    ; ld   SP, 0x2080
+19df a5          ; and  L
+19e0 56          ; ld   D, (HL)
+19e1 43          ; ld   B, E
+19e2 09          ; add  HL, BC
+19e3 b4          ; or   H
+19e4 c1          ; pop  BC
+19e5 f4 a2 df    ; call P, 0xdfa2
+19e8 d1          ; pop  DE
+19e9 3c          ; inc  A
+19ea a2          ; and  D
+19eb 3e 01       ; ld   A, 0x01
+19ed 00          ; nop
+19ee 00          ; nop
+19ef 00          ; nop
+19f0 00          ; nop
+19f1 00          ; nop
+19f2 00          ; nop
+19f3 00          ; nop
+19f4 00          ; nop
+19f5 00          ; nop
+19f6 ff          ; rst  0x38
+19f7 00          ; nop
+19f8 00          ; nop
+19f9 00          ; nop
+19fa 00          ; nop
+19fb 00          ; nop
+19fc 00          ; nop
+19fd 00          ; nop
+19fe 00          ; nop
+19ff 00          ; nop
+1a00 00          ; nop
+1a01 00          ; nop
+1a02 00          ; nop
+1a03 00          ; nop
+1a04 00          ; nop
+1a05 00          ; nop
+1a06 00          ; nop
+1a07 00          ; nop
+1a08 00          ; nop
+1a09 00          ; nop
+1a0a 00          ; nop
+1a0b 00          ; nop
+1a0c 00          ; nop
+1a0d 00          ; nop
+1a0e 00          ; nop
+1a0f 00          ; nop
+1a10 d7          ; rst  0x10
+1a11 00          ; nop
+1a12 00          ; nop
+1a13 00          ; nop
+1a14 a0          ; and  B
+1a15 a1          ; and  C
+1a16 b4          ; or   H
+1a17 9f          ; sbc  A, A
+1a18 3c          ; inc  A
+1a19 69          ; ld   L, C
+1a1a 6e          ; ld   L, (HL)
+1a1b 63          ; ld   H, E
+1a1c 2c          ; inc  L
+1a1d 64          ; ld   H, H
+1a1e 65          ; ld   H, L
+1a1f 63          ; ld   H, E
+1a20 3e 20       ; ld   A, 0x20
+1a22 6c          ; ld   L, H
+1a23 2e 2e       ; ld   L, 0x2e
+1a25 2e 2e       ; ld   L, 0x2e
+1a27 2e 2e       ; ld   L, 0x2e
+1a29 2e 2e       ; ld   L, 0x2e
+1a2b 2e 2e       ; ld   L, 0x2e
+1a2d 2e 2e       ; ld   L, 0x2e
+1a2f 2e 2e       ; ld   L, 0x2e
+1a31 2e 2e       ; ld   L, 0x2e
+1a33 2e 2e       ; ld   L, 0x2e
+1a35 2e 24       ; ld   L, 0x24
+1a37 ff          ; rst  0x38
+1a38 34          ; inc  (HL)
+1a39 00          ; nop
+1a3a 00          ; nop
+1a3b 00          ; nop
+1a3c 56          ; ld   D, (HL)
+1a3d b8          ; cp   B
+1a3e 7c          ; ld   A, H
+1a3f 0c          ; inc  C
+1a40 3e e5       ; ld   A, 0xe5
+1a42 03          ; inc  BC
+1a43 10 7e       ; djnz +0x7e
+1a45 87          ; add  A, A
+1a46 58          ; ld   E, B
+1a47 da 15 5c    ; jp   C, 0x5c15
+1a4a 37          ; scf
+1a4b 1f          ; rra
+1a4c 01 00 00    ; ld   BC, 0x0000
+1a4f 00          ; nop
+1a50 ff          ; rst  0x38
+1a51 00          ; nop
+1a52 00          ; nop
+1a53 00          ; nop
+1a54 00          ; nop
+1a55 00          ; nop
+1a56 00          ; nop
+1a57 00          ; nop
+1a58 00          ; nop
+1a59 00          ; nop
+1a5a 00          ; nop
+1a5b 00          ; nop
+1a5c 00          ; nop
+1a5d 00          ; nop
+1a5e 00          ; nop
+1a5f 00          ; nop
+1a60 00          ; nop
+1a61 00          ; nop
+1a62 00          ; nop
+1a63 00          ; nop
+1a64 00          ; nop
+1a65 00          ; nop
+1a66 00          ; nop
+1a67 00          ; nop
+1a68 00          ; nop
+1a69 00          ; nop
+1a6a 00          ; nop
+1a6b 00          ; nop
+1a6c 00          ; nop
+1a6d 00          ; nop
+1a6e 00          ; nop
+1a6f 00          ; nop
+1a70 d7          ; rst  0x10
+1a71 00          ; nop
+1a72 00          ; nop
+1a73 00          ; nop
+1a74 d2 47 5e    ; jp   NC, 0x5e47
+1a77 94          ; sub  H
+1a78 3c          ; inc  A
+1a79 69          ; ld   L, C
+1a7a 6e          ; ld   L, (HL)
+1a7b 63          ; ld   H, E
+1a7c 2c          ; inc  L
+1a7d 64          ; ld   H, H
+1a7e 65          ; ld   H, L
+1a7f 63          ; ld   H, E
+1a80 3e 20       ; ld   A, 0x20
+1a82 28 68       ; jr   Z, +0x68
+1a84 6c          ; ld   L, H
+1a85 29          ; add  HL, HL
+1a86 2e 2e       ; ld   L, 0x2e
+1a88 2e 2e       ; ld   L, 0x2e
+1a8a 2e 2e       ; ld   L, 0x2e
+1a8c 2e 2e       ; ld   L, 0x2e
+1a8e 2e 2e       ; ld   L, 0x2e
+1a90 2e 2e       ; ld   L, 0x2e
+1a92 2e 2e       ; ld   L, 0x2e
+1a94 2e 2e       ; ld   L, 0x2e
+1a96 24          ; inc  H
+1a97 ff          ; rst  0x38
+1a98 33          ; inc  SP
+1a99 00          ; nop
+1a9a 00          ; nop
+1a9b 00          ; nop
+1a9c 6f          ; ld   L, A
+1a9d 34          ; inc  (HL)
+1a9e 82          ; add  A, D
+1a9f d4 69 d1    ; call NC, 0xd169
+1aa2 b6          ; or   (HL)
+1aa3 de 94       ; sbc  A, 0x94
+1aa5 a4          ; and  H
+1aa6 76          ; halt
+1aa7 f4 53 02    ; call P, 0x0253
+1aaa 5b          ; ld   E, E
+1aab 85          ; add  A, L
+1aac 08          ; ex   AF, AF'
+1aad 00          ; nop
+1aae 00          ; nop
+1aaf 00          ; nop
+1ab0 00          ; nop
+1ab1 00          ; nop
+1ab2 00          ; nop
+1ab3 00          ; nop
+1ab4 00          ; nop
+1ab5 00          ; nop
+1ab6 00          ; nop
+1ab7 00          ; nop
+1ab8 00          ; nop
+1ab9 00          ; nop
+1aba 00          ; nop
+1abb 00          ; nop
+1abc 00          ; nop
+1abd 00          ; nop
+1abe 21 f8 00    ; ld   HL, 0x00f8
+1ac1 00          ; nop
+1ac2 00          ; nop
+1ac3 00          ; nop
+1ac4 00          ; nop
+1ac5 00          ; nop
+1ac6 00          ; nop
+1ac7 00          ; nop
+1ac8 00          ; nop
+1ac9 00          ; nop
+1aca 00          ; nop
+1acb 00          ; nop
+1acc 00          ; nop
+1acd 00          ; nop
+1ace 00          ; nop
+1acf 00          ; nop
+1ad0 d7          ; rst  0x10
+1ad1 00          ; nop
+1ad2 00          ; nop
+1ad3 00          ; nop
+1ad4 5d          ; ld   E, L
+1ad5 ac          ; xor  H
+1ad6 d5          ; push DE
+1ad7 27          ; daa
+1ad8 3c          ; inc  A
+1ad9 69          ; ld   L, C
+1ada 6e          ; ld   L, (HL)
+1adb 63          ; ld   H, E
+1adc 2c          ; inc  L
+1add 64          ; ld   H, H
+1ade 65          ; ld   H, L
+1adf 63          ; ld   H, E
+1ae0 3e 20       ; ld   A, 0x20
+1ae2 73          ; ld   (HL), E
+1ae3 70          ; ld   (HL), B
+1ae4 2e 2e       ; ld   L, 0x2e
+1ae6 2e 2e       ; ld   L, 0x2e
+1ae8 2e 2e       ; ld   L, 0x2e
+1aea 2e 2e       ; ld   L, 0x2e
+1aec 2e 2e       ; ld   L, 0x2e
+1aee 2e 2e       ; ld   L, 0x2e
+1af0 2e 2e       ; ld   L, 0x2e
+1af2 2e 2e       ; ld   L, 0x2e
+1af4 2e 2e       ; ld   L, 0x2e
+1af6 24          ; inc  H
+1af7 ff          ; rst  0x38
+1af8 dd 34 01    ; inc  (IX+0x01)
+1afb 00          ; nop
+1afc 6e          ; ld   L, (HL)
+1afd fa 02 10    ; jp   M, 0x1002
+1b00 02          ; ld   (BC), A
+1b01 10 28       ; djnz +0x28
+1b03 2c          ; inc  L
+1b04 94          ; sub  H
+1b05 88          ; adc  A, B
+1b06 57          ; ld   D, A
+1b07 50          ; ld   D, B
+1b08 16 33       ; ld   D, 0x33
+1b0a 6f          ; ld   L, A
+1b0b 28 20       ; jr   Z, +0x20
+1b0d 01 00 00    ; ld   BC, 0x0000
+1b10 ff          ; rst  0x38
+1b11 00          ; nop
+1b12 00          ; nop
+1b13 00          ; nop
+1b14 00          ; nop
+1b15 00          ; nop
+1b16 00          ; nop
+1b17 00          ; nop
+1b18 00          ; nop
+1b19 00          ; nop
+1b1a 00          ; nop
+1b1b 00          ; nop
+1b1c 00          ; nop
+1b1d 00          ; nop
+1b1e 00          ; nop
+1b1f 00          ; nop
+1b20 00          ; nop
+1b21 00          ; nop
+1b22 00          ; nop
+1b23 00          ; nop
+1b24 00          ; nop
+1b25 00          ; nop
+1b26 00          ; nop
+1b27 00          ; nop
+1b28 00          ; nop
+1b29 00          ; nop
+1b2a 00          ; nop
+1b2b 00          ; nop
+1b2c 00          ; nop
+1b2d 00          ; nop
+1b2e 00          ; nop
+1b2f 00          ; nop
+1b30 d7          ; rst  0x10
+1b31 00          ; nop
+1b32 00          ; nop
+1b33 00          ; nop
+1b34 6c          ; ld   L, H
+1b35 2a 42 31    ; ld   HL, (0x3142)
+1b38 3c          ; inc  A
+1b39 69          ; ld   L, C
+1b3a 6e          ; ld   L, (HL)
+1b3b 63          ; ld   H, E
+1b3c 2c          ; inc  L
+1b3d 64          ; ld   H, H
+1b3e 65          ; ld   H, L
+1b3f 63          ; ld   H, E
+1b40 3e 20       ; ld   A, 0x20
+1b42 28 3c       ; jr   Z, +0x3c
+1b44 69          ; ld   L, C
+1b45 78          ; ld   A, B
+1b46 2c          ; inc  L
+1b47 69          ; ld   L, C
+1b48 79          ; ld   A, C
+1b49 3e 2b       ; ld   A, 0x2b
+1b4b 31 29 2e    ; ld   SP, 0x2e29
+1b4e 2e 2e       ; ld   L, 0x2e
+1b50 2e 2e       ; ld   L, 0x2e
+1b52 2e 2e       ; ld   L, 0x2e
+1b54 2e 2e       ; ld   L, 0x2e
+1b56 24          ; inc  H
+1b57 ff          ; rst  0x38
+1b58 dd 24       ; inc  IXh
+1b5a 00          ; nop
+1b5b 00          ; nop
+1b5c 38 b8       ; jr   C, -0x48
+1b5e 6c          ; ld   L, H
+1b5f 31 d4 c6    ; ld   SP, 0xc6d4
+1b62 01 3e 58    ; ld   BC, 0x583e
+1b65 83          ; add  A, E
+1b66 b4          ; or   H
+1b67 15          ; dec  D
+1b68 81          ; add  A, C
+1b69 de 59       ; sbc  A, 0x59
+1b6b 42          ; ld   B, D
+1b6c 00          ; nop
+1b6d 01 00 00    ; ld   BC, 0x0000
+1b70 00          ; nop
+1b71 00          ; nop
+1b72 00          ; nop
+1b73 ff          ; rst  0x38
+1b74 00          ; nop
+1b75 00          ; nop
+1b76 00          ; nop
+1b77 00          ; nop
+1b78 00          ; nop
+1b79 00          ; nop
+1b7a 00          ; nop
+1b7b 00          ; nop
+1b7c 00          ; nop
+1b7d 00          ; nop
+1b7e 00          ; nop
+1b7f 00          ; nop
+1b80 00          ; nop
+1b81 00          ; nop
+1b82 00          ; nop
+1b83 00          ; nop
+1b84 00          ; nop
+1b85 00          ; nop
+1b86 00          ; nop
+1b87 00          ; nop
+1b88 00          ; nop
+1b89 00          ; nop
+1b8a 00          ; nop
+1b8b 00          ; nop
+1b8c 00          ; nop
+1b8d 00          ; nop
+1b8e 00          ; nop
+1b8f 00          ; nop
+1b90 d7          ; rst  0x10
+1b91 00          ; nop
+1b92 00          ; nop
+1b93 00          ; nop
+1b94 6f          ; ld   L, A
+1b95 46          ; ld   B, (HL)
+1b96 36 62       ; ld   (HL), 0x62
+1b98 3c          ; inc  A
+1b99 69          ; ld   L, C
+1b9a 6e          ; ld   L, (HL)
+1b9b 63          ; ld   H, E
+1b9c 2c          ; inc  L
+1b9d 64          ; ld   H, H
+1b9e 65          ; ld   H, L
+1b9f 63          ; ld   H, E
+1ba0 3e 20       ; ld   A, 0x20
+1ba2 69          ; ld   L, C
+1ba3 78          ; ld   A, B
+1ba4 68          ; ld   L, B
+1ba5 2e 2e       ; ld   L, 0x2e
+1ba7 2e 2e       ; ld   L, 0x2e
+1ba9 2e 2e       ; ld   L, 0x2e
+1bab 2e 2e       ; ld   L, 0x2e
+1bad 2e 2e       ; ld   L, 0x2e
+1baf 2e 2e       ; ld   L, 0x2e
+1bb1 2e 2e       ; ld   L, 0x2e
+1bb3 2e 2e       ; ld   L, 0x2e
+1bb5 2e 24       ; ld   L, 0x24
+1bb7 ff          ; rst  0x38
+1bb8 dd 2c       ; inc  IXl
+1bba 00          ; nop
+1bbb 00          ; nop
+1bbc 14          ; inc  D
+1bbd 4d          ; ld   C, L
+1bbe 60          ; ld   H, B
+1bbf 74          ; ld   (HL), H
+1bc0 d4 76 e7    ; call NC, 0xe776
+1bc3 06 a2       ; ld   B, 0xa2
+1bc5 32 3c 21    ; ld   (0x213c), A
+1bc8 d6 d7       ; sub  0xd7
+1bca a5          ; and  L
+1bcb 99          ; sbc  A, C
+1bcc 00          ; nop
+1bcd 01 00 00    ; ld   BC, 0x0000
+1bd0 00          ; nop
+1bd1 00          ; nop
+1bd2 ff          ; rst  0x38
+1bd3 00          ; nop
+1bd4 00          ; nop
+1bd5 00          ; nop
+1bd6 00          ; nop
+1bd7 00          ; nop
+1bd8 00          ; nop
+1bd9 00          ; nop
+1bda 00          ; nop
+1bdb 00          ; nop
+1bdc 00          ; nop
+1bdd 00          ; nop
+1bde 00          ; nop
+1bdf 00          ; nop
+1be0 00          ; nop
+1be1 00          ; nop
+1be2 00          ; nop
+1be3 00          ; nop
+1be4 00          ; nop
+1be5 00          ; nop
+1be6 00          ; nop
+1be7 00          ; nop
+1be8 00          ; nop
+1be9 00          ; nop
+1bea 00          ; nop
+1beb 00          ; nop
+1bec 00          ; nop
+1bed 00          ; nop
+1bee 00          ; nop
+1bef 00          ; nop
+1bf0 d7          ; rst  0x10
+1bf1 00          ; nop
+1bf2 00          ; nop
+1bf3 00          ; nop
+1bf4 02          ; ld   (BC), A
+1bf5 7b          ; ld   A, E
+1bf6 ef          ; rst  0x28
+1bf7 2c          ; inc  L
+1bf8 3c          ; inc  A
+1bf9 69          ; ld   L, C
+1bfa 6e          ; ld   L, (HL)
+1bfb 63          ; ld   H, E
+1bfc 2c          ; inc  L
+1bfd 64          ; ld   H, H
+1bfe 65          ; ld   H, L
+1bff 63          ; ld   H, E
+1c00 3e 20       ; ld   A, 0x20
+1c02 69          ; ld   L, C
+1c03 78          ; ld   A, B
+1c04 6c          ; ld   L, H
+1c05 2e 2e       ; ld   L, 0x2e
+1c07 2e 2e       ; ld   L, 0x2e
+1c09 2e 2e       ; ld   L, 0x2e
+1c0b 2e 2e       ; ld   L, 0x2e
+1c0d 2e 2e       ; ld   L, 0x2e
+1c0f 2e 2e       ; ld   L, 0x2e
+1c11 2e 2e       ; ld   L, 0x2e
+1c13 2e 2e       ; ld   L, 0x2e
+1c15 2e 24       ; ld   L, 0x24
+1c17 ff          ; rst  0x38
+1c18 dd 24       ; inc  IXh
+1c1a 00          ; nop
+1c1b 00          ; nop
+1c1c 36 28       ; ld   (HL), 0x28
+1c1e 6f          ; ld   L, A
+1c1f 9f          ; sbc  A, A
+1c20 16 91       ; ld   D, 0x91
+1c22 b9          ; cp   C
+1c23 61          ; ld   H, C
+1c24 cb 82       ; res  0x00, D
+1c26 19          ; add  HL, DE
+1c27 e2 92 73    ; jp   PO, 0x7392
+1c2a 8c          ; adc  A, H
+1c2b a9          ; xor  C
+1c2c 00          ; nop
+1c2d 01 00 00    ; ld   BC, 0x0000
+1c30 00          ; nop
+1c31 ff          ; rst  0x38
+1c32 00          ; nop
+1c33 00          ; nop
+1c34 00          ; nop
+1c35 00          ; nop
+1c36 00          ; nop
+1c37 00          ; nop
+1c38 00          ; nop
+1c39 00          ; nop
+1c3a 00          ; nop
+1c3b 00          ; nop
+1c3c 00          ; nop
+1c3d 00          ; nop
+1c3e 00          ; nop
+1c3f 00          ; nop
+1c40 00          ; nop
+1c41 00          ; nop
+1c42 00          ; nop
+1c43 00          ; nop
+1c44 00          ; nop
+1c45 00          ; nop
+1c46 00          ; nop
+1c47 00          ; nop
+1c48 00          ; nop
+1c49 00          ; nop
+1c4a 00          ; nop
+1c4b 00          ; nop
+1c4c 00          ; nop
+1c4d 00          ; nop
+1c4e 00          ; nop
+1c4f 00          ; nop
+1c50 d7          ; rst  0x10
+1c51 00          ; nop
+1c52 00          ; nop
+1c53 00          ; nop
+1c54 2d          ; dec  L
+1c55 96          ; sub  (HL)
+1c56 6c          ; ld   L, H
+1c57 f3          ; di
+1c58 3c          ; inc  A
+1c59 69          ; ld   L, C
+1c5a 6e          ; ld   L, (HL)
+1c5b 63          ; ld   H, E
+1c5c 2c          ; inc  L
+1c5d 64          ; ld   H, H
+1c5e 65          ; ld   H, L
+1c5f 63          ; ld   H, E
+1c60 3e 20       ; ld   A, 0x20
+1c62 69          ; ld   L, C
+1c63 79          ; ld   A, C
+1c64 68          ; ld   L, B
+1c65 2e 2e       ; ld   L, 0x2e
+1c67 2e 2e       ; ld   L, 0x2e
+1c69 2e 2e       ; ld   L, 0x2e
+1c6b 2e 2e       ; ld   L, 0x2e
+1c6d 2e 2e       ; ld   L, 0x2e
+1c6f 2e 2e       ; ld   L, 0x2e
+1c71 2e 2e       ; ld   L, 0x2e
+1c73 2e 2e       ; ld   L, 0x2e
+1c75 2e 24       ; ld   L, 0x24
+1c77 ff          ; rst  0x38
+1c78 dd 2c       ; inc  IXl
+1c7a 00          ; nop
+1c7b 00          ; nop
+1c7c c6 d7       ; add  A, 0xd7
+1c7e d5          ; push DE
+1c7f 62          ; ld   H, D
+1c80 9e          ; sbc  A, (HL)
+1c81 a0          ; and  B
+1c82 39          ; add  HL, SP
+1c83 70          ; ld   (HL), B
+1c84 7e          ; ld   A, (HL)
+1c85 3e 12       ; ld   A, 0x12
+1c87 9f          ; sbc  A, A
+1c88 90          ; sub  B
+1c89 d9          ; exx
+1c8a 0f          ; rrca
+1c8b 22 00 01    ; ld   (0x0100), HL
+1c8e 00          ; nop
+1c8f 00          ; nop
+1c90 ff          ; rst  0x38
+1c91 00          ; nop
+1c92 00          ; nop
+1c93 00          ; nop
+1c94 00          ; nop
+1c95 00          ; nop
+1c96 00          ; nop
+1c97 00          ; nop
+1c98 00          ; nop
+1c99 00          ; nop
+1c9a 00          ; nop
+1c9b 00          ; nop
+1c9c 00          ; nop
+1c9d 00          ; nop
+1c9e 00          ; nop
+1c9f 00          ; nop
+1ca0 00          ; nop
+1ca1 00          ; nop
+1ca2 00          ; nop
+1ca3 00          ; nop
+1ca4 00          ; nop
+1ca5 00          ; nop
+1ca6 00          ; nop
+1ca7 00          ; nop
+1ca8 00          ; nop
+1ca9 00          ; nop
+1caa 00          ; nop
+1cab 00          ; nop
+1cac 00          ; nop
+1cad 00          ; nop
+1cae 00          ; nop
+1caf 00          ; nop
+1cb0 d7          ; rst  0x10
+1cb1 00          ; nop
+1cb2 00          ; nop
+1cb3 00          ; nop
+1cb4 36 c1       ; ld   (HL), 0xc1
+1cb6 1e 75       ; ld   E, 0x75
+1cb8 3c          ; inc  A
+1cb9 69          ; ld   L, C
+1cba 6e          ; ld   L, (HL)
+1cbb 63          ; ld   H, E
+1cbc 2c          ; inc  L
+1cbd 64          ; ld   H, H
+1cbe 65          ; ld   H, L
+1cbf 63          ; ld   H, E
+1cc0 3e 20       ; ld   A, 0x20
+1cc2 69          ; ld   L, C
+1cc3 79          ; ld   A, C
+1cc4 6c          ; ld   L, H
+1cc5 2e 2e       ; ld   L, 0x2e
+1cc7 2e 2e       ; ld   L, 0x2e
+1cc9 2e 2e       ; ld   L, 0x2e
+1ccb 2e 2e       ; ld   L, 0x2e
+1ccd 2e 2e       ; ld   L, 0x2e
+1ccf 2e 2e       ; ld   L, 0x2e
+1cd1 2e 2e       ; ld   L, 0x2e
+1cd3 2e 2e       ; ld   L, 0x2e
+1cd5 2e 24       ; ld   L, 0x24
+1cd7 ff          ; rst  0x38
+1cd8 ed 4b 03 10 ; ld   BC, (0x1003)
+1cdc a8          ; xor  B
+1cdd f9          ; ld   SP, HL
+1cde 59          ; ld   E, C
+1cdf f5          ; push AF
+1ce0 a4          ; and  H
+1ce1 93          ; sub  E
+1ce2 ed f5       ; nop
+1ce4 96          ; sub  (HL)
+1ce5 6f          ; ld   L, A
+1ce6 68          ; ld   L, B
+1ce7 d9          ; exx
+1ce8 86          ; add  A, (HL)
+1ce9 e6 d8       ; and  0xd8
+1ceb 4b          ; ld   C, E
+1cec 00          ; nop
+1ced 10 00       ; djnz +0x00
+1cef 00          ; nop
+1cf0 00          ; nop
+1cf1 00          ; nop
+1cf2 00          ; nop
+1cf3 00          ; nop
+1cf4 00          ; nop
+1cf5 00          ; nop
+1cf6 00          ; nop
+1cf7 00          ; nop
+1cf8 00          ; nop
+1cf9 00          ; nop
+1cfa 00          ; nop
+1cfb 00          ; nop
+1cfc 00          ; nop
+1cfd 00          ; nop
+1cfe 00          ; nop
+1cff 00          ; nop
+1d00 00          ; nop
+1d01 00          ; nop
+1d02 00          ; nop
+1d03 00          ; nop
+1d04 ff          ; rst  0x38
+1d05 ff          ; rst  0x38
+1d06 00          ; nop
+1d07 00          ; nop
+1d08 00          ; nop
+1d09 00          ; nop
+1d0a 00          ; nop
+1d0b 00          ; nop
+1d0c 00          ; nop
+1d0d 00          ; nop
+1d0e 00          ; nop
+1d0f 00          ; nop
+1d10 00          ; nop
+1d11 00          ; nop
+1d12 00          ; nop
+1d13 00          ; nop
+1d14 4d          ; ld   C, L
+1d15 45          ; ld   B, L
+1d16 a9          ; xor  C
+1d17 ac          ; xor  H
+1d18 6c          ; ld   L, H
+1d19 64          ; ld   H, H
+1d1a 20 3c       ; jr   NZ, +0x3c
+1d1c 62          ; ld   H, D
+1d1d 63          ; ld   H, E
+1d1e 2c          ; inc  L
+1d1f 64          ; ld   H, H
+1d20 65          ; ld   H, L
+1d21 3e 2c       ; ld   A, 0x2c
+1d23 28 6e       ; jr   Z, +0x6e
+1d25 6e          ; ld   L, (HL)
+1d26 6e          ; ld   L, (HL)
+1d27 6e          ; ld   L, (HL)
+1d28 29          ; add  HL, HL
+1d29 2e 2e       ; ld   L, 0x2e
+1d2b 2e 2e       ; ld   L, 0x2e
+1d2d 2e 2e       ; ld   L, 0x2e
+1d2f 2e 2e       ; ld   L, 0x2e
+1d31 2e 2e       ; ld   L, 0x2e
+1d33 2e 2e       ; ld   L, 0x2e
+1d35 2e 24       ; ld   L, 0x24
+1d37 ff          ; rst  0x38
+1d38 2a 03 10    ; ld   HL, (0x1003)
+1d3b 00          ; nop
+1d3c 63          ; ld   H, E
+1d3d 98          ; sbc  A, B
+1d3e 30 78       ; jr   NC, +0x78
+1d40 77          ; ld   (HL), A
+1d41 20 fe       ; jr   NZ, -0x02
+1d43 b1          ; or   C
+1d44 fa b9 b8    ; jp   M, 0xb8b9
+1d47 ab          ; xor  E
+1d48 04          ; inc  B
+1d49 06 15       ; ld   B, 0x15
+1d4b 60          ; ld   H, B
+1d4c 00          ; nop
+1d4d 00          ; nop
+1d4e 00          ; nop
+1d4f 00          ; nop
+1d50 00          ; nop
+1d51 00          ; nop
+1d52 00          ; nop
+1d53 00          ; nop
+1d54 00          ; nop
+1d55 00          ; nop
+1d56 00          ; nop
+1d57 00          ; nop
+1d58 00          ; nop
+1d59 00          ; nop
+1d5a 00          ; nop
+1d5b 00          ; nop
+1d5c 00          ; nop
+1d5d 00          ; nop
+1d5e 00          ; nop
+1d5f 00          ; nop
+1d60 00          ; nop
+1d61 00          ; nop
+1d62 00          ; nop
+1d63 00          ; nop
+1d64 ff          ; rst  0x38
+1d65 ff          ; rst  0x38
+1d66 00          ; nop
+1d67 00          ; nop
+1d68 00          ; nop
+1d69 00          ; nop
+1d6a 00          ; nop
+1d6b 00          ; nop
+1d6c 00          ; nop
+1d6d 00          ; nop
+1d6e 00          ; nop
+1d6f 00          ; nop
+1d70 00          ; nop
+1d71 00          ; nop
+1d72 00          ; nop
+1d73 00          ; nop
+1d74 5f          ; ld   E, A
+1d75 97          ; sub  A
+1d76 24          ; inc  H
+1d77 87          ; add  A, A
+1d78 6c          ; ld   L, H
+1d79 64          ; ld   H, H
+1d7a 20 68       ; jr   NZ, +0x68
+1d7c 6c          ; ld   L, H
+1d7d 2c          ; inc  L
+1d7e 28 6e       ; jr   Z, +0x6e
+1d80 6e          ; ld   L, (HL)
+1d81 6e          ; ld   L, (HL)
+1d82 6e          ; ld   L, (HL)
+1d83 29          ; add  HL, HL
+1d84 2e 2e       ; ld   L, 0x2e
+1d86 2e 2e       ; ld   L, 0x2e
+1d88 2e 2e       ; ld   L, 0x2e
+1d8a 2e 2e       ; ld   L, 0x2e
+1d8c 2e 2e       ; ld   L, 0x2e
+1d8e 2e 2e       ; ld   L, 0x2e
+1d90 2e 2e       ; ld   L, 0x2e
+1d92 2e 2e       ; ld   L, 0x2e
+1d94 2e 2e       ; ld   L, 0x2e
+1d96 24          ; inc  H
+1d97 ff          ; rst  0x38
+1d98 ed 7b 03 10 ; ld   SP, (0x1003)
+1d9c fc 8d d7    ; call M, 0xd78d
+1d9f 57          ; ld   D, A
+1da0 61          ; ld   H, C
+1da1 21 18 ca    ; ld   HL, 0xca18
+1da4 85          ; add  A, L
+1da5 c1          ; pop  BC
+1da6 da 27 83    ; jp   C, 0x8327
+1da9 1e 60       ; ld   E, 0x60
+1dab f4 00 00    ; call P, 0x0000
+1dae 00          ; nop
+1daf 00          ; nop
+1db0 00          ; nop
+1db1 00          ; nop
+1db2 00          ; nop
+1db3 00          ; nop
+1db4 00          ; nop
+1db5 00          ; nop
+1db6 00          ; nop
+1db7 00          ; nop
+1db8 00          ; nop
+1db9 00          ; nop
+1dba 00          ; nop
+1dbb 00          ; nop
+1dbc 00          ; nop
+1dbd 00          ; nop
+1dbe 00          ; nop
+1dbf 00          ; nop
+1dc0 00          ; nop
+1dc1 00          ; nop
+1dc2 00          ; nop
+1dc3 00          ; nop
+1dc4 ff          ; rst  0x38
+1dc5 ff          ; rst  0x38
+1dc6 00          ; nop
+1dc7 00          ; nop
+1dc8 00          ; nop
+1dc9 00          ; nop
+1dca 00          ; nop
+1dcb 00          ; nop
+1dcc 00          ; nop
+1dcd 00          ; nop
+1dce 00          ; nop
+1dcf 00          ; nop
+1dd0 00          ; nop
+1dd1 00          ; nop
+1dd2 00          ; nop
+1dd3 00          ; nop
+1dd4 7a          ; ld   A, D
+1dd5 ce a1       ; adc  A, 0xa1
+1dd7 1b          ; dec  DE
+1dd8 6c          ; ld   L, H
+1dd9 64          ; ld   H, H
+1dda 20 73       ; jr   NZ, +0x73
+1ddc 70          ; ld   (HL), B
+1ddd 2c          ; inc  L
+1dde 28 6e       ; jr   Z, +0x6e
+1de0 6e          ; ld   L, (HL)
+1de1 6e          ; ld   L, (HL)
+1de2 6e          ; ld   L, (HL)
+1de3 29          ; add  HL, HL
+1de4 2e 2e       ; ld   L, 0x2e
+1de6 2e 2e       ; ld   L, 0x2e
+1de8 2e 2e       ; ld   L, 0x2e
+1dea 2e 2e       ; ld   L, 0x2e
+1dec 2e 2e       ; ld   L, 0x2e
+1dee 2e 2e       ; ld   L, 0x2e
+1df0 2e 2e       ; ld   L, 0x2e
+1df2 2e 2e       ; ld   L, 0x2e
+1df4 2e 2e       ; ld   L, 0x2e
+1df6 24          ; inc  H
+1df7 ff          ; rst  0x38
+1df8 dd 2a 03 10 ; ld   IX, (0x1003)
+1dfc d7          ; rst  0x10
+1dfd de fa       ; sbc  A, 0xfa
+1dff a6          ; and  (HL)
+1e00 80          ; add  A, B
+1e01 f7          ; rst  0x30
+1e02 4c          ; ld   C, H
+1e03 24          ; inc  H
+1e04 de 87       ; sbc  A, 0x87
+1e06 c2 bc 16    ; jp   NZ, 0x16bc
+1e09 63          ; ld   H, E
+1e0a 96          ; sub  (HL)
+1e0b 4c          ; ld   C, H
+1e0c 20 00       ; jr   NZ, +0x00
+1e0e 00          ; nop
+1e0f 00          ; nop
+1e10 00          ; nop
+1e11 00          ; nop
+1e12 00          ; nop
+1e13 00          ; nop
+1e14 00          ; nop
+1e15 00          ; nop
+1e16 00          ; nop
+1e17 00          ; nop
+1e18 00          ; nop
+1e19 00          ; nop
+1e1a 00          ; nop
+1e1b 00          ; nop
+1e1c 00          ; nop
+1e1d 00          ; nop
+1e1e 00          ; nop
+1e1f 00          ; nop
+1e20 00          ; nop
+1e21 00          ; nop
+1e22 00          ; nop
+1e23 00          ; nop
+1e24 ff          ; rst  0x38
+1e25 ff          ; rst  0x38
+1e26 00          ; nop
+1e27 00          ; nop
+1e28 00          ; nop
+1e29 00          ; nop
+1e2a 00          ; nop
+1e2b 00          ; nop
+1e2c 00          ; nop
+1e2d 00          ; nop
+1e2e 00          ; nop
+1e2f 00          ; nop
+1e30 00          ; nop
+1e31 00          ; nop
+1e32 00          ; nop
+1e33 00          ; nop
+1e34 85          ; add  A, L
+1e35 8b          ; adc  A, E
+1e36 f1          ; pop  AF
+1e37 6d          ; ld   L, L
+1e38 6c          ; ld   L, H
+1e39 64          ; ld   H, H
+1e3a 20 3c       ; jr   NZ, +0x3c
+1e3c 69          ; ld   L, C
+1e3d 78          ; ld   A, B
+1e3e 2c          ; inc  L
+1e3f 69          ; ld   L, C
+1e40 79          ; ld   A, C
+1e41 3e 2c       ; ld   A, 0x2c
+1e43 28 6e       ; jr   Z, +0x6e
+1e45 6e          ; ld   L, (HL)
+1e46 6e          ; ld   L, (HL)
+1e47 6e          ; ld   L, (HL)
+1e48 29          ; add  HL, HL
+1e49 2e 2e       ; ld   L, 0x2e
+1e4b 2e 2e       ; ld   L, 0x2e
+1e4d 2e 2e       ; ld   L, 0x2e
+1e4f 2e 2e       ; ld   L, 0x2e
+1e51 2e 2e       ; ld   L, 0x2e
+1e53 2e 2e       ; ld   L, 0x2e
+1e55 2e 24       ; ld   L, 0x24
+1e57 ff          ; rst  0x38
+1e58 ed 43 03 10 ; ld   (0x1003), BC
+1e5c 98          ; sbc  A, B
+1e5d 1f          ; rra
+1e5e 4d          ; ld   C, L
+1e5f 84          ; add  A, H
+1e60 ac          ; xor  H
+1e61 e8          ; ret  PE
+1e62 ed c9       ; nop
+1e64 5d          ; ld   E, L
+1e65 c9          ; ret
+1e66 61          ; ld   H, C
+1e67 8f          ; adc  A, A
+1e68 80          ; add  A, B
+1e69 3f          ; ccf
+1e6a bf          ; cp   A
+1e6b c7          ; rst  0x00
+1e6c 00          ; nop
+1e6d 10 00       ; djnz +0x00
+1e6f 00          ; nop
+1e70 00          ; nop
+1e71 00          ; nop
+1e72 00          ; nop
+1e73 00          ; nop
+1e74 00          ; nop
+1e75 00          ; nop
+1e76 00          ; nop
+1e77 00          ; nop
+1e78 00          ; nop
+1e79 00          ; nop
+1e7a 00          ; nop
+1e7b 00          ; nop
+1e7c 00          ; nop
+1e7d 00          ; nop
+1e7e 00          ; nop
+1e7f 00          ; nop
+1e80 00          ; nop
+1e81 00          ; nop
+1e82 00          ; nop
+1e83 00          ; nop
+1e84 00          ; nop
+1e85 00          ; nop
+1e86 00          ; nop
+1e87 00          ; nop
+1e88 00          ; nop
+1e89 00          ; nop
+1e8a 00          ; nop
+1e8b 00          ; nop
+1e8c ff          ; rst  0x38
+1e8d ff          ; rst  0x38
+1e8e ff          ; rst  0x38
+1e8f ff          ; rst  0x38
+1e90 00          ; nop
+1e91 00          ; nop
+1e92 00          ; nop
+1e93 00          ; nop
+1e94 64          ; ld   H, H
+1e95 1e 87       ; ld   E, 0x87
+1e97 15          ; dec  D
+1e98 6c          ; ld   L, H
+1e99 64          ; ld   H, H
+1e9a 20 28       ; jr   NZ, +0x28
+1e9c 6e          ; ld   L, (HL)
+1e9d 6e          ; ld   L, (HL)
+1e9e 6e          ; ld   L, (HL)
+1e9f 6e          ; ld   L, (HL)
+1ea0 29          ; add  HL, HL
+1ea1 2c          ; inc  L
+1ea2 3c          ; inc  A
+1ea3 62          ; ld   H, D
+1ea4 63          ; ld   H, E
+1ea5 2c          ; inc  L
+1ea6 64          ; ld   H, H
+1ea7 65          ; ld   H, L
+1ea8 3e 2e       ; ld   A, 0x2e
+1eaa 2e 2e       ; ld   L, 0x2e
+1eac 2e 2e       ; ld   L, 0x2e
+1eae 2e 2e       ; ld   L, 0x2e
+1eb0 2e 2e       ; ld   L, 0x2e
+1eb2 2e 2e       ; ld   L, 0x2e
+1eb4 2e 2e       ; ld   L, 0x2e
+1eb6 24          ; inc  H
+1eb7 ff          ; rst  0x38
+1eb8 22 03 10    ; ld   (0x1003), HL
+1ebb 00          ; nop
+1ebc 03          ; inc  BC
+1ebd d0          ; ret  NC
+1ebe 72          ; ld   (HL), D
+1ebf 77          ; ld   (HL), A
+1ec0 53          ; ld   D, E
+1ec1 7f          ; ld   A, A
+1ec2 72          ; ld   (HL), D
+1ec3 3f          ; ccf
+1ec4 ea 64 80    ; jp   PE, 0x8064
+1ec7 e1          ; pop  HL
+1ec8 10 2d       ; djnz +0x2d
+1eca e9          ; jp   HL
+1ecb 35          ; dec  (HL)
+1ecc 00          ; nop
+1ecd 00          ; nop
+1ece 00          ; nop
+1ecf 00          ; nop
+1ed0 00          ; nop
+1ed1 00          ; nop
+1ed2 00          ; nop
+1ed3 00          ; nop
+1ed4 00          ; nop
+1ed5 00          ; nop
+1ed6 00          ; nop
+1ed7 00          ; nop
+1ed8 00          ; nop
+1ed9 00          ; nop
+1eda 00          ; nop
+1edb 00          ; nop
+1edc 00          ; nop
+1edd 00          ; nop
+1ede 00          ; nop
+1edf 00          ; nop
+1ee0 00          ; nop
+1ee1 00          ; nop
+1ee2 00          ; nop
+1ee3 00          ; nop
+1ee4 00          ; nop
+1ee5 00          ; nop
+1ee6 00          ; nop
+1ee7 00          ; nop
+1ee8 00          ; nop
+1ee9 00          ; nop
+1eea ff          ; rst  0x38
+1eeb ff          ; rst  0x38
+1eec 00          ; nop
+1eed 00          ; nop
+1eee 00          ; nop
+1eef 00          ; nop
+1ef0 00          ; nop
+1ef1 00          ; nop
+1ef2 00          ; nop
+1ef3 00          ; nop
+1ef4 a3          ; and  E
+1ef5 60          ; ld   H, B
+1ef6 8b          ; adc  A, E
+1ef7 47          ; ld   B, A
+1ef8 6c          ; ld   L, H
+1ef9 64          ; ld   H, H
+1efa 20 28       ; jr   NZ, +0x28
+1efc 6e          ; ld   L, (HL)
+1efd 6e          ; ld   L, (HL)
+1efe 6e          ; ld   L, (HL)
+1eff 6e          ; ld   L, (HL)
+1f00 29          ; add  HL, HL
+1f01 2c          ; inc  L
+1f02 68          ; ld   L, B
+1f03 6c          ; ld   L, H
+1f04 2e 2e       ; ld   L, 0x2e
+1f06 2e 2e       ; ld   L, 0x2e
+1f08 2e 2e       ; ld   L, 0x2e
+1f0a 2e 2e       ; ld   L, 0x2e
+1f0c 2e 2e       ; ld   L, 0x2e
+1f0e 2e 2e       ; ld   L, 0x2e
+1f10 2e 2e       ; ld   L, 0x2e
+1f12 2e 2e       ; ld   L, 0x2e
+1f14 2e 2e       ; ld   L, 0x2e
+1f16 24          ; inc  H
+1f17 ff          ; rst  0x38
+1f18 ed 73 03 10 ; ld   (0x1003), SP
+1f1c dc c0 d6    ; call C, 0xd6c0
+1f1f d1          ; pop  DE
+1f20 5a          ; ld   E, D
+1f21 ed 56       ; im   0x01
+1f23 f3          ; di
+1f24 da af a7    ; jp   C, 0xa7af
+1f27 6c          ; ld   L, H
+1f28 44          ; ld   B, H
+1f29 9f          ; sbc  A, A
+1f2a 0a          ; ld   A, (BC)
+1f2b 3f          ; ccf
+1f2c 00          ; nop
+1f2d 00          ; nop
+1f2e 00          ; nop
+1f2f 00          ; nop
+1f30 00          ; nop
+1f31 00          ; nop
+1f32 00          ; nop
+1f33 00          ; nop
+1f34 00          ; nop
+1f35 00          ; nop
+1f36 00          ; nop
+1f37 00          ; nop
+1f38 00          ; nop
+1f39 00          ; nop
+1f3a 00          ; nop
+1f3b 00          ; nop
+1f3c 00          ; nop
+1f3d 00          ; nop
+1f3e 00          ; nop
+1f3f 00          ; nop
+1f40 00          ; nop
+1f41 00          ; nop
+1f42 00          ; nop
+1f43 00          ; nop
+1f44 00          ; nop
+1f45 00          ; nop
+1f46 00          ; nop
+1f47 00          ; nop
+1f48 00          ; nop
+1f49 00          ; nop
+1f4a 00          ; nop
+1f4b 00          ; nop
+1f4c 00          ; nop
+1f4d 00          ; nop
+1f4e 00          ; nop
+1f4f 00          ; nop
+1f50 00          ; nop
+1f51 00          ; nop
+1f52 ff          ; rst  0x38
+1f53 ff          ; rst  0x38
+1f54 16 58       ; ld   D, 0x58
+1f56 5f          ; ld   E, A
+1f57 d7          ; rst  0x10
+1f58 6c          ; ld   L, H
+1f59 64          ; ld   H, H
+1f5a 20 28       ; jr   NZ, +0x28
+1f5c 6e          ; ld   L, (HL)
+1f5d 6e          ; ld   L, (HL)
+1f5e 6e          ; ld   L, (HL)
+1f5f 6e          ; ld   L, (HL)
+1f60 29          ; add  HL, HL
+1f61 2c          ; inc  L
+1f62 73          ; ld   (HL), E
+1f63 70          ; ld   (HL), B
+1f64 2e 2e       ; ld   L, 0x2e
+1f66 2e 2e       ; ld   L, 0x2e
+1f68 2e 2e       ; ld   L, 0x2e
+1f6a 2e 2e       ; ld   L, 0x2e
+1f6c 2e 2e       ; ld   L, 0x2e
+1f6e 2e 2e       ; ld   L, 0x2e
+1f70 2e 2e       ; ld   L, 0x2e
+1f72 2e 2e       ; ld   L, 0x2e
+1f74 2e 2e       ; ld   L, 0x2e
+1f76 24          ; inc  H
+1f77 ff          ; rst  0x38
+1f78 dd 22 03 10 ; ld   (0x1003), IX
+1f7c c3 6c 91    ; jp   0x916c
+1f7f 0d          ; dec  C
+1f80 00          ; nop
+1f81 69          ; ld   L, C
+1f82 f8          ; ret  M
+1f83 8e          ; adc  A, (HL)
+1f84 d6 e3       ; sub  0xe3
+1f86 f7          ; rst  0x30
+1f87 c3 c6 d9    ; jp   0xd9c6
+1f8a df          ; rst  0x18
+1f8b c2 20 00    ; jp   NZ, 0x0020
+1f8e 00          ; nop
+1f8f 00          ; nop
+1f90 00          ; nop
+1f91 00          ; nop
+1f92 00          ; nop
+1f93 00          ; nop
+1f94 00          ; nop
+1f95 00          ; nop
+1f96 00          ; nop
+1f97 00          ; nop
+1f98 00          ; nop
+1f99 00          ; nop
+1f9a 00          ; nop
+1f9b 00          ; nop
+1f9c 00          ; nop
+1f9d 00          ; nop
+1f9e 00          ; nop
+1f9f 00          ; nop
+1fa0 00          ; nop
+1fa1 00          ; nop
+1fa2 00          ; nop
+1fa3 00          ; nop
+1fa4 00          ; nop
+1fa5 00          ; nop
+1fa6 ff          ; rst  0x38
+1fa7 ff          ; rst  0x38
+1fa8 ff          ; rst  0x38
+1fa9 ff          ; rst  0x38
+1faa 00          ; nop
+1fab 00          ; nop
+1fac 00          ; nop
+1fad 00          ; nop
+1fae 00          ; nop
+1faf 00          ; nop
+1fb0 00          ; nop
+1fb1 00          ; nop
+1fb2 00          ; nop
+1fb3 00          ; nop
+1fb4 ba          ; cp   D
+1fb5 10 2a       ; djnz +0x2a
+1fb7 6b          ; ld   L, E
+1fb8 6c          ; ld   L, H
+1fb9 64          ; ld   H, H
+1fba 20 28       ; jr   NZ, +0x28
+1fbc 6e          ; ld   L, (HL)
+1fbd 6e          ; ld   L, (HL)
+1fbe 6e          ; ld   L, (HL)
+1fbf 6e          ; ld   L, (HL)
+1fc0 29          ; add  HL, HL
+1fc1 2c          ; inc  L
+1fc2 3c          ; inc  A
+1fc3 69          ; ld   L, C
+1fc4 78          ; ld   A, B
+1fc5 2c          ; inc  L
+1fc6 69          ; ld   L, C
+1fc7 79          ; ld   A, C
+1fc8 3e 2e       ; ld   A, 0x2e
+1fca 2e 2e       ; ld   L, 0x2e
+1fcc 2e 2e       ; ld   L, 0x2e
+1fce 2e 2e       ; ld   L, 0x2e
+1fd0 2e 2e       ; ld   L, 0x2e
+1fd2 2e 2e       ; ld   L, 0x2e
+1fd4 2e 2e       ; ld   L, 0x2e
+1fd6 24          ; inc  H
+1fd7 ff          ; rst  0x38
+1fd8 01 00 00    ; ld   BC, 0x0000
+1fdb 00          ; nop
+1fdc 1c          ; inc  E
+1fdd 5c          ; ld   E, H
+1fde 46          ; ld   B, (HL)
+1fdf 2d          ; dec  L
+1fe0 b9          ; cp   C
+1fe1 8e          ; adc  A, (HL)
+1fe2 78          ; ld   A, B
+1fe3 60          ; ld   H, B
+1fe4 b1          ; or   C
+1fe5 74          ; ld   (HL), H
+1fe6 0e b3       ; ld   C, 0xb3
+1fe8 46          ; ld   B, (HL)
+1fe9 d1          ; pop  DE
+1fea cc 30 30    ; call Z, 0x3030
+1fed 00          ; nop
+1fee 00          ; nop
+1fef 00          ; nop
+1ff0 00          ; nop
+1ff1 00          ; nop
+1ff2 00          ; nop
+1ff3 00          ; nop
+1ff4 00          ; nop
+1ff5 00          ; nop
+1ff6 00          ; nop
+1ff7 00          ; nop
+1ff8 00          ; nop
+1ff9 00          ; nop
+1ffa 00          ; nop
+1ffb 00          ; nop
+1ffc 00          ; nop
+1ffd 00          ; nop
+1ffe 00          ; nop
+1fff 00          ; nop
+2000 00          ; nop
+2001 ff          ; rst  0x38
+2002 ff          ; rst  0x38
+2003 00          ; nop
+2004 00          ; nop
+2005 00          ; nop
+2006 00          ; nop
+2007 00          ; nop
+2008 00          ; nop
+2009 00          ; nop
+200a 00          ; nop
+200b 00          ; nop
+200c 00          ; nop
+200d 00          ; nop
+200e 00          ; nop
+200f 00          ; nop
+2010 00          ; nop
+2011 00          ; nop
+2012 00          ; nop
+2013 00          ; nop
+2014 de 39       ; sbc  A, 0x39
+2016 19          ; add  HL, DE
+2017 69          ; ld   L, C
+2018 6c          ; ld   L, H
+2019 64          ; ld   H, H
+201a 20 3c       ; jr   NZ, +0x3c
+201c 62          ; ld   H, D
+201d 63          ; ld   H, E
+201e 2c          ; inc  L
+201f 64          ; ld   H, H
+2020 65          ; ld   H, L
+2021 2c          ; inc  L
+2022 68          ; ld   L, B
+2023 6c          ; ld   L, H
+2024 2c          ; inc  L
+2025 73          ; ld   (HL), E
+2026 70          ; ld   (HL), B
+2027 3e 2c       ; ld   A, 0x2c
+2029 6e          ; ld   L, (HL)
+202a 6e          ; ld   L, (HL)
+202b 6e          ; ld   L, (HL)
+202c 6e          ; ld   L, (HL)
+202d 2e 2e       ; ld   L, 0x2e
+202f 2e 2e       ; ld   L, 0x2e
+2031 2e 2e       ; ld   L, 0x2e
+2033 2e 2e       ; ld   L, 0x2e
+2035 2e 24       ; ld   L, 0x24
+2037 ff          ; rst  0x38
+2038 dd 21 00 00 ; ld   IX, 0x0000
+203c e8          ; ret  PE
+203d 87          ; add  A, A
+203e 06 20       ; ld   B, 0x20
+2040 12          ; ld   (DE), A
+2041 bd          ; cp   L
+2042 9b          ; sbc  A, E
+2043 b6          ; or   (HL)
+2044 53          ; ld   D, E
+2045 72          ; ld   (HL), D
+2046 e5          ; push HL
+2047 a1          ; and  C
+2048 51          ; ld   D, C
+2049 13          ; inc  DE
+204a bd          ; cp   L
+204b f1          ; pop  AF
+204c 20 00       ; jr   NZ, +0x00
+204e 00          ; nop
+204f 00          ; nop
+2050 00          ; nop
+2051 00          ; nop
+2052 00          ; nop
+2053 00          ; nop
+2054 00          ; nop
+2055 00          ; nop
+2056 00          ; nop
+2057 00          ; nop
+2058 00          ; nop
+2059 00          ; nop
+205a 00          ; nop
+205b 00          ; nop
+205c 00          ; nop
+205d 00          ; nop
+205e 00          ; nop
+205f 00          ; nop
+2060 00          ; nop
+2061 00          ; nop
+2062 ff          ; rst  0x38
+2063 ff          ; rst  0x38
+2064 00          ; nop
+2065 00          ; nop
+2066 00          ; nop
+2067 00          ; nop
+2068 00          ; nop
+2069 00          ; nop
+206a 00          ; nop
+206b 00          ; nop
+206c 00          ; nop
+206d 00          ; nop
+206e 00          ; nop
+206f 00          ; nop
+2070 00          ; nop
+2071 00          ; nop
+2072 00          ; nop
+2073 00          ; nop
+2074 22 7d d5    ; ld   (0xd57d), HL
+2077 25          ; dec  H
+2078 6c          ; ld   L, H
+2079 64          ; ld   H, H
+207a 20 3c       ; jr   NZ, +0x3c
+207c 69          ; ld   L, C
+207d 78          ; ld   A, B
+207e 2c          ; inc  L
+207f 69          ; ld   L, C
+2080 79          ; ld   A, C
+2081 3e 2c       ; ld   A, 0x2c
+2083 6e          ; ld   L, (HL)
+2084 6e          ; ld   L, (HL)
+2085 6e          ; ld   L, (HL)
+2086 6e          ; ld   L, (HL)
+2087 2e 2e       ; ld   L, 0x2e
+2089 2e 2e       ; ld   L, 0x2e
+208b 2e 2e       ; ld   L, 0x2e
+208d 2e 2e       ; ld   L, 0x2e
+208f 2e 2e       ; ld   L, 0x2e
+2091 2e 2e       ; ld   L, 0x2e
+2093 2e 2e       ; ld   L, 0x2e
+2095 2e 24       ; ld   L, 0x24
+2097 ff          ; rst  0x38
+2098 0a          ; ld   A, (BC)
+2099 00          ; nop
+209a 00          ; nop
+209b 00          ; nop
+209c a8          ; xor  B
+209d b3          ; or   E
+209e 2a 1d 8e    ; ld   HL, (0x8e1d)
+20a1 7f          ; ld   A, A
+20a2 ac          ; xor  H
+20a3 42          ; ld   B, D
+20a4 03          ; inc  BC
+20a5 10 03       ; djnz +0x03
+20a7 10 c6       ; djnz -0x3a
+20a9 b1          ; or   C
+20aa 8e          ; adc  A, (HL)
+20ab ef          ; rst  0x28
+20ac 10 00       ; djnz +0x00
+20ae 00          ; nop
+20af 00          ; nop
+20b0 00          ; nop
+20b1 00          ; nop
+20b2 00          ; nop
+20b3 00          ; nop
+20b4 00          ; nop
+20b5 00          ; nop
+20b6 00          ; nop
+20b7 00          ; nop
+20b8 00          ; nop
+20b9 00          ; nop
+20ba 00          ; nop
+20bb 00          ; nop
+20bc 00          ; nop
+20bd 00          ; nop
+20be 00          ; nop
+20bf 00          ; nop
+20c0 00          ; nop
+20c1 00          ; nop
+20c2 00          ; nop
+20c3 00          ; nop
+20c4 ff          ; rst  0x38
+20c5 00          ; nop
+20c6 00          ; nop
+20c7 00          ; nop
+20c8 00          ; nop
+20c9 00          ; nop
+20ca 00          ; nop
+20cb 00          ; nop
+20cc 00          ; nop
+20cd 00          ; nop
+20ce 00          ; nop
+20cf 00          ; nop
+20d0 d7          ; rst  0x10
+20d1 ff          ; rst  0x38
+20d2 00          ; nop
+20d3 00          ; nop
+20d4 98          ; sbc  A, B
+20d5 76          ; halt
+20d6 d6 e0       ; sub  0xe0
+20d8 6c          ; ld   L, H
+20d9 64          ; ld   H, H
+20da 20 61       ; jr   NZ, +0x61
+20dc 2c          ; inc  L
+20dd 3c          ; inc  A
+20de 28 62       ; jr   Z, +0x62
+20e0 63          ; ld   H, E
+20e1 29          ; add  HL, HL
+20e2 2c          ; inc  L
+20e3 28 64       ; jr   Z, +0x64
+20e5 65          ; ld   H, L
+20e6 29          ; add  HL, HL
+20e7 3e 2e       ; ld   A, 0x2e
+20e9 2e 2e       ; ld   L, 0x2e
+20eb 2e 2e       ; ld   L, 0x2e
+20ed 2e 2e       ; ld   L, 0x2e
+20ef 2e 2e       ; ld   L, 0x2e
+20f1 2e 2e       ; ld   L, 0x2e
+20f3 2e 2e       ; ld   L, 0x2e
+20f5 2e 24       ; ld   L, 0x24
+20f7 ff          ; rst  0x38
+20f8 06 00       ; ld   B, 0x00
+20fa 00          ; nop
+20fb 00          ; nop
+20fc 07          ; rlca
+20fd c4 9d f4    ; call NZ, 0xf49d
+2100 3d          ; dec  A
+2101 d1          ; pop  DE
+2102 39          ; add  HL, SP
+2103 03          ; inc  BC
+2104 89          ; adc  A, C
+2105 de 55       ; sbc  A, 0x55
+2107 74          ; ld   (HL), H
+2108 53          ; ld   D, E
+2109 c0          ; ret  NZ
+210a 09          ; add  HL, BC
+210b 55          ; ld   D, L
+210c 38 00       ; jr   C, +0x00
+210e 00          ; nop
+210f 00          ; nop
+2110 00          ; nop
+2111 00          ; nop
+2112 00          ; nop
+2113 00          ; nop
+2114 00          ; nop
+2115 00          ; nop
+2116 00          ; nop
+2117 00          ; nop
+2118 00          ; nop
+2119 00          ; nop
+211a 00          ; nop
+211b 00          ; nop
+211c 00          ; nop
+211d 00          ; nop
+211e 00          ; nop
+211f 00          ; nop
+2120 00          ; nop
+2121 00          ; nop
+2122 00          ; nop
+2123 00          ; nop
+2124 00          ; nop
+2125 00          ; nop
+2126 00          ; nop
+2127 00          ; nop
+2128 00          ; nop
+2129 00          ; nop
+212a 00          ; nop
+212b 00          ; nop
+212c 00          ; nop
+212d 00          ; nop
+212e 00          ; nop
+212f 00          ; nop
+2130 00          ; nop
+2131 ff          ; rst  0x38
+2132 00          ; nop
+2133 00          ; nop
+2134 f1          ; pop  AF
+2135 da b5 56    ; jp   C, 0x56b5
+2138 6c          ; ld   L, H
+2139 64          ; ld   H, H
+213a 20 3c       ; jr   NZ, +0x3c
+213c 62          ; ld   H, D
+213d 2c          ; inc  L
+213e 63          ; ld   H, E
+213f 2c          ; inc  L
+2140 64          ; ld   H, H
+2141 2c          ; inc  L
+2142 65          ; ld   H, L
+2143 2c          ; inc  L
+2144 68          ; ld   L, B
+2145 2c          ; inc  L
+2146 6c          ; ld   L, H
+2147 2c          ; inc  L
+2148 28 68       ; jr   Z, +0x68
+214a 6c          ; ld   L, H
+214b 29          ; add  HL, HL
+214c 2c          ; inc  L
+214d 61          ; ld   H, C
+214e 3e 2c       ; ld   A, 0x2c
+2150 6e          ; ld   L, (HL)
+2151 6e          ; ld   L, (HL)
+2152 2e 2e       ; ld   L, 0x2e
+2154 2e 2e       ; ld   L, 0x2e
+2156 24          ; inc  H
+2157 ff          ; rst  0x38
+2158 dd 36 01 00 ; ld   (IX+0x01), 0x00
+215c 45          ; ld   B, L
+215d 1b          ; dec  DE
+215e 02          ; ld   (BC), A
+215f 10 02       ; djnz +0x02
+2161 10 c1       ; djnz -0x3f
+2163 d5          ; push DE
+2164 c7          ; rst  0x00
+2165 61          ; ld   H, C
+2166 c4 bd c0    ; call NZ, 0xc0bd
+2169 85          ; add  A, L
+216a 16 cd       ; ld   D, 0xcd
+216c 20 00       ; jr   NZ, +0x00
+216e 00          ; nop
+216f 00          ; nop
+2170 00          ; nop
+2171 00          ; nop
+2172 00          ; nop
+2173 00          ; nop
+2174 00          ; nop
+2175 00          ; nop
+2176 00          ; nop
+2177 00          ; nop
+2178 00          ; nop
+2179 00          ; nop
+217a 00          ; nop
+217b 00          ; nop
+217c 00          ; nop
+217d 00          ; nop
+217e 00          ; nop
+217f 00          ; nop
+2180 00          ; nop
+2181 00          ; nop
+2182 00          ; nop
+2183 ff          ; rst  0x38
+2184 00          ; nop
+2185 00          ; nop
+2186 00          ; nop
+2187 00          ; nop
+2188 00          ; nop
+2189 00          ; nop
+218a 00          ; nop
+218b 00          ; nop
+218c 00          ; nop
+218d 00          ; nop
+218e 00          ; nop
+218f 00          ; nop
+2190 00          ; nop
+2191 ff          ; rst  0x38
+2192 00          ; nop
+2193 00          ; nop
+2194 fe 4c       ; cp   0x4c
+2196 2c          ; inc  L
+2197 7e          ; ld   A, (HL)
+2198 6c          ; ld   L, H
+2199 64          ; ld   H, H
+219a 20 28       ; jr   NZ, +0x28
+219c 3c          ; inc  A
+219d 69          ; ld   L, C
+219e 78          ; ld   A, B
+219f 2c          ; inc  L
+21a0 69          ; ld   L, C
+21a1 79          ; ld   A, C
+21a2 3e 2b       ; ld   A, 0x2b
+21a4 31 29 2c    ; ld   SP, 0x2c29
+21a7 6e          ; ld   L, (HL)
+21a8 6e          ; ld   L, (HL)
+21a9 2e 2e       ; ld   L, 0x2e
+21ab 2e 2e       ; ld   L, 0x2e
+21ad 2e 2e       ; ld   L, 0x2e
+21af 2e 2e       ; ld   L, 0x2e
+21b1 2e 2e       ; ld   L, 0x2e
+21b3 2e 2e       ; ld   L, 0x2e
+21b5 2e 24       ; ld   L, 0x24
+21b7 ff          ; rst  0x38
+21b8 dd 46 01    ; ld   B, (IX+0x01)
+21bb 00          ; nop
+21bc 16 d0       ; ld   D, 0xd0
+21be 02          ; ld   (BC), A
+21bf 10 02       ; djnz +0x02
+21c1 10 60       ; djnz +0x60
+21c3 42          ; ld   B, D
+21c4 39          ; add  HL, SP
+21c5 7f          ; ld   A, A
+21c6 04          ; inc  B
+21c7 04          ; inc  B
+21c8 97          ; sub  A
+21c9 4a          ; ld   C, D
+21ca 85          ; add  A, L
+21cb d0          ; ret  NC
+21cc 20 18       ; jr   NZ, +0x18
+21ce 00          ; nop
+21cf 00          ; nop
+21d0 00          ; nop
+21d1 00          ; nop
+21d2 01 00 01    ; ld   BC, 0x0100
+21d5 00          ; nop
+21d6 00          ; nop
+21d7 00          ; nop
+21d8 00          ; nop
+21d9 00          ; nop
+21da 00          ; nop
+21db 00          ; nop
+21dc 00          ; nop
+21dd 00          ; nop
+21de 00          ; nop
+21df 00          ; nop
+21e0 00          ; nop
+21e1 00          ; nop
+21e2 00          ; nop
+21e3 00          ; nop
+21e4 ff          ; rst  0x38
+21e5 ff          ; rst  0x38
+21e6 00          ; nop
+21e7 00          ; nop
+21e8 00          ; nop
+21e9 00          ; nop
+21ea 00          ; nop
+21eb 00          ; nop
+21ec 00          ; nop
+21ed 00          ; nop
+21ee 00          ; nop
+21ef 00          ; nop
+21f0 00          ; nop
+21f1 00          ; nop
+21f2 00          ; nop
+21f3 00          ; nop
+21f4 cc a6 66    ; call Z, 0x66a6
+21f7 eb          ; ex   DE, HL
+21f8 6c          ; ld   L, H
+21f9 64          ; ld   H, H
+21fa 20 3c       ; jr   NZ, +0x3c
+21fc 62          ; ld   H, D
+21fd 2c          ; inc  L
+21fe 63          ; ld   H, E
+21ff 2c          ; inc  L
+2200 64          ; ld   H, H
+2201 2c          ; inc  L
+2202 65          ; ld   H, L
+2203 3e 2c       ; ld   A, 0x2c
+2205 28 3c       ; jr   Z, +0x3c
+2207 69          ; ld   L, C
+2208 78          ; ld   A, B
+2209 2c          ; inc  L
+220a 69          ; ld   L, C
+220b 79          ; ld   A, C
+220c 3e 2b       ; ld   A, 0x2b
+220e 31 29 2e    ; ld   SP, 0x2e29
+2211 2e 2e       ; ld   L, 0x2e
+2213 2e 2e       ; ld   L, 0x2e
+2215 2e 24       ; ld   L, 0x24
+2217 ff          ; rst  0x38
+2218 dd 66 01    ; ld   H, (IX+0x01)
+221b 00          ; nop
+221c e0          ; ret  PO
+221d 84          ; add  A, H
+221e 02          ; ld   (BC), A
+221f 10 02       ; djnz +0x02
+2221 10 52       ; djnz +0x52
+2223 9c          ; sbc  A, H
+2224 99          ; sbc  A, C
+2225 a7          ; and  A
+2226 b6          ; or   (HL)
+2227 49          ; ld   C, C
+2228 93          ; sub  E
+2229 00          ; nop
+222a ad          ; xor  L
+222b ee 20       ; xor  0x20
+222d 08          ; ex   AF, AF'
+222e 00          ; nop
+222f 00          ; nop
+2230 00          ; nop
+2231 00          ; nop
+2232 01 00 01    ; ld   BC, 0x0100
+2235 00          ; nop
+2236 00          ; nop
+2237 00          ; nop
+2238 00          ; nop
+2239 00          ; nop
+223a 00          ; nop
+223b 00          ; nop
+223c 00          ; nop
+223d 00          ; nop
+223e 00          ; nop
+223f 00          ; nop
+2240 00          ; nop
+2241 00          ; nop
+2242 00          ; nop
+2243 00          ; nop
+2244 ff          ; rst  0x38
+2245 ff          ; rst  0x38
+2246 00          ; nop
+2247 00          ; nop
+2248 00          ; nop
+2249 00          ; nop
+224a 00          ; nop
+224b 00          ; nop
+224c 00          ; nop
+224d 00          ; nop
+224e 00          ; nop
+224f 00          ; nop
+2250 00          ; nop
+2251 00          ; nop
+2252 00          ; nop
+2253 00          ; nop
+2254 e9          ; jp   HL
+2255 fe 19       ; cp   0x19
+2257 66          ; ld   H, (HL)
+2258 6c          ; ld   L, H
+2259 64          ; ld   H, H
+225a 20 3c       ; jr   NZ, +0x3c
+225c 68          ; ld   L, B
+225d 2c          ; inc  L
+225e 6c          ; ld   L, H
+225f 3e 2c       ; ld   A, 0x2c
+2261 28 3c       ; jr   Z, +0x3c
+2263 69          ; ld   L, C
+2264 78          ; ld   A, B
+2265 2c          ; inc  L
+2266 69          ; ld   L, C
+2267 79          ; ld   A, C
+2268 3e 2b       ; ld   A, 0x2b
+226a 31 29 2e    ; ld   SP, 0x2e29
+226d 2e 2e       ; ld   L, 0x2e
+226f 2e 2e       ; ld   L, 0x2e
+2271 2e 2e       ; ld   L, 0x2e
+2273 2e 2e       ; ld   L, 0x2e
+2275 2e 24       ; ld   L, 0x24
+2277 ff          ; rst  0x38
+2278 dd 7e 01    ; ld   A, (IX+0x01)
+227b 00          ; nop
+227c b6          ; or   (HL)
+227d d8          ; ret  C
+227e 02          ; ld   (BC), A
+227f 10 02       ; djnz +0x02
+2281 10 12       ; djnz +0x12
+2283 c6 07       ; add  A, 0x07
+2285 df          ; rst  0x18
+2286 d0          ; ret  NC
+2287 9c          ; sbc  A, H
+2288 43          ; ld   B, E
+2289 a6          ; and  (HL)
+228a e5          ; push HL
+228b a0          ; and  B
+228c 20 00       ; jr   NZ, +0x00
+228e 00          ; nop
+228f 00          ; nop
+2290 00          ; nop
+2291 00          ; nop
+2292 01 00 01    ; ld   BC, 0x0100
+2295 00          ; nop
+2296 00          ; nop
+2297 00          ; nop
+2298 00          ; nop
+2299 00          ; nop
+229a 00          ; nop
+229b 00          ; nop
+229c 00          ; nop
+229d 00          ; nop
+229e 00          ; nop
+229f 00          ; nop
+22a0 00          ; nop
+22a1 00          ; nop
+22a2 00          ; nop
+22a3 00          ; nop
+22a4 ff          ; rst  0x38
+22a5 ff          ; rst  0x38
+22a6 00          ; nop
+22a7 00          ; nop
+22a8 00          ; nop
+22a9 00          ; nop
+22aa 00          ; nop
+22ab 00          ; nop
+22ac 00          ; nop
+22ad 00          ; nop
+22ae 00          ; nop
+22af 00          ; nop
+22b0 00          ; nop
+22b1 00          ; nop
+22b2 00          ; nop
+22b3 00          ; nop
+22b4 ed 74       ; neg
+22b6 8c          ; adc  A, H
+22b7 66          ; ld   H, (HL)
+22b8 6c          ; ld   L, H
+22b9 64          ; ld   H, H
+22ba 20 61       ; jr   NZ, +0x61
+22bc 2c          ; inc  L
+22bd 28 3c       ; jr   Z, +0x3c
+22bf 69          ; ld   L, C
+22c0 78          ; ld   A, B
+22c1 2c          ; inc  L
+22c2 69          ; ld   L, C
+22c3 79          ; ld   A, C
+22c4 3e 2b       ; ld   A, 0x2b
+22c6 31 29 2e    ; ld   SP, 0x2e29
+22c9 2e 2e       ; ld   L, 0x2e
+22cb 2e 2e       ; ld   L, 0x2e
+22cd 2e 2e       ; ld   L, 0x2e
+22cf 2e 2e       ; ld   L, 0x2e
+22d1 2e 2e       ; ld   L, 0x2e
+22d3 2e 2e       ; ld   L, 0x2e
+22d5 2e 24       ; ld   L, 0x24
+22d7 ff          ; rst  0x38
+22d8 dd 26 00    ; ld   IXh, 0x00
+22db 00          ; nop
+22dc 53          ; ld   D, E
+22dd 3c          ; inc  A
+22de 40          ; ld   B, B
+22df 46          ; ld   B, (HL)
+22e0 79          ; ld   A, C
+22e1 e1          ; pop  HL
+22e2 11 77 07    ; ld   DE, 0x0777
+22e5 c1          ; pop  BC
+22e6 fa 1a 81    ; jp   M, 0x811a
+22e9 ad          ; xor  L
+22ea 9b          ; sbc  A, E
+22eb 5d          ; ld   E, L
+22ec 20 08       ; jr   NZ, +0x08
+22ee 00          ; nop
+22ef 00          ; nop
+22f0 00          ; nop
+22f1 00          ; nop
+22f2 00          ; nop
+22f3 00          ; nop
+22f4 00          ; nop
+22f5 00          ; nop
+22f6 00          ; nop
+22f7 00          ; nop
+22f8 00          ; nop
+22f9 00          ; nop
+22fa 00          ; nop
+22fb 00          ; nop
+22fc 00          ; nop
+22fd 00          ; nop
+22fe 00          ; nop
+22ff 00          ; nop
+2300 00          ; nop
+2301 00          ; nop
+2302 00          ; nop
+2303 00          ; nop
+2304 00          ; nop
+2305 00          ; nop
+2306 00          ; nop
+2307 00          ; nop
+2308 00          ; nop
+2309 00          ; nop
+230a 00          ; nop
+230b 00          ; nop
+230c 00          ; nop
+230d 00          ; nop
+230e 00          ; nop
+230f 00          ; nop
+2310 00          ; nop
+2311 ff          ; rst  0x38
+2312 00          ; nop
+2313 00          ; nop
+2314 24          ; inc  H
+2315 e8          ; ret  PE
+2316 82          ; add  A, D
+2317 8b          ; adc  A, E
+2318 6c          ; ld   L, H
+2319 64          ; ld   H, H
+231a 20 3c       ; jr   NZ, +0x3c
+231c 69          ; ld   L, C
+231d 78          ; ld   A, B
+231e 68          ; ld   L, B
+231f 2c          ; inc  L
+2320 69          ; ld   L, C
+2321 78          ; ld   A, B
+2322 6c          ; ld   L, H
+2323 2c          ; inc  L
+2324 69          ; ld   L, C
+2325 79          ; ld   A, C
+2326 68          ; ld   L, B
+2327 2c          ; inc  L
+2328 69          ; ld   L, C
+2329 79          ; ld   A, C
+232a 6c          ; ld   L, H
+232b 3e 2c       ; ld   A, 0x2c
+232d 6e          ; ld   L, (HL)
+232e 6e          ; ld   L, (HL)
+232f 2e 2e       ; ld   L, 0x2e
+2331 2e 2e       ; ld   L, 0x2e
+2333 2e 2e       ; ld   L, 0x2e
+2335 2e 24       ; ld   L, 0x24
+2337 ff          ; rst  0x38
+2338 40          ; ld   B, B
+2339 00          ; nop
+233a 00          ; nop
+233b 00          ; nop
+233c a4          ; and  H
+233d 72          ; ld   (HL), D
+233e 24          ; inc  H
+233f a0          ; and  B
+2340 ac          ; xor  H
+2341 61          ; ld   H, C
+2342 03          ; inc  BC
+2343 10 c7       ; djnz -0x39
+2345 82          ; add  A, D
+2346 8f          ; adc  A, A
+2347 71          ; ld   (HL), C
+2348 97          ; sub  A
+2349 8f          ; adc  A, A
+234a 8e          ; adc  A, (HL)
+234b ef          ; rst  0x28
+234c 3f          ; ccf
+234d 00          ; nop
+234e 00          ; nop
+234f 00          ; nop
+2350 00          ; nop
+2351 00          ; nop
+2352 00          ; nop
+2353 00          ; nop
+2354 00          ; nop
+2355 00          ; nop
+2356 00          ; nop
+2357 00          ; nop
+2358 00          ; nop
+2359 00          ; nop
+235a 00          ; nop
+235b 00          ; nop
+235c 00          ; nop
+235d 00          ; nop
+235e 00          ; nop
+235f 00          ; nop
+2360 00          ; nop
+2361 00          ; nop
+2362 00          ; nop
+2363 00          ; nop
+2364 ff          ; rst  0x38
+2365 00          ; nop
+2366 00          ; nop
+2367 00          ; nop
+2368 00          ; nop
+2369 00          ; nop
+236a 00          ; nop
+236b 00          ; nop
+236c ff          ; rst  0x38
+236d ff          ; rst  0x38
+236e ff          ; rst  0x38
+236f ff          ; rst  0x38
+2370 d7          ; rst  0x10
+2371 ff          ; rst  0x38
+2372 00          ; nop
+2373 00          ; nop
+2374 94          ; sub  H
+2375 bb          ; cp   E
+2376 60          ; ld   H, B
+2377 d9          ; exx
+2378 6c          ; ld   L, H
+2379 64          ; ld   H, H
+237a 20 3c       ; jr   NZ, +0x3c
+237c 62          ; ld   H, D
+237d 63          ; ld   H, E
+237e 64          ; ld   H, H
+237f 65          ; ld   H, L
+2380 68          ; ld   L, B
+2381 6c          ; ld   L, H
+2382 61          ; ld   H, C
+2383 3e 2c       ; ld   A, 0x2c
+2385 3c          ; inc  A
+2386 62          ; ld   H, D
+2387 63          ; ld   H, E
+2388 64          ; ld   H, H
+2389 65          ; ld   H, L
+238a 68          ; ld   L, B
+238b 6c          ; ld   L, H
+238c 61          ; ld   H, C
+238d 3e 2e       ; ld   A, 0x2e
+238f 2e 2e       ; ld   L, 0x2e
+2391 2e 2e       ; ld   L, 0x2e
+2393 2e 2e       ; ld   L, 0x2e
+2395 2e 24       ; ld   L, 0x24
+2397 ff          ; rst  0x38
+2398 dd 40       ; ld   B, B
+239a 00          ; nop
+239b 00          ; nop
+239c c5          ; push BC
+239d bc          ; cp   H
+239e 03          ; inc  BC
+239f 10 03       ; djnz +0x03
+23a1 10 03       ; djnz +0x03
+23a3 10 c2       ; djnz -0x3e
+23a5 2f          ; cpl
+23a6 c0          ; ret  NZ
+23a7 98          ; sbc  A, B
+23a8 83          ; add  A, E
+23a9 1f          ; rra
+23aa cd 3b 20    ; call 0x203b
+23ad 3f          ; ccf
+23ae 00          ; nop
+23af 00          ; nop
+23b0 00          ; nop
+23b1 00          ; nop
+23b2 00          ; nop
+23b3 00          ; nop
+23b4 00          ; nop
+23b5 00          ; nop
+23b6 00          ; nop
+23b7 00          ; nop
+23b8 00          ; nop
+23b9 00          ; nop
+23ba 00          ; nop
+23bb 00          ; nop
+23bc 00          ; nop
+23bd 00          ; nop
+23be 00          ; nop
+23bf 00          ; nop
+23c0 00          ; nop
+23c1 00          ; nop
+23c2 00          ; nop
+23c3 00          ; nop
+23c4 ff          ; rst  0x38
+23c5 00          ; nop
+23c6 00          ; nop
+23c7 00          ; nop
+23c8 00          ; nop
+23c9 00          ; nop
+23ca 00          ; nop
+23cb 00          ; nop
+23cc ff          ; rst  0x38
+23cd ff          ; rst  0x38
+23ce ff          ; rst  0x38
+23cf ff          ; rst  0x38
+23d0 d7          ; rst  0x10
+23d1 ff          ; rst  0x38
+23d2 00          ; nop
+23d3 00          ; nop
+23d4 b6          ; or   (HL)
+23d5 60          ; ld   H, B
+23d6 89          ; adc  A, C
+23d7 8d          ; adc  A, L
+23d8 6c          ; ld   L, H
+23d9 64          ; ld   H, H
+23da 20 3c       ; jr   NZ, +0x3c
+23dc 62          ; ld   H, D
+23dd 63          ; ld   H, E
+23de 64          ; ld   H, H
+23df 65          ; ld   H, L
+23e0 78          ; ld   A, B
+23e1 79          ; ld   A, C
+23e2 61          ; ld   H, C
+23e3 3e 2c       ; ld   A, 0x2c
+23e5 3c          ; inc  A
+23e6 62          ; ld   H, D
+23e7 63          ; ld   H, E
+23e8 64          ; ld   H, H
+23e9 65          ; ld   H, L
+23ea 78          ; ld   A, B
+23eb 79          ; ld   A, C
+23ec 61          ; ld   H, C
+23ed 3e 2e       ; ld   A, 0x2e
+23ef 2e 2e       ; ld   L, 0x2e
+23f1 2e 2e       ; ld   L, 0x2e
+23f3 2e 2e       ; ld   L, 0x2e
+23f5 2e 24       ; ld   L, 0x24
+23f7 ff          ; rst  0x38
+23f8 32 03 10    ; ld   (0x1003), A
+23fb 00          ; nop
+23fc 68          ; ld   L, B
+23fd fd ec f4 a0 ; call PE, 0xa0f4
+2401 44          ; ld   B, H
+2402 43          ; ld   B, E
+2403 b5          ; or   L
+2404 53          ; ld   D, E
+2405 06 ba       ; ld   B, 0xba
+2407 cd d2 4f    ; call 0x4fd2
+240a d8          ; ret  C
+240b 1f          ; rra
+240c 08          ; ex   AF, AF'
+240d 00          ; nop
+240e 00          ; nop
+240f 00          ; nop
+2410 00          ; nop
+2411 00          ; nop
+2412 00          ; nop
+2413 00          ; nop
+2414 00          ; nop
+2415 00          ; nop
+2416 00          ; nop
+2417 00          ; nop
+2418 00          ; nop
+2419 00          ; nop
+241a 00          ; nop
+241b 00          ; nop
+241c 00          ; nop
+241d 00          ; nop
+241e 00          ; nop
+241f 00          ; nop
+2420 00          ; nop
+2421 00          ; nop
+2422 00          ; nop
+2423 00          ; nop
+2424 ff          ; rst  0x38
+2425 00          ; nop
+2426 00          ; nop
+2427 00          ; nop
+2428 00          ; nop
+2429 00          ; nop
+242a 00          ; nop
+242b 00          ; nop
+242c 00          ; nop
+242d 00          ; nop
+242e 00          ; nop
+242f 00          ; nop
+2430 d7          ; rst  0x10
+2431 ff          ; rst  0x38
+2432 00          ; nop
+2433 00          ; nop
+2434 c9          ; ret
+2435 26 2d       ; ld   H, 0x2d
+2437 e5          ; push HL
+2438 6c          ; ld   L, H
+2439 64          ; ld   H, H
+243a 20 61       ; jr   NZ, +0x61
+243c 2c          ; inc  L
+243d 28 6e       ; jr   Z, +0x6e
+243f 6e          ; ld   L, (HL)
+2440 6e          ; ld   L, (HL)
+2441 6e          ; ld   L, (HL)
+2442 29          ; add  HL, HL
+2443 20 2f       ; jr   NZ, +0x2f
+2445 20 6c       ; jr   NZ, +0x6c
+2447 64          ; ld   H, H
+2448 20 28       ; jr   NZ, +0x28
+244a 6e          ; ld   L, (HL)
+244b 6e          ; ld   L, (HL)
+244c 6e          ; ld   L, (HL)
+244d 6e          ; ld   L, (HL)
+244e 29          ; add  HL, HL
+244f 2c          ; inc  L
+2450 61          ; ld   H, C
+2451 2e 2e       ; ld   L, 0x2e
+2453 2e 2e       ; ld   L, 0x2e
+2455 2e 24       ; ld   L, 0x24
+2457 ff          ; rst  0x38
+2458 ed a8       ; ldd
+245a 00          ; nop
+245b 00          ; nop
+245c 52          ; ld   D, D
+245d 98          ; sbc  A, B
+245e fa 68 a1    ; jp   M, 0xa168
+2461 66          ; ld   H, (HL)
+2462 06 10       ; ld   B, 0x10
+2464 04          ; inc  B
+2465 10 01       ; djnz +0x01
+2467 00          ; nop
+2468 c1          ; pop  BC
+2469 68          ; ld   L, B
+246a b7          ; or   A
+246b 20 00       ; jr   NZ, +0x00
+246d 10 00       ; djnz +0x00
+246f 00          ; nop
+2470 00          ; nop
+2471 00          ; nop
+2472 00          ; nop
+2473 00          ; nop
+2474 00          ; nop
+2475 00          ; nop
+2476 00          ; nop
+2477 00          ; nop
+2478 00          ; nop
+2479 00          ; nop
+247a 00          ; nop
+247b 00          ; nop
+247c 00          ; nop
+247d 00          ; nop
+247e 00          ; nop
+247f 00          ; nop
+2480 00          ; nop
+2481 00          ; nop
+2482 00          ; nop
+2483 00          ; nop
+2484 ff          ; rst  0x38
+2485 ff          ; rst  0x38
+2486 00          ; nop
+2487 00          ; nop
+2488 00          ; nop
+2489 00          ; nop
+248a 00          ; nop
+248b 00          ; nop
+248c 00          ; nop
+248d 00          ; nop
+248e 00          ; nop
+248f 00          ; nop
+2490 d7          ; rst  0x10
+2491 00          ; nop
+2492 00          ; nop
+2493 00          ; nop
+2494 93          ; sub  E
+2495 6f          ; ld   L, A
+2496 72          ; ld   (HL), D
+2497 a1          ; and  C
+2498 6c          ; ld   L, H
+2499 64          ; ld   H, H
+249a 64          ; ld   H, H
+249b 3c          ; inc  A
+249c 72          ; ld   (HL), D
+249d 3e 20       ; ld   A, 0x20
+249f 28 31       ; jr   Z, +0x31
+24a1 29          ; add  HL, HL
+24a2 2e 2e       ; ld   L, 0x2e
+24a4 2e 2e       ; ld   L, 0x2e
+24a6 2e 2e       ; ld   L, 0x2e
+24a8 2e 2e       ; ld   L, 0x2e
+24aa 2e 2e       ; ld   L, 0x2e
+24ac 2e 2e       ; ld   L, 0x2e
+24ae 2e 2e       ; ld   L, 0x2e
+24b0 2e 2e       ; ld   L, 0x2e
+24b2 2e 2e       ; ld   L, 0x2e
+24b4 2e 2e       ; ld   L, 0x2e
+24b6 24          ; inc  H
+24b7 ff          ; rst  0x38
+24b8 ed a8       ; ldd
+24ba 00          ; nop
+24bb 00          ; nop
+24bc 2e f1       ; ld   L, 0xf1
+24be 2a eb ba    ; ld   HL, (0xbaeb)
+24c1 d5          ; push DE
+24c2 06 10       ; ld   B, 0x10
+24c4 04          ; inc  B
+24c5 10 02       ; djnz +0x02
+24c7 00          ; nop
+24c8 47          ; ld   B, A
+24c9 ff          ; rst  0x38
+24ca e4 fb 00    ; call PO, 0x00fb
+24cd 10 00       ; djnz +0x00
+24cf 00          ; nop
+24d0 00          ; nop
+24d1 00          ; nop
+24d2 00          ; nop
+24d3 00          ; nop
+24d4 00          ; nop
+24d5 00          ; nop
+24d6 00          ; nop
+24d7 00          ; nop
+24d8 00          ; nop
+24d9 00          ; nop
+24da 00          ; nop
+24db 00          ; nop
+24dc 00          ; nop
+24dd 00          ; nop
+24de 00          ; nop
+24df 00          ; nop
+24e0 00          ; nop
+24e1 00          ; nop
+24e2 00          ; nop
+24e3 00          ; nop
+24e4 ff          ; rst  0x38
+24e5 ff          ; rst  0x38
+24e6 00          ; nop
+24e7 00          ; nop
+24e8 00          ; nop
+24e9 00          ; nop
+24ea 00          ; nop
+24eb 00          ; nop
+24ec 00          ; nop
+24ed 00          ; nop
+24ee 00          ; nop
+24ef 00          ; nop
+24f0 d7          ; rst  0x10
+24f1 00          ; nop
+24f2 00          ; nop
+24f3 00          ; nop
+24f4 3e 46       ; ld   A, 0x46
+24f6 68          ; ld   L, B
+24f7 29          ; add  HL, HL
+24f8 6c          ; ld   L, H
+24f9 64          ; ld   H, H
+24fa 64          ; ld   H, H
+24fb 3c          ; inc  A
+24fc 72          ; ld   (HL), D
+24fd 3e 20       ; ld   A, 0x20
+24ff 28 32       ; jr   Z, +0x32
+2501 29          ; add  HL, HL
+2502 2e 2e       ; ld   L, 0x2e
+2504 2e 2e       ; ld   L, 0x2e
+2506 2e 2e       ; ld   L, 0x2e
+2508 2e 2e       ; ld   L, 0x2e
+250a 2e 2e       ; ld   L, 0x2e
+250c 2e 2e       ; ld   L, 0x2e
+250e 2e 2e       ; ld   L, 0x2e
+2510 2e 2e       ; ld   L, 0x2e
+2512 2e 2e       ; ld   L, 0x2e
+2514 2e 2e       ; ld   L, 0x2e
+2516 24          ; inc  H
+2517 ff          ; rst  0x38
+2518 ed a0       ; ldi
+251a 00          ; nop
+251b 00          ; nop
+251c 30 fe       ; jr   NC, -0x02
+251e cd 03 58    ; call 0x5803
+2521 60          ; ld   H, B
+2522 05          ; dec  B
+2523 10 03       ; djnz +0x03
+2525 10 01       ; djnz +0x01
+2527 00          ; nop
+2528 04          ; inc  B
+2529 60          ; ld   H, B
+252a 88          ; adc  A, B
+252b 26 00       ; ld   H, 0x00
+252d 10 00       ; djnz +0x00
+252f 00          ; nop
+2530 00          ; nop
+2531 00          ; nop
+2532 00          ; nop
+2533 00          ; nop
+2534 00          ; nop
+2535 00          ; nop
+2536 00          ; nop
+2537 00          ; nop
+2538 00          ; nop
+2539 00          ; nop
+253a 00          ; nop
+253b 00          ; nop
+253c 00          ; nop
+253d 00          ; nop
+253e 00          ; nop
+253f 00          ; nop
+2540 00          ; nop
+2541 00          ; nop
+2542 00          ; nop
+2543 00          ; nop
+2544 ff          ; rst  0x38
+2545 ff          ; rst  0x38
+2546 00          ; nop
+2547 00          ; nop
+2548 00          ; nop
+2549 00          ; nop
+254a 00          ; nop
+254b 00          ; nop
+254c 00          ; nop
+254d 00          ; nop
+254e 00          ; nop
+254f 00          ; nop
+2550 d7          ; rst  0x10
+2551 00          ; nop
+2552 00          ; nop
+2553 00          ; nop
+2554 f0          ; ret  P
+2555 19          ; add  HL, DE
+2556 e5          ; push HL
+2557 19          ; add  HL, DE
+2558 6c          ; ld   L, H
+2559 64          ; ld   H, H
+255a 69          ; ld   L, C
+255b 3c          ; inc  A
+255c 72          ; ld   (HL), D
+255d 3e 20       ; ld   A, 0x20
+255f 28 31       ; jr   Z, +0x31
+2561 29          ; add  HL, HL
+2562 2e 2e       ; ld   L, 0x2e
+2564 2e 2e       ; ld   L, 0x2e
+2566 2e 2e       ; ld   L, 0x2e
+2568 2e 2e       ; ld   L, 0x2e
+256a 2e 2e       ; ld   L, 0x2e
+256c 2e 2e       ; ld   L, 0x2e
+256e 2e 2e       ; ld   L, 0x2e
+2570 2e 2e       ; ld   L, 0x2e
+2572 2e 2e       ; ld   L, 0x2e
+2574 2e 2e       ; ld   L, 0x2e
+2576 24          ; inc  H
+2577 ff          ; rst  0x38
+2578 ed a0       ; ldi
+257a 00          ; nop
+257b 00          ; nop
+257c ce 4a       ; adc  A, 0x4a
+257e 6e          ; ld   L, (HL)
+257f c2 88 b1    ; jp   NZ, 0xb188
+2582 05          ; dec  B
+2583 10 03       ; djnz +0x03
+2585 10 02       ; djnz +0x02
+2587 00          ; nop
+2588 14          ; inc  D
+2589 2d          ; dec  L
+258a 9f          ; sbc  A, A
+258b a3          ; and  E
+258c 00          ; nop
+258d 10 00       ; djnz +0x00
+258f 00          ; nop
+2590 00          ; nop
+2591 00          ; nop
+2592 00          ; nop
+2593 00          ; nop
+2594 00          ; nop
+2595 00          ; nop
+2596 00          ; nop
+2597 00          ; nop
+2598 00          ; nop
+2599 00          ; nop
+259a 00          ; nop
+259b 00          ; nop
+259c 00          ; nop
+259d 00          ; nop
+259e 00          ; nop
+259f 00          ; nop
+25a0 00          ; nop
+25a1 00          ; nop
+25a2 00          ; nop
+25a3 00          ; nop
+25a4 ff          ; rst  0x38
+25a5 ff          ; rst  0x38
+25a6 00          ; nop
+25a7 00          ; nop
+25a8 00          ; nop
+25a9 00          ; nop
+25aa 00          ; nop
+25ab 00          ; nop
+25ac 00          ; nop
+25ad 00          ; nop
+25ae 00          ; nop
+25af 00          ; nop
+25b0 d7          ; rst  0x10
+25b1 00          ; nop
+25b2 00          ; nop
+25b3 00          ; nop
+25b4 ee 71       ; xor  0x71
+25b6 85          ; add  A, L
+25b7 66          ; ld   H, (HL)
+25b8 6c          ; ld   L, H
+25b9 64          ; ld   H, H
+25ba 69          ; ld   L, C
+25bb 3c          ; inc  A
+25bc 72          ; ld   (HL), D
+25bd 3e 20       ; ld   A, 0x20
+25bf 28 32       ; jr   Z, +0x32
+25c1 29          ; add  HL, HL
+25c2 2e 2e       ; ld   L, 0x2e
+25c4 2e 2e       ; ld   L, 0x2e
+25c6 2e 2e       ; ld   L, 0x2e
+25c8 2e 2e       ; ld   L, 0x2e
+25ca 2e 2e       ; ld   L, 0x2e
+25cc 2e 2e       ; ld   L, 0x2e
+25ce 2e 2e       ; ld   L, 0x2e
+25d0 2e 2e       ; ld   L, 0x2e
+25d2 2e 2e       ; ld   L, 0x2e
+25d4 2e 2e       ; ld   L, 0x2e
+25d6 24          ; inc  H
+25d7 ff          ; rst  0x38
+25d8 ed 44       ; neg
+25da 00          ; nop
+25db 00          ; nop
+25dc a2          ; and  D
+25dd 38 6b       ; jr   C, +0x6b
+25df 5f          ; ld   E, A
+25e0 34          ; inc  (HL)
+25e1 d9          ; exx
+25e2 e4 57 d6    ; call PO, 0xd657
+25e5 d2 42 46    ; jp   NC, 0x4642
+25e8 43          ; ld   B, E
+25e9 5a          ; ld   E, D
+25ea cc 09 00    ; call Z, 0x0009
+25ed 00          ; nop
+25ee 00          ; nop
+25ef 00          ; nop
+25f0 00          ; nop
+25f1 00          ; nop
+25f2 00          ; nop
+25f3 00          ; nop
+25f4 00          ; nop
+25f5 00          ; nop
+25f6 00          ; nop
+25f7 00          ; nop
+25f8 00          ; nop
+25f9 00          ; nop
+25fa 00          ; nop
+25fb 00          ; nop
+25fc d7          ; rst  0x10
+25fd ff          ; rst  0x38
+25fe 00          ; nop
+25ff 00          ; nop
+2600 00          ; nop
+2601 00          ; nop
+2602 00          ; nop
+2603 00          ; nop
+2604 00          ; nop
+2605 00          ; nop
+2606 00          ; nop
+2607 00          ; nop
+2608 00          ; nop
+2609 00          ; nop
+260a 00          ; nop
+260b 00          ; nop
+260c 00          ; nop
+260d 00          ; nop
+260e 00          ; nop
+260f 00          ; nop
+2610 00          ; nop
+2611 00          ; nop
+2612 00          ; nop
+2613 00          ; nop
+2614 d6 38       ; sub  0x38
+2616 dd 6a       ; ld   IXl, D
+2618 6e          ; ld   L, (HL)
+2619 65          ; ld   H, L
+261a 67          ; ld   H, A
+261b 2e 2e       ; ld   L, 0x2e
+261d 2e 2e       ; ld   L, 0x2e
+261f 2e 2e       ; ld   L, 0x2e
+2621 2e 2e       ; ld   L, 0x2e
+2623 2e 2e       ; ld   L, 0x2e
+2625 2e 2e       ; ld   L, 0x2e
+2627 2e 2e       ; ld   L, 0x2e
+2629 2e 2e       ; ld   L, 0x2e
+262b 2e 2e       ; ld   L, 0x2e
+262d 2e 2e       ; ld   L, 0x2e
+262f 2e 2e       ; ld   L, 0x2e
+2631 2e 2e       ; ld   L, 0x2e
+2633 2e 2e       ; ld   L, 0x2e
+2635 2e 24       ; ld   L, 0x24
+2637 ff          ; rst  0x38
+2638 ed 67       ; rrd
+263a 00          ; nop
+263b 00          ; nop
+263c cb 91       ; res  0x02, C
+263e 8b          ; adc  A, E
+263f c4 62 fa    ; call NZ, 0xfa62
+2642 03          ; inc  BC
+2643 10 20       ; djnz +0x20
+2645 e7          ; rst  0x20
+2646 79          ; ld   A, C
+2647 b4          ; or   H
+2648 40          ; ld   B, B
+2649 06 e2       ; ld   B, 0xe2
+264b 8a          ; adc  A, D
+264c 00          ; nop
+264d 08          ; ex   AF, AF'
+264e 00          ; nop
+264f 00          ; nop
+2650 ff          ; rst  0x38
+2651 00          ; nop
+2652 00          ; nop
+2653 00          ; nop
+2654 00          ; nop
+2655 00          ; nop
+2656 00          ; nop
+2657 00          ; nop
+2658 00          ; nop
+2659 00          ; nop
+265a 00          ; nop
+265b 00          ; nop
+265c 00          ; nop
+265d 00          ; nop
+265e 00          ; nop
+265f 00          ; nop
+2660 00          ; nop
+2661 00          ; nop
+2662 00          ; nop
+2663 00          ; nop
+2664 00          ; nop
+2665 00          ; nop
+2666 00          ; nop
+2667 00          ; nop
+2668 00          ; nop
+2669 00          ; nop
+266a 00          ; nop
+266b 00          ; nop
+266c 00          ; nop
+266d 00          ; nop
+266e 00          ; nop
+266f 00          ; nop
+2670 d7          ; rst  0x10
+2671 ff          ; rst  0x38
+2672 00          ; nop
+2673 00          ; nop
+2674 62          ; ld   H, D
+2675 48          ; ld   C, B
+2676 07          ; rlca
+2677 db 3c       ; in   A, (0x3c)
+2679 72          ; ld   (HL), D
+267a 72          ; ld   (HL), D
+267b 64          ; ld   H, H
+267c 2c          ; inc  L
+267d 72          ; ld   (HL), D
+267e 6c          ; ld   L, H
+267f 64          ; ld   H, H
+2680 3e 2e       ; ld   A, 0x2e
+2682 2e 2e       ; ld   L, 0x2e
+2684 2e 2e       ; ld   L, 0x2e
+2686 2e 2e       ; ld   L, 0x2e
+2688 2e 2e       ; ld   L, 0x2e
+268a 2e 2e       ; ld   L, 0x2e
+268c 2e 2e       ; ld   L, 0x2e
+268e 2e 2e       ; ld   L, 0x2e
+2690 2e 2e       ; ld   L, 0x2e
+2692 2e 2e       ; ld   L, 0x2e
+2694 2e 2e       ; ld   L, 0x2e
+2696 24          ; inc  H
+2697 ff          ; rst  0x38
+2698 07          ; rlca
+2699 00          ; nop
+269a 00          ; nop
+269b 00          ; nop
+269c 92          ; sub  D
+269d cb 43       ; bit  0x00, E
+269f 6d          ; ld   L, L
+26a0 90          ; sub  B
+26a1 0a          ; ld   A, (BC)
+26a2 84          ; add  A, H
+26a3 c2 53 0c    ; jp   NZ, 0x0c53
+26a6 0e f5       ; ld   C, 0xf5
+26a8 91          ; sub  C
+26a9 eb          ; ex   DE, HL
+26aa fc 40 18    ; call M, 0x1840
+26ad 00          ; nop
+26ae 00          ; nop
+26af 00          ; nop
+26b0 00          ; nop
+26b1 00          ; nop
+26b2 00          ; nop
+26b3 00          ; nop
+26b4 00          ; nop
+26b5 00          ; nop
+26b6 00          ; nop
+26b7 00          ; nop
+26b8 00          ; nop
+26b9 00          ; nop
+26ba 00          ; nop
+26bb 00          ; nop
+26bc 00          ; nop
+26bd ff          ; rst  0x38
+26be 00          ; nop
+26bf 00          ; nop
+26c0 00          ; nop
+26c1 00          ; nop
+26c2 00          ; nop
+26c3 00          ; nop
+26c4 00          ; nop
+26c5 00          ; nop
+26c6 00          ; nop
+26c7 00          ; nop
+26c8 00          ; nop
+26c9 00          ; nop
+26ca 00          ; nop
+26cb 00          ; nop
+26cc 00          ; nop
+26cd 00          ; nop
+26ce 00          ; nop
+26cf 00          ; nop
+26d0 d7          ; rst  0x10
+26d1 00          ; nop
+26d2 00          ; nop
+26d3 00          ; nop
+26d4 9b          ; sbc  A, E
+26d5 a3          ; and  E
+26d6 80          ; add  A, B
+26d7 7c          ; ld   A, H
+26d8 3c          ; inc  A
+26d9 72          ; ld   (HL), D
+26da 6c          ; ld   L, H
+26db 63          ; ld   H, E
+26dc 61          ; ld   H, C
+26dd 2c          ; inc  L
+26de 72          ; ld   (HL), D
+26df 72          ; ld   (HL), D
+26e0 63          ; ld   H, E
+26e1 61          ; ld   H, C
+26e2 2c          ; inc  L
+26e3 72          ; ld   (HL), D
+26e4 6c          ; ld   L, H
+26e5 61          ; ld   H, C
+26e6 2c          ; inc  L
+26e7 72          ; ld   (HL), D
+26e8 72          ; ld   (HL), D
+26e9 61          ; ld   H, C
+26ea 3e 2e       ; ld   A, 0x2e
+26ec 2e 2e       ; ld   L, 0x2e
+26ee 2e 2e       ; ld   L, 0x2e
+26f0 2e 2e       ; ld   L, 0x2e
+26f2 2e 2e       ; ld   L, 0x2e
+26f4 2e 2e       ; ld   L, 0x2e
+26f6 24          ; inc  H
+26f7 ff          ; rst  0x38
+26f8 dd cb 01 06 ; rlc  (IX+0x06)->C
+26fc af          ; xor  A
+26fd dd 02       ; ld   (BC), A
+26ff 10 02       ; djnz +0x02
+2701 10 3c       ; djnz +0x3c
+2703 ff          ; rst  0x38
+2704 f6 db       ; or   0xdb
+2706 f4 94 82    ; call P, 0x8294
+2709 80          ; add  A, B
+270a d9          ; exx
+270b 61          ; ld   H, C
+270c 20 00       ; jr   NZ, +0x00
+270e 00          ; nop
+270f 38 00       ; jr   C, +0x00
+2711 00          ; nop
+2712 00          ; nop
+2713 00          ; nop
+2714 00          ; nop
+2715 00          ; nop
+2716 00          ; nop
+2717 00          ; nop
+2718 00          ; nop
+2719 00          ; nop
+271a 00          ; nop
+271b 00          ; nop
+271c 80          ; add  A, B
+271d 00          ; nop
+271e 00          ; nop
+271f 00          ; nop
+2720 00          ; nop
+2721 00          ; nop
+2722 00          ; nop
+2723 00          ; nop
+2724 ff          ; rst  0x38
+2725 00          ; nop
+2726 00          ; nop
+2727 00          ; nop
+2728 00          ; nop
+2729 00          ; nop
+272a 00          ; nop
+272b 00          ; nop
+272c 00          ; nop
+272d 00          ; nop
+272e 00          ; nop
+272f 00          ; nop
+2730 57          ; ld   D, A
+2731 00          ; nop
+2732 00          ; nop
+2733 00          ; nop
+2734 4a          ; ld   C, D
+2735 ae          ; xor  (HL)
+2736 4c          ; ld   C, H
+2737 c3 73 68    ; jp   0x6873
+273a 66          ; ld   H, (HL)
+273b 2f          ; cpl
+273c 72          ; ld   (HL), D
+273d 6f          ; ld   L, A
+273e 74          ; ld   (HL), H
+273f 20 28       ; jr   NZ, +0x28
+2741 3c          ; inc  A
+2742 69          ; ld   L, C
+2743 78          ; ld   A, B
+2744 2c          ; inc  L
+2745 69          ; ld   L, C
+2746 79          ; ld   A, C
+2747 3e 2b       ; ld   A, 0x2b
+2749 31 29 2e    ; ld   SP, 0x2e29
+274c 2e 2e       ; ld   L, 0x2e
+274e 2e 2e       ; ld   L, 0x2e
+2750 2e 2e       ; ld   L, 0x2e
+2752 2e 2e       ; ld   L, 0x2e
+2754 2e 2e       ; ld   L, 0x2e
+2756 24          ; inc  H
+2757 ff          ; rst  0x38
+2758 cb 00       ; rlc  B
+275a 00          ; nop
+275b 00          ; nop
+275c eb          ; ex   DE, HL
+275d cc 4a 5d    ; call Z, 0x5d4a
+2760 07          ; rlca
+2761 e0          ; ret  PO
+2762 03          ; inc  BC
+2763 10 95       ; djnz -0x6b
+2765 13          ; inc  DE
+2766 ee 30       ; xor  0x30
+2768 43          ; ld   B, E
+2769 78          ; ld   A, B
+276a ad          ; xor  L
+276b 3d          ; dec  A
+276c 00          ; nop
+276d 3f          ; ccf
+276e 00          ; nop
+276f 00          ; nop
+2770 00          ; nop
+2771 00          ; nop
+2772 00          ; nop
+2773 00          ; nop
+2774 00          ; nop
+2775 00          ; nop
+2776 00          ; nop
+2777 00          ; nop
+2778 00          ; nop
+2779 00          ; nop
+277a 00          ; nop
+277b 00          ; nop
+277c 80          ; add  A, B
+277d 00          ; nop
+277e 00          ; nop
+277f 00          ; nop
+2780 00          ; nop
+2781 00          ; nop
+2782 00          ; nop
+2783 00          ; nop
+2784 ff          ; rst  0x38
+2785 00          ; nop
+2786 00          ; nop
+2787 00          ; nop
+2788 00          ; nop
+2789 00          ; nop
+278a 00          ; nop
+278b 00          ; nop
+278c ff          ; rst  0x38
+278d ff          ; rst  0x38
+278e ff          ; rst  0x38
+278f ff          ; rst  0x38
+2790 57          ; ld   D, A
+2791 ff          ; rst  0x38
+2792 00          ; nop
+2793 00          ; nop
+2794 1c          ; inc  E
+2795 9d          ; sbc  A, L
+2796 94          ; sub  H
+2797 a3          ; and  E
+2798 73          ; ld   (HL), E
+2799 68          ; ld   L, B
+279a 66          ; ld   H, (HL)
+279b 2f          ; cpl
+279c 72          ; ld   (HL), D
+279d 6f          ; ld   L, A
+279e 74          ; ld   (HL), H
+279f 20 3c       ; jr   NZ, +0x3c
+27a1 62          ; ld   H, D
+27a2 2c          ; inc  L
+27a3 63          ; ld   H, E
+27a4 2c          ; inc  L
+27a5 64          ; ld   H, H
+27a6 2c          ; inc  L
+27a7 65          ; ld   H, L
+27a8 2c          ; inc  L
+27a9 68          ; ld   L, B
+27aa 2c          ; inc  L
+27ab 6c          ; ld   L, H
+27ac 2c          ; inc  L
+27ad 28 68       ; jr   Z, +0x68
+27af 6c          ; ld   L, H
+27b0 29          ; add  HL, HL
+27b1 2c          ; inc  L
+27b2 61          ; ld   H, C
+27b3 3e 2e       ; ld   A, 0x2e
+27b5 2e 24       ; ld   L, 0x24
+27b7 ff          ; rst  0x38
+27b8 cb 80       ; res  0x00, B
+27ba 00          ; nop
+27bb 00          ; nop
+27bc d5          ; push DE
+27bd 2c          ; inc  L
+27be ab          ; xor  E
+27bf 97          ; sub  A
+27c0 ff          ; rst  0x38
+27c1 39          ; add  HL, SP
+27c2 03          ; inc  BC
+27c3 10 4b       ; djnz +0x4b
+27c5 d1          ; pop  DE
+27c6 b2          ; or   D
+27c7 6a          ; ld   L, D
+27c8 53          ; ld   D, E
+27c9 27          ; daa
+27ca 38 b5       ; jr   C, -0x4b
+27cc 00          ; nop
+27cd 7f          ; ld   A, A
+27ce 00          ; nop
+27cf 00          ; nop
+27d0 00          ; nop
+27d1 00          ; nop
+27d2 00          ; nop
+27d3 00          ; nop
+27d4 00          ; nop
+27d5 00          ; nop
+27d6 00          ; nop
+27d7 00          ; nop
+27d8 00          ; nop
+27d9 00          ; nop
+27da 00          ; nop
+27db 00          ; nop
+27dc 00          ; nop
+27dd 00          ; nop
+27de 00          ; nop
+27df 00          ; nop
+27e0 00          ; nop
+27e1 00          ; nop
+27e2 00          ; nop
+27e3 00          ; nop
+27e4 ff          ; rst  0x38
+27e5 00          ; nop
+27e6 00          ; nop
+27e7 00          ; nop
+27e8 00          ; nop
+27e9 00          ; nop
+27ea 00          ; nop
+27eb 00          ; nop
+27ec ff          ; rst  0x38
+27ed ff          ; rst  0x38
+27ee ff          ; rst  0x38
+27ef ff          ; rst  0x38
+27f0 d7          ; rst  0x10
+27f1 ff          ; rst  0x38
+27f2 00          ; nop
+27f3 00          ; nop
+27f4 20 c1       ; jr   NZ, -0x3f
+27f6 b8          ; cp   B
+27f7 c9          ; ret
+27f8 3c          ; inc  A
+27f9 73          ; ld   (HL), E
+27fa 65          ; ld   H, L
+27fb 74          ; ld   (HL), H
+27fc 2c          ; inc  L
+27fd 72          ; ld   (HL), D
+27fe 65          ; ld   H, L
+27ff 73          ; ld   (HL), E
+2800 3e 20       ; ld   A, 0x20
+2802 6e          ; ld   L, (HL)
+2803 2c          ; inc  L
+2804 3c          ; inc  A
+2805 62          ; ld   H, D
+2806 63          ; ld   H, E
+2807 64          ; ld   H, H
+2808 65          ; ld   H, L
+2809 68          ; ld   L, B
+280a 6c          ; ld   L, H
+280b 28 68       ; jr   Z, +0x68
+280d 6c          ; ld   L, H
+280e 29          ; add  HL, HL
+280f 61          ; ld   H, C
+2810 3e 2e       ; ld   A, 0x2e
+2812 2e 2e       ; ld   L, 0x2e
+2814 2e 2e       ; ld   L, 0x2e
+2816 24          ; inc  H
+2817 ff          ; rst  0x38
+2818 dd cb 01 86 ; rlc  (IX-0x7a)->C
+281c 44          ; ld   B, H
+281d fb          ; ei
+281e 02          ; ld   (BC), A
+281f 10 02       ; djnz +0x02
+2821 10 09       ; djnz +0x09
+2823 ba          ; cp   D
+2824 be          ; cp   (HL)
+2825 68          ; ld   L, B
+2826 d8          ; ret  C
+2827 32 10 5e    ; ld   (0x5e10), A
+282a 67          ; ld   H, A
+282b a8          ; xor  B
+282c 20 00       ; jr   NZ, +0x00
+282e 00          ; nop
+282f 78          ; ld   A, B
+2830 00          ; nop
+2831 00          ; nop
+2832 00          ; nop
+2833 00          ; nop
+2834 00          ; nop
+2835 00          ; nop
+2836 00          ; nop
+2837 00          ; nop
+2838 00          ; nop
+2839 00          ; nop
+283a 00          ; nop
+283b 00          ; nop
+283c 00          ; nop
+283d 00          ; nop
+283e 00          ; nop
+283f 00          ; nop
+2840 00          ; nop
+2841 00          ; nop
+2842 00          ; nop
+2843 00          ; nop
+2844 ff          ; rst  0x38
+2845 00          ; nop
+2846 00          ; nop
+2847 00          ; nop
+2848 00          ; nop
+2849 00          ; nop
+284a 00          ; nop
+284b 00          ; nop
+284c 00          ; nop
+284d 00          ; nop
+284e 00          ; nop
+284f 00          ; nop
+2850 d7          ; rst  0x10
+2851 00          ; nop
+2852 00          ; nop
+2853 00          ; nop
+2854 72          ; ld   (HL), D
+2855 ca 12 0f    ; jp   Z, 0x0f12
+2858 3c          ; inc  A
+2859 73          ; ld   (HL), E
+285a 65          ; ld   H, L
+285b 74          ; ld   (HL), H
+285c 2c          ; inc  L
+285d 72          ; ld   (HL), D
+285e 65          ; ld   H, L
+285f 73          ; ld   (HL), E
+2860 3e 20       ; ld   A, 0x20
+2862 6e          ; ld   L, (HL)
+2863 2c          ; inc  L
+2864 28 3c       ; jr   Z, +0x3c
+2866 69          ; ld   L, C
+2867 78          ; ld   A, B
+2868 2c          ; inc  L
+2869 69          ; ld   L, C
+286a 79          ; ld   A, C
+286b 3e 2b       ; ld   A, 0x2b
+286d 31 29 2e    ; ld   SP, 0x2e29
+2870 2e 2e       ; ld   L, 0x2e
+2872 2e 2e       ; ld   L, 0x2e
+2874 2e 2e       ; ld   L, 0x2e
+2876 24          ; inc  H
+2877 ff          ; rst  0x38
+2878 dd 70 01    ; ld   (IX+0x01), B
+287b 00          ; nop
+287c 0d          ; dec  C
+287d 27          ; daa
+287e 02          ; ld   (BC), A
+287f 10 02       ; djnz +0x02
+2881 10 3a       ; djnz +0x3a
+2883 b7          ; or   A
+2884 7b          ; ld   A, E
+2885 88          ; adc  A, B
+2886 ee 99       ; xor  0x99
+2888 86          ; add  A, (HL)
+2889 70          ; ld   (HL), B
+288a 07          ; rlca
+288b ca 20 03    ; jp   Z, 0x0320
+288e 00          ; nop
+288f 00          ; nop
+2890 00          ; nop
+2891 00          ; nop
+2892 01 00 01    ; ld   BC, 0x0100
+2895 00          ; nop
+2896 00          ; nop
+2897 00          ; nop
+2898 00          ; nop
+2899 00          ; nop
+289a 00          ; nop
+289b 00          ; nop
+289c 00          ; nop
+289d 00          ; nop
+289e 00          ; nop
+289f 00          ; nop
+28a0 00          ; nop
+28a1 00          ; nop
+28a2 00          ; nop
+28a3 00          ; nop
+28a4 00          ; nop
+28a5 00          ; nop
+28a6 00          ; nop
+28a7 00          ; nop
+28a8 00          ; nop
+28a9 00          ; nop
+28aa 00          ; nop
+28ab 00          ; nop
+28ac ff          ; rst  0x38
+28ad ff          ; rst  0x38
+28ae ff          ; rst  0x38
+28af ff          ; rst  0x38
+28b0 00          ; nop
+28b1 00          ; nop
+28b2 00          ; nop
+28b3 00          ; nop
+28b4 97          ; sub  A
+28b5 e2 51 e9    ; jp   PO, 0xe951
+28b8 6c          ; ld   L, H
+28b9 64          ; ld   H, H
+28ba 20 28       ; jr   NZ, +0x28
+28bc 3c          ; inc  A
+28bd 69          ; ld   L, C
+28be 78          ; ld   A, B
+28bf 2c          ; inc  L
+28c0 69          ; ld   L, C
+28c1 79          ; ld   A, C
+28c2 3e 2b       ; ld   A, 0x2b
+28c4 31 29 2c    ; ld   SP, 0x2c29
+28c7 3c          ; inc  A
+28c8 62          ; ld   H, D
+28c9 2c          ; inc  L
+28ca 63          ; ld   H, E
+28cb 2c          ; inc  L
+28cc 64          ; ld   H, H
+28cd 2c          ; inc  L
+28ce 65          ; ld   H, L
+28cf 3e 2e       ; ld   A, 0x2e
+28d1 2e 2e       ; ld   L, 0x2e
+28d3 2e 2e       ; ld   L, 0x2e
+28d5 2e 24       ; ld   L, 0x24
+28d7 ff          ; rst  0x38
+28d8 dd 74 01    ; ld   (IX+0x01), H
+28db 00          ; nop
+28dc 64          ; ld   H, H
+28dd b6          ; or   (HL)
+28de 02          ; ld   (BC), A
+28df 10 02       ; djnz +0x02
+28e1 10 ac       ; djnz -0x54
+28e3 e8          ; ret  PE
+28e4 f5          ; push AF
+28e5 b5          ; or   L
+28e6 fe aa       ; cp   0xaa
+28e8 12          ; ld   (DE), A
+28e9 10 66       ; djnz +0x66
+28eb 95          ; sub  L
+28ec 20 01       ; jr   NZ, +0x01
+28ee 00          ; nop
+28ef 00          ; nop
+28f0 00          ; nop
+28f1 00          ; nop
+28f2 01 00 01    ; ld   BC, 0x0100
+28f5 00          ; nop
+28f6 00          ; nop
+28f7 00          ; nop
+28f8 00          ; nop
+28f9 00          ; nop
+28fa 00          ; nop
+28fb 00          ; nop
+28fc 00          ; nop
+28fd 00          ; nop
+28fe 00          ; nop
+28ff 00          ; nop
+2900 00          ; nop
+2901 00          ; nop
+2902 00          ; nop
+2903 00          ; nop
+2904 00          ; nop
+2905 00          ; nop
+2906 00          ; nop
+2907 00          ; nop
+2908 00          ; nop
+2909 00          ; nop
+290a ff          ; rst  0x38
+290b ff          ; rst  0x38
+290c 00          ; nop
+290d 00          ; nop
+290e 00          ; nop
+290f 00          ; nop
+2910 00          ; nop
+2911 00          ; nop
+2912 00          ; nop
+2913 00          ; nop
+2914 79          ; ld   A, C
+2915 ce dc       ; adc  A, 0xdc
+2917 54          ; ld   D, H
+2918 6c          ; ld   L, H
+2919 64          ; ld   H, H
+291a 20 28       ; jr   NZ, +0x28
+291c 3c          ; inc  A
+291d 69          ; ld   L, C
+291e 78          ; ld   A, B
+291f 2c          ; inc  L
+2920 69          ; ld   L, C
+2921 79          ; ld   A, C
+2922 3e 2b       ; ld   A, 0x2b
+2924 31 29 2c    ; ld   SP, 0x2c29
+2927 3c          ; inc  A
+2928 68          ; ld   L, B
+2929 2c          ; inc  L
+292a 6c          ; ld   L, H
+292b 3e 2e       ; ld   A, 0x2e
+292d 2e 2e       ; ld   L, 0x2e
+292f 2e 2e       ; ld   L, 0x2e
+2931 2e 2e       ; ld   L, 0x2e
+2933 2e 2e       ; ld   L, 0x2e
+2935 2e 24       ; ld   L, 0x24
+2937 ff          ; rst  0x38
+2938 dd 77 01    ; ld   (IX+0x01), A
+293b 00          ; nop
+293c af          ; xor  A
+293d 67          ; ld   H, A
+293e 02          ; ld   (BC), A
+293f 10 02       ; djnz +0x02
+2941 10 13       ; djnz +0x13
+2943 4f          ; ld   C, A
+2944 44          ; ld   B, H
+2945 06 d7       ; ld   B, 0xd7
+2947 bc          ; cp   H
+2948 50          ; ld   D, B
+2949 ac          ; xor  H
+294a af          ; xor  A
+294b 5f          ; ld   E, A
+294c 20 00       ; jr   NZ, +0x00
+294e 00          ; nop
+294f 00          ; nop
+2950 00          ; nop
+2951 00          ; nop
+2952 01 00 01    ; ld   BC, 0x0100
+2955 00          ; nop
+2956 00          ; nop
+2957 00          ; nop
+2958 00          ; nop
+2959 00          ; nop
+295a 00          ; nop
+295b 00          ; nop
+295c 00          ; nop
+295d 00          ; nop
+295e 00          ; nop
+295f 00          ; nop
+2960 00          ; nop
+2961 00          ; nop
+2962 00          ; nop
+2963 00          ; nop
+2964 00          ; nop
+2965 00          ; nop
+2966 00          ; nop
+2967 00          ; nop
+2968 00          ; nop
+2969 00          ; nop
+296a 00          ; nop
+296b 00          ; nop
+296c 00          ; nop
+296d 00          ; nop
+296e 00          ; nop
+296f 00          ; nop
+2970 00          ; nop
+2971 ff          ; rst  0x38
+2972 00          ; nop
+2973 00          ; nop
+2974 f3          ; di
+2975 4e          ; ld   C, (HL)
+2976 a9          ; xor  C
+2977 51          ; ld   D, C
+2978 6c          ; ld   L, H
+2979 64          ; ld   H, H
+297a 20 28       ; jr   NZ, +0x28
+297c 3c          ; inc  A
+297d 69          ; ld   L, C
+297e 78          ; ld   A, B
+297f 2c          ; inc  L
+2980 69          ; ld   L, C
+2981 79          ; ld   A, C
+2982 3e 2b       ; ld   A, 0x2b
+2984 31 29 2c    ; ld   SP, 0x2c29
+2987 61          ; ld   H, C
+2988 2e 2e       ; ld   L, 0x2e
+298a 2e 2e       ; ld   L, 0x2e
+298c 2e 2e       ; ld   L, 0x2e
+298e 2e 2e       ; ld   L, 0x2e
+2990 2e 2e       ; ld   L, 0x2e
+2992 2e 2e       ; ld   L, 0x2e
+2994 2e 2e       ; ld   L, 0x2e
+2996 24          ; inc  H
+2997 ff          ; rst  0x38
+2998 02          ; ld   (BC), A
+2999 00          ; nop
+299a 00          ; nop
+299b 00          ; nop
+299c 3b          ; dec  SP
+299d 0c          ; inc  C
+299e 92          ; sub  D
+299f b5          ; or   L
+29a0 ff          ; rst  0x38
+29a1 6c          ; ld   L, H
+29a2 9e          ; sbc  A, (HL)
+29a3 95          ; sub  L
+29a4 03          ; inc  BC
+29a5 10 04       ; djnz +0x04
+29a7 10 c1       ; djnz -0x3f
+29a9 21 e7 bd    ; ld   HL, 0xbde7
+29ac 18 00       ; jr   +0x00
+29ae 00          ; nop
+29af 00          ; nop
+29b0 00          ; nop
+29b1 00          ; nop
+29b2 00          ; nop
+29b3 00          ; nop
+29b4 00          ; nop
+29b5 00          ; nop
+29b6 00          ; nop
+29b7 00          ; nop
+29b8 00          ; nop
+29b9 00          ; nop
+29ba 00          ; nop
+29bb 00          ; nop
+29bc 00          ; nop
+29bd 00          ; nop
+29be 00          ; nop
+29bf 00          ; nop
+29c0 00          ; nop
+29c1 00          ; nop
+29c2 00          ; nop
+29c3 00          ; nop
+29c4 ff          ; rst  0x38
+29c5 ff          ; rst  0x38
+29c6 00          ; nop
+29c7 00          ; nop
+29c8 00          ; nop
+29c9 00          ; nop
+29ca 00          ; nop
+29cb 00          ; nop
+29cc 00          ; nop
+29cd 00          ; nop
+29ce 00          ; nop
+29cf 00          ; nop
+29d0 00          ; nop
+29d1 ff          ; rst  0x38
+29d2 00          ; nop
+29d3 00          ; nop
+29d4 3b          ; dec  SP
+29d5 ca af 1f    ; jp   Z, 0x1faf
+29d8 6c          ; ld   L, H
+29d9 64          ; ld   H, H
+29da 20 28       ; jr   NZ, +0x28
+29dc 3c          ; inc  A
+29dd 62          ; ld   H, D
+29de 63          ; ld   H, E
+29df 2c          ; inc  L
+29e0 64          ; ld   H, H
+29e1 65          ; ld   H, L
+29e2 3e 29       ; ld   A, 0x29
+29e4 2c          ; inc  L
+29e5 61          ; ld   H, C
+29e6 2e 2e       ; ld   L, 0x2e
+29e8 2e 2e       ; ld   L, 0x2e
+29ea 2e 2e       ; ld   L, 0x2e
+29ec 2e 2e       ; ld   L, 0x2e
+29ee 2e 2e       ; ld   L, 0x2e
+29f0 2e 2e       ; ld   L, 0x2e
+29f2 2e 2e       ; ld   L, 0x2e
+29f4 2e 2e       ; ld   L, 0x2e
+29f6 24          ; inc  H
+29f7 e5          ; push HL
+29f8 7e          ; ld   A, (HL)
+29f9 23          ; inc  HL
+29fa 66          ; ld   H, (HL)
+29fb 6f          ; ld   L, A
+29fc 7e          ; ld   A, (HL)
+29fd 32 69 2c    ; ld   (0x2c69), A
+2a00 23          ; inc  HL
+2a01 e5          ; push HL
+2a02 11 14 00    ; ld   DE, 0x0014
+2a05 19          ; add  HL, DE
+2a06 11 de 2b    ; ld   DE, 0x2bde
+2a09 cd 4d 2b    ; call 0x2b4d
+2a0c e1          ; pop  HL
+2a0d e5          ; push HL
+2a0e 11 28 00    ; ld   DE, 0x0028
+2a11 19          ; add  HL, DE
+2a12 11 06 2c    ; ld   DE, 0x2c06
+2a15 cd 4d 2b    ; call 0x2b4d
+2a18 21 06 2c    ; ld   HL, 0x2c06
+2a1b 36 01       ; ld   (HL), 0x01
+2a1d e1          ; pop  HL
+2a1e e5          ; push HL
+2a1f 11 46 2c    ; ld   DE, 0x2c46
+2a22 01 04 00    ; ld   BC, 0x0004
+2a25 ed b0       ; ldir
+2a27 11 03 10    ; ld   DE, 0x1003
+2a2a 01 10 00    ; ld   BC, 0x0010
+2a2d ed b0       ; ldir
+2a2f 11 2c 00    ; ld   DE, 0x002c
+2a32 19          ; add  HL, DE
+2a33 eb          ; ex   DE, HL
+2a34 cd 13 10    ; call 0x1013
+2a37 cd a5 2d    ; call 0x2da5
+2a3a 3a 46 2c    ; ld   A, (0x2c46)
+2a3d fe 76       ; cp   0x76
+2a3f ca 51 2a    ; jp   Z, 0x2a51
+2a42 e6 df       ; and  0xdf
+2a44 fe dd       ; cp   0xdd
+2a46 c2 4e 2a    ; jp   NZ, 0x2a4e
+2a49 3a 47 2c    ; ld   A, (0x2c47)
+2a4c fe 76       ; cp   0x76
+2a4e c4 2e 2c    ; call NZ, 0x2c2e
+2a51 cd 8d 2b    ; call 0x2b8d
+2a54 c4 b1 2b    ; call NZ, 0x2bb1
+2a57 e1          ; pop  HL
+2a58 ca 7e 2a    ; jp   Z, 0x2a7e
+2a5b 11 3c 00    ; ld   DE, 0x003c
+2a5e 19          ; add  HL, DE
+2a5f cd 66 2d    ; call 0x2d66
+2a62 11 55 2d    ; ld   DE, 0x2d55
+2a65 ca 77 2a    ; jp   Z, 0x2a77
+2a68 11 5b 2d    ; ld   DE, 0x2d5b
+2a6b cd 13 10    ; call 0x1013
+2a6e 21 b9 2d    ; ld   HL, 0x2db9
+2a71 cd 9d 2c    ; call 0x2c9d
+2a74 11 64 2d    ; ld   DE, 0x2d64
+2a77 cd 13 10    ; call 0x1013
+2a7a e1          ; pop  HL
+2a7b 23          ; inc  HL
+2a7c 23          ; inc  HL
+2a7d c9          ; ret
+2a7e e5          ; push HL
+2a7f 3e 01       ; ld   A, 0x01
+2a81 32 f4 2a    ; ld   (0x2af4), A
+2a84 32 18 2b    ; ld   (0x2b18), A
+2a87 21 de 2b    ; ld   HL, 0x2bde
+2a8a 22 f5 2a    ; ld   (0x2af5), HL
+2a8d 21 06 2c    ; ld   HL, 0x2c06
+2a90 22 19 2b    ; ld   (0x2b19), HL
+2a93 06 04       ; ld   B, 0x04
+2a95 e1          ; pop  HL
+2a96 e5          ; push HL
+2a97 11 46 2c    ; ld   DE, 0x2c46
+2a9a cd a8 2a    ; call 0x2aa8
+2a9d 06 10       ; ld   B, 0x10
+2a9f 11 03 10    ; ld   DE, 0x1003
+2aa2 cd a8 2a    ; call 0x2aa8
+2aa5 c3 3a 2a    ; jp   0x2a3a
+2aa8 cd b1 2a    ; call 0x2ab1
+2aab 23          ; inc  HL
+2aac 05          ; dec  B
+2aad c2 a8 2a    ; jp   NZ, 0x2aa8
+2ab0 c9          ; ret
+2ab1 c5          ; push BC
+2ab2 d5          ; push DE
+2ab3 e5          ; push HL
+2ab4 4e          ; ld   C, (HL)
+2ab5 11 14 00    ; ld   DE, 0x0014
+2ab8 19          ; add  HL, DE
+2ab9 7e          ; ld   A, (HL)
+2aba fe 00       ; cp   0x00
+2abc ca d2 2a    ; jp   Z, 0x2ad2
+2abf 06 08       ; ld   B, 0x08
+2ac1 0f          ; rrca
+2ac2 f5          ; push AF
+2ac3 3e 00       ; ld   A, 0x00
+2ac5 dc f7 2a    ; call C, 0x2af7
+2ac8 a9          ; xor  C
+2ac9 0f          ; rrca
+2aca 4f          ; ld   C, A
+2acb f1          ; pop  AF
+2acc 05          ; dec  B
+2acd c2 c1 2a    ; jp   NZ, 0x2ac1
+2ad0 06 08       ; ld   B, 0x08
+2ad2 11 14 00    ; ld   DE, 0x0014
+2ad5 19          ; add  HL, DE
+2ad6 7e          ; ld   A, (HL)
+2ad7 fe 00       ; cp   0x00
+2ad9 ca ed 2a    ; jp   Z, 0x2aed
+2adc 06 08       ; ld   B, 0x08
+2ade 0f          ; rrca
+2adf f5          ; push AF
+2ae0 3e 00       ; ld   A, 0x00
+2ae2 dc 1b 2b    ; call C, 0x2b1b
+2ae5 a9          ; xor  C
+2ae6 0f          ; rrca
+2ae7 4f          ; ld   C, A
+2ae8 f1          ; pop  AF
+2ae9 05          ; dec  B
+2aea c2 de 2a    ; jp   NZ, 0x2ade
+2aed e1          ; pop  HL
+2aee d1          ; pop  DE
+2aef 79          ; ld   A, C
+2af0 12          ; ld   (DE), A
+2af1 13          ; inc  DE
+2af2 c1          ; pop  BC
+2af3 c9          ; ret
+2af4 00          ; nop
+2af5 00          ; nop
+2af6 00          ; nop
+2af7 c5          ; push BC
+2af8 e5          ; push HL
+2af9 2a f5 2a    ; ld   HL, (0x2af5)
+2afc 46          ; ld   B, (HL)
+2afd 21 f4 2a    ; ld   HL, 0x2af4
+2b00 7e          ; ld   A, (HL)
+2b01 4f          ; ld   C, A
+2b02 07          ; rlca
+2b03 77          ; ld   (HL), A
+2b04 fe 01       ; cp   0x01
+2b06 c2 10 2b    ; jp   NZ, 0x2b10
+2b09 2a f5 2a    ; ld   HL, (0x2af5)
+2b0c 23          ; inc  HL
+2b0d 22 f5 2a    ; ld   (0x2af5), HL
+2b10 78          ; ld   A, B
+2b11 a1          ; and  C
+2b12 e1          ; pop  HL
+2b13 c1          ; pop  BC
+2b14 c8          ; ret  Z
+2b15 3e 01       ; ld   A, 0x01
+2b17 c9          ; ret
+2b18 00          ; nop
+2b19 00          ; nop
+2b1a 00          ; nop
+2b1b c5          ; push BC
+2b1c e5          ; push HL
+2b1d 2a 19 2b    ; ld   HL, (0x2b19)
+2b20 46          ; ld   B, (HL)
+2b21 21 18 2b    ; ld   HL, 0x2b18
+2b24 7e          ; ld   A, (HL)
+2b25 4f          ; ld   C, A
+2b26 07          ; rlca
+2b27 77          ; ld   (HL), A
+2b28 fe 01       ; cp   0x01
+2b2a c2 34 2b    ; jp   NZ, 0x2b34
+2b2d 2a 19 2b    ; ld   HL, (0x2b19)
+2b30 23          ; inc  HL
+2b31 22 19 2b    ; ld   (0x2b19), HL
+2b34 78          ; ld   A, B
+2b35 a1          ; and  C
+2b36 e1          ; pop  HL
+2b37 c1          ; pop  BC
+2b38 c8          ; ret  Z
+2b39 3e 01       ; ld   A, 0x01
+2b3b c9          ; ret
+2b3c f5          ; push AF
+2b3d c5          ; push BC
+2b3e d5          ; push DE
+2b3f e5          ; push HL
+2b40 36 00       ; ld   (HL), 0x00
+2b42 54          ; ld   D, H
+2b43 5d          ; ld   E, L
+2b44 13          ; inc  DE
+2b45 0b          ; dec  BC
+2b46 ed b0       ; ldir
+2b48 e1          ; pop  HL
+2b49 d1          ; pop  DE
+2b4a c1          ; pop  BC
+2b4b f1          ; pop  AF
+2b4c c9          ; ret
+2b4d d5          ; push DE
+2b4e eb          ; ex   DE, HL
+2b4f 01 28 00    ; ld   BC, 0x0028
+2b52 cd 3c 2b    ; call 0x2b3c
+2b55 eb          ; ex   DE, HL
+2b56 06 14       ; ld   B, 0x14
+2b58 0e 01       ; ld   C, 0x01
+2b5a 16 00       ; ld   D, 0x00
+2b5c 5e          ; ld   E, (HL)
+2b5d 7b          ; ld   A, E
+2b5e a1          ; and  C
+2b5f ca 63 2b    ; jp   Z, 0x2b63
+2b62 14          ; inc  D
+2b63 79          ; ld   A, C
+2b64 07          ; rlca
+2b65 4f          ; ld   C, A
+2b66 fe 01       ; cp   0x01
+2b68 c2 5d 2b    ; jp   NZ, 0x2b5d
+2b6b 23          ; inc  HL
+2b6c 05          ; dec  B
+2b6d c2 5c 2b    ; jp   NZ, 0x2b5c
+2b70 7a          ; ld   A, D
+2b71 e6 f8       ; and  0xf8
+2b73 0f          ; rrca
+2b74 0f          ; rrca
+2b75 0f          ; rrca
+2b76 6f          ; ld   L, A
+2b77 26 00       ; ld   H, 0x00
+2b79 7a          ; ld   A, D
+2b7a e6 07       ; and  0x07
+2b7c 3c          ; inc  A
+2b7d 47          ; ld   B, A
+2b7e 3e 80       ; ld   A, 0x80
+2b80 07          ; rlca
+2b81 05          ; dec  B
+2b82 c2 80 2b    ; jp   NZ, 0x2b80
+2b85 d1          ; pop  DE
+2b86 19          ; add  HL, DE
+2b87 11 14 00    ; ld   DE, 0x0014
+2b8a 19          ; add  HL, DE
+2b8b 77          ; ld   (HL), A
+2b8c c9          ; ret
+2b8d c5          ; push BC
+2b8e d5          ; push DE
+2b8f e5          ; push HL
+2b90 21 de 2b    ; ld   HL, 0x2bde
+2b93 11 14 00    ; ld   DE, 0x0014
+2b96 eb          ; ex   DE, HL
+2b97 19          ; add  HL, DE
+2b98 eb          ; ex   DE, HL
+2b99 34          ; inc  (HL)
+2b9a 7e          ; ld   A, (HL)
+2b9b fe 00       ; cp   0x00
+2b9d ca ac 2b    ; jp   Z, 0x2bac
+2ba0 47          ; ld   B, A
+2ba1 1a          ; ld   A, (DE)
+2ba2 a0          ; and  B
+2ba3 ca a8 2b    ; jp   Z, 0x2ba8
+2ba6 36 00       ; ld   (HL), 0x00
+2ba8 c1          ; pop  BC
+2ba9 d1          ; pop  DE
+2baa e1          ; pop  HL
+2bab c9          ; ret
+2bac 23          ; inc  HL
+2bad 13          ; inc  DE
+2bae c3 99 2b    ; jp   0x2b99
+2bb1 c5          ; push BC
+2bb2 d5          ; push DE
+2bb3 e5          ; push HL
+2bb4 21 06 2c    ; ld   HL, 0x2c06
+2bb7 11 14 00    ; ld   DE, 0x0014
+2bba eb          ; ex   DE, HL
+2bbb 19          ; add  HL, DE
+2bbc eb          ; ex   DE, HL
+2bbd 7e          ; ld   A, (HL)
+2bbe b7          ; or   A
+2bbf ca d9 2b    ; jp   Z, 0x2bd9
+2bc2 47          ; ld   B, A
+2bc3 1a          ; ld   A, (DE)
+2bc4 a0          ; and  B
+2bc5 c2 d5 2b    ; jp   NZ, 0x2bd5
+2bc8 78          ; ld   A, B
+2bc9 07          ; rlca
+2bca fe 01       ; cp   0x01
+2bcc c2 d3 2b    ; jp   NZ, 0x2bd3
+2bcf 36 00       ; ld   (HL), 0x00
+2bd1 23          ; inc  HL
+2bd2 13          ; inc  DE
+2bd3 77          ; ld   (HL), A
+2bd4 af          ; xor  A
+2bd5 e1          ; pop  HL
+2bd6 d1          ; pop  DE
+2bd7 c1          ; pop  BC
+2bd8 c9          ; ret
+2bd9 23          ; inc  HL
+2bda 13          ; inc  DE
+2bdb c3 bd 2b    ; jp   0x2bbd
+2bde 00          ; nop
+2bdf 00          ; nop
+2be0 00          ; nop
+2be1 00          ; nop
+2be2 00          ; nop
+2be3 00          ; nop
+2be4 00          ; nop
+2be5 00          ; nop
+2be6 00          ; nop
+2be7 00          ; nop
+2be8 00          ; nop
+2be9 00          ; nop
+2bea 00          ; nop
+2beb 00          ; nop
+2bec 00          ; nop
+2bed 00          ; nop
+2bee 00          ; nop
+2bef 00          ; nop
+2bf0 00          ; nop
+2bf1 00          ; nop
+2bf2 00          ; nop
+2bf3 00          ; nop
+2bf4 00          ; nop
+2bf5 00          ; nop
+2bf6 00          ; nop
+2bf7 00          ; nop
+2bf8 00          ; nop
+2bf9 00          ; nop
+2bfa 00          ; nop
+2bfb 00          ; nop
+2bfc 00          ; nop
+2bfd 00          ; nop
+2bfe 00          ; nop
+2bff 00          ; nop
+2c00 00          ; nop
+2c01 00          ; nop
+2c02 00          ; nop
+2c03 00          ; nop
+2c04 00          ; nop
+2c05 00          ; nop
+2c06 00          ; nop
+2c07 00          ; nop
+2c08 00          ; nop
+2c09 00          ; nop
+2c0a 00          ; nop
+2c0b 00          ; nop
+2c0c 00          ; nop
+2c0d 00          ; nop
+2c0e 00          ; nop
+2c0f 00          ; nop
+2c10 00          ; nop
+2c11 00          ; nop
+2c12 00          ; nop
+2c13 00          ; nop
+2c14 00          ; nop
+2c15 00          ; nop
+2c16 00          ; nop
+2c17 00          ; nop
+2c18 00          ; nop
+2c19 00          ; nop
+2c1a 00          ; nop
+2c1b 00          ; nop
+2c1c 00          ; nop
+2c1d 00          ; nop
+2c1e 00          ; nop
+2c1f 00          ; nop
+2c20 00          ; nop
+2c21 00          ; nop
+2c22 00          ; nop
+2c23 00          ; nop
+2c24 00          ; nop
+2c25 00          ; nop
+2c26 00          ; nop
+2c27 00          ; nop
+2c28 00          ; nop
+2c29 00          ; nop
+2c2a 00          ; nop
+2c2b 00          ; nop
+2c2c 00          ; nop
+2c2d 00          ; nop
+2c2e f5          ; push AF
+2c2f c5          ; push BC
+2c30 d5          ; push DE
+2c31 e5          ; push HL
+2c32 f3          ; di
+2c33 ed 73 91 2c ; ld   (0x2c91), SP
+2c37 31 05 10    ; ld   SP, 0x1005
+2c3a fd e1       ; pop  IY
+2c3c dd e1       ; pop  IX
+2c3e e1          ; pop  HL
+2c3f d1          ; pop  DE
+2c40 c1          ; pop  BC
+2c41 f1          ; pop  AF
+2c42 ed 7b 11 10 ; ld   SP, (0x1011)
+2c46 00          ; nop
+2c47 00          ; nop
+2c48 00          ; nop
+2c49 00          ; nop
+2c4a ed 73 8f 2c ; ld   (0x2c8f), SP
+2c4e 31 8f 2c    ; ld   SP, 0x2c8f
+2c51 f5          ; push AF
+2c52 c5          ; push BC
+2c53 d5          ; push DE
+2c54 e5          ; push HL
+2c55 dd e5       ; push IX
+2c57 fd e5       ; push IY
+2c59 ed 7b 91 2c ; ld   SP, (0x2c91)
+2c5d fb          ; ei
+2c5e 2a 03 10    ; ld   HL, (0x1003)
+2c61 22 81 2c    ; ld   (0x2c81), HL
+2c64 21 8d 2c    ; ld   HL, 0x2c8d
+2c67 7e          ; ld   A, (HL)
+2c68 e6 d7       ; and  0xd7
+2c6a 77          ; ld   (HL), A
+2c6b 06 10       ; ld   B, 0x10
+2c6d 11 81 2c    ; ld   DE, 0x2c81
+2c70 21 b9 2d    ; ld   HL, 0x2db9
+2c73 1a          ; ld   A, (DE)
+2c74 13          ; inc  DE
+2c75 cd 7d 2d    ; call 0x2d7d
+2c78 05          ; dec  B
+2c79 c2 73 2c    ; jp   NZ, 0x2c73
+2c7c e1          ; pop  HL
+2c7d d1          ; pop  DE
+2c7e c1          ; pop  BC
+2c7f f1          ; pop  AF
+2c80 c9          ; ret
+2c81 00          ; nop
+2c82 00          ; nop
+2c83 00          ; nop
+2c84 00          ; nop
+2c85 00          ; nop
+2c86 00          ; nop
+2c87 00          ; nop
+2c88 00          ; nop
+2c89 00          ; nop
+2c8a 00          ; nop
+2c8b 00          ; nop
+2c8c 00          ; nop
+2c8d 00          ; nop
+2c8e 00          ; nop
+2c8f 00          ; nop
+2c90 00          ; nop
+2c91 00          ; nop
+2c92 00          ; nop
+2c93 7e          ; ld   A, (HL)
+2c94 cd af 2c    ; call 0x2caf
+2c97 23          ; inc  HL
+2c98 05          ; dec  B
+2c99 c2 93 2c    ; jp   NZ, 0x2c93
+2c9c c9          ; ret
+2c9d f5          ; push AF
+2c9e c5          ; push BC
+2c9f e5          ; push HL
+2ca0 06 04       ; ld   B, 0x04
+2ca2 7e          ; ld   A, (HL)
+2ca3 cd af 2c    ; call 0x2caf
+2ca6 23          ; inc  HL
+2ca7 05          ; dec  B
+2ca8 c2 a2 2c    ; jp   NZ, 0x2ca2
+2cab e1          ; pop  HL
+2cac c1          ; pop  BC
+2cad f1          ; pop  AF
+2cae c9          ; ret
+2caf f5          ; push AF
+2cb0 0f          ; rrca
+2cb1 0f          ; rrca
+2cb2 0f          ; rrca
+2cb3 0f          ; rrca
+2cb4 cd b8 2c    ; call 0x2cb8
+2cb7 f1          ; pop  AF
+2cb8 f5          ; push AF
+2cb9 c5          ; push BC
+2cba d5          ; push DE
+2cbb e5          ; push HL
+2cbc e6 0f       ; and  0x0f
+2cbe fe 0a       ; cp   0x0a
+2cc0 da c5 2c    ; jp   C, 0x2cc5
+2cc3 c6 27       ; add  A, 0x27
+2cc5 c6 30       ; add  A, 0x30
+2cc7 5f          ; ld   E, A
+2cc8 cd 21 10    ; call 0x1021
+2ccb e1          ; pop  HL
+2ccc d1          ; pop  DE
+2ccd c1          ; pop  BC
+2cce f1          ; pop  AF
+2ccf c9          ; ret
+2cd0 f5          ; push AF
+2cd1 c5          ; push BC
+2cd2 d5          ; push DE
+2cd3 e5          ; push HL
+2cd4 cd 05 00    ; call 0x0005
+2cd7 e1          ; pop  HL
+2cd8 d1          ; pop  DE
+2cd9 c1          ; pop  BC
+2cda f1          ; pop  AF
+2cdb c9          ; ret
+2cdc 4e          ; ld   C, (HL)
+2cdd 41          ; ld   B, C
+2cde 53          ; ld   D, E
+2cdf 43          ; ld   B, E
+2ce0 4f          ; ld   C, A
+2ce1 4d          ; ld   C, L
+2ce2 20 5a       ; jr   NZ, +0x5a
+2ce4 38 30       ; jr   C, +0x30
+2ce6 20 69       ; jr   NZ, +0x69
+2ce8 6e          ; ld   L, (HL)
+2ce9 73          ; ld   (HL), E
+2cea 74          ; ld   (HL), H
+2ceb 72          ; ld   (HL), D
+2cec 75          ; ld   (HL), L
+2ced 63          ; ld   H, E
+2cee 74          ; ld   (HL), H
+2cef 69          ; ld   L, C
+2cf0 6f          ; ld   L, A
+2cf1 6e          ; ld   L, (HL)
+2cf2 20 65       ; jr   NZ, +0x65
+2cf4 78          ; ld   A, B
+2cf5 65          ; ld   H, L
+2cf6 72          ; ld   (HL), D
+2cf7 63          ; ld   H, E
+2cf8 69          ; ld   L, C
+2cf9 73          ; ld   (HL), E
+2cfa 65          ; ld   H, L
+2cfb 72          ; ld   (HL), D
+2cfc 0d          ; dec  C
+2cfd 2d          ; dec  L
+2cfe 2d          ; dec  L
+2cff 2d          ; dec  L
+2d00 2d          ; dec  L
+2d01 2d          ; dec  L
+2d02 2d          ; dec  L
+2d03 2d          ; dec  L
+2d04 2d          ; dec  L
+2d05 2d          ; dec  L
+2d06 2d          ; dec  L
+2d07 2d          ; dec  L
+2d08 2d          ; dec  L
+2d09 2d          ; dec  L
+2d0a 2d          ; dec  L
+2d0b 2d          ; dec  L
+2d0c 2d          ; dec  L
+2d0d 2d          ; dec  L
+2d0e 2d          ; dec  L
+2d0f 2d          ; dec  L
+2d10 2d          ; dec  L
+2d11 2d          ; dec  L
+2d12 2d          ; dec  L
+2d13 2d          ; dec  L
+2d14 2d          ; dec  L
+2d15 2d          ; dec  L
+2d16 2d          ; dec  L
+2d17 2d          ; dec  L
+2d18 2d          ; dec  L
+2d19 2d          ; dec  L
+2d1a 2d          ; dec  L
+2d1b 2d          ; dec  L
+2d1c 2d          ; dec  L
+2d1d 0d          ; dec  C
+2d1e 28 75       ; jr   Z, +0x75
+2d20 73          ; ld   (HL), E
+2d21 69          ; ld   L, C
+2d22 6e          ; ld   L, (HL)
+2d23 67          ; ld   H, A
+2d24 20 75       ; jr   NZ, +0x75
+2d26 6e          ; ld   L, (HL)
+2d27 64          ; ld   H, H
+2d28 6f          ; ld   L, A
+2d29 63          ; ld   H, E
+2d2a 75          ; ld   (HL), L
+2d2b 6d          ; ld   L, L
+2d2c 65          ; ld   H, L
+2d2d 6e          ; ld   L, (HL)
+2d2e 74          ; ld   (HL), H
+2d2f 65          ; ld   H, L
+2d30 64          ; ld   H, H
+2d31 20 6f       ; jr   NZ, +0x6f
+2d33 70          ; ld   (HL), B
+2d34 63          ; ld   H, E
+2d35 6f          ; ld   L, A
+2d36 64          ; ld   H, H
+2d37 65          ; ld   H, L
+2d38 73          ; ld   (HL), E
+2d39 20 61       ; jr   NZ, +0x61
+2d3b 6e          ; ld   L, (HL)
+2d3c 64          ; ld   H, H
+2d3d 20 66       ; jr   NZ, +0x66
+2d3f 6c          ; ld   L, H
+2d40 61          ; ld   H, C
+2d41 67          ; ld   H, A
+2d42 73          ; ld   (HL), E
+2d43 29          ; add  HL, HL
+2d44 0d          ; dec  C
+2d45 24          ; inc  H
+2d46 54          ; ld   D, H
+2d47 65          ; ld   H, L
+2d48 73          ; ld   (HL), E
+2d49 74          ; ld   (HL), H
+2d4a 73          ; ld   (HL), E
+2d4b 20 63       ; jr   NZ, +0x63
+2d4d 6f          ; ld   L, A
+2d4e 6d          ; ld   L, L
+2d4f 70          ; ld   (HL), B
+2d50 6c          ; ld   L, H
+2d51 65          ; ld   H, L
+2d52 74          ; ld   (HL), H
+2d53 65          ; ld   H, L
+2d54 24          ; inc  H
+2d55 20 20       ; jr   NZ, +0x20
+2d57 4f          ; ld   C, A
+2d58 4b          ; ld   C, E
+2d59 0d          ; dec  C
+2d5a 24          ; inc  H
+2d5b 20 20       ; jr   NZ, +0x20
+2d5d 45          ; ld   B, L
+2d5e 52          ; ld   D, D
+2d5f 52          ; ld   D, D
+2d60 4f          ; ld   C, A
+2d61 52          ; ld   D, D
+2d62 20 24       ; jr   NZ, +0x24
+2d64 0d          ; dec  C
+2d65 24          ; inc  H
+2d66 c5          ; push BC
+2d67 d5          ; push DE
+2d68 e5          ; push HL
+2d69 11 b9 2d    ; ld   DE, 0x2db9
+2d6c 06 04       ; ld   B, 0x04
+2d6e 1a          ; ld   A, (DE)
+2d6f be          ; cp   (HL)
+2d70 c2 79 2d    ; jp   NZ, 0x2d79
+2d73 23          ; inc  HL
+2d74 13          ; inc  DE
+2d75 05          ; dec  B
+2d76 c2 6e 2d    ; jp   NZ, 0x2d6e
+2d79 e1          ; pop  HL
+2d7a d1          ; pop  DE
+2d7b c1          ; pop  BC
+2d7c c9          ; ret
+2d7d f5          ; push AF
+2d7e c5          ; push BC
+2d7f d5          ; push DE
+2d80 e5          ; push HL
+2d81 e5          ; push HL
+2d82 11 03 00    ; ld   DE, 0x0003
+2d85 19          ; add  HL, DE
+2d86 ae          ; xor  (HL)
+2d87 6f          ; ld   L, A
+2d88 26 00       ; ld   H, 0x00
+2d8a 29          ; add  HL, HL
+2d8b 29          ; add  HL, HL
+2d8c eb          ; ex   DE, HL
+2d8d 21 bd 2d    ; ld   HL, 0x2dbd
+2d90 19          ; add  HL, DE
+2d91 eb          ; ex   DE, HL
+2d92 e1          ; pop  HL
+2d93 01 04 00    ; ld   BC, 0x0004
+2d96 1a          ; ld   A, (DE)
+2d97 a8          ; xor  B
+2d98 46          ; ld   B, (HL)
+2d99 77          ; ld   (HL), A
+2d9a 13          ; inc  DE
+2d9b 23          ; inc  HL
+2d9c 0d          ; dec  C
+2d9d c2 96 2d    ; jp   NZ, 0x2d96
+2da0 e1          ; pop  HL
+2da1 d1          ; pop  DE
+2da2 c1          ; pop  BC
+2da3 f1          ; pop  AF
+2da4 c9          ; ret
+2da5 f5          ; push AF
+2da6 c5          ; push BC
+2da7 e5          ; push HL
+2da8 21 b9 2d    ; ld   HL, 0x2db9
+2dab 3e ff       ; ld   A, 0xff
+2dad 06 04       ; ld   B, 0x04
+2daf 77          ; ld   (HL), A
+2db0 23          ; inc  HL
+2db1 05          ; dec  B
+2db2 c2 af 2d    ; jp   NZ, 0x2daf
+2db5 e1          ; pop  HL
+2db6 c1          ; pop  BC
+2db7 f1          ; pop  AF
+2db8 c9          ; ret
+2db9 00          ; nop
+2dba 00          ; nop
+2dbb 00          ; nop
+2dbc 00          ; nop
+2dbd 00          ; nop
+2dbe 00          ; nop
+2dbf 00          ; nop
+2dc0 00          ; nop
+2dc1 77          ; ld   (HL), A
+2dc2 07          ; rlca
+2dc3 30 96       ; jr   NC, -0x6a
+2dc5 ee 0e       ; xor  0x0e
+2dc7 61          ; ld   H, C
+2dc8 2c          ; inc  L
+2dc9 99          ; sbc  A, C
+2dca 09          ; add  HL, BC
+2dcb 51          ; ld   D, C
+2dcc ba          ; cp   D
+2dcd 07          ; rlca
+2dce 6d          ; ld   L, L
+2dcf c4 19 70    ; call NZ, 0x7019
+2dd2 6a          ; ld   L, D
+2dd3 f4 8f e9    ; call P, 0xe98f
+2dd6 63          ; ld   H, E
+2dd7 a5          ; and  L
+2dd8 35          ; dec  (HL)
+2dd9 9e          ; sbc  A, (HL)
+2dda 64          ; ld   H, H
+2ddb 95          ; sub  L
+2ddc a3          ; and  E
+2ddd 0e db       ; ld   C, 0xdb
+2ddf 88          ; adc  A, B
+2de0 32 79 dc    ; ld   (0xdc79), A
+2de3 b8          ; cp   B
+2de4 a4          ; and  H
+2de5 e0          ; ret  PO
+2de6 d5          ; push DE
+2de7 e9          ; jp   HL
+2de8 1e 97       ; ld   E, 0x97
+2dea d2 d9 88    ; jp   NC, 0x88d9
+2ded 09          ; add  HL, BC
+2dee b6          ; or   (HL)
+2def 4c          ; ld   C, H
+2df0 2b          ; dec  HL
+2df1 7e          ; ld   A, (HL)
+2df2 b1          ; or   C
+2df3 7c          ; ld   A, H
+2df4 bd          ; cp   L
+2df5 e7          ; rst  0x20
+2df6 b8          ; cp   B
+2df7 2d          ; dec  L
+2df8 07          ; rlca
+2df9 90          ; sub  B
+2dfa bf          ; cp   A
+2dfb 1d          ; dec  E
+2dfc 91          ; sub  C
+2dfd 1d          ; dec  E
+2dfe b7          ; or   A
+2dff 10 64       ; djnz +0x64
+2e01 6a          ; ld   L, D
+2e02 b0          ; or   B
+2e03 20 f2       ; jr   NZ, -0x0e
+2e05 f3          ; di
+2e06 b9          ; cp   C
+2e07 71          ; ld   (HL), C
+2e08 48          ; ld   C, B
+2e09 84          ; add  A, H
+2e0a be          ; cp   (HL)
+2e0b 41          ; ld   B, C
+2e0c de 1a       ; sbc  A, 0x1a
+2e0e da d4 7d    ; jp   C, 0x7dd4
+2e11 6d          ; ld   L, L
+2e12 dd e4 eb f4 ; call PO, 0xf4eb
+2e16 d4 b5 51    ; call NC, 0x51b5
+2e19 83          ; add  A, E
+2e1a d3 85       ; out  (0x85), A
+2e1c c7          ; rst  0x00
+2e1d 13          ; inc  DE
+2e1e 6c          ; ld   L, H
+2e1f 98          ; sbc  A, B
+2e20 56          ; ld   D, (HL)
+2e21 64          ; ld   H, H
+2e22 6b          ; ld   L, E
+2e23 a8          ; xor  B
+2e24 c0          ; ret  NZ
+2e25 fd 62       ; ld   IYh, D
+2e27 f9          ; ld   SP, HL
+2e28 7a          ; ld   A, D
+2e29 8a          ; adc  A, D
+2e2a 65          ; ld   H, L
+2e2b c9          ; ret
+2e2c ec 14 01    ; call PE, 0x0114
+2e2f 5c          ; ld   E, H
+2e30 4f          ; ld   C, A
+2e31 63          ; ld   H, E
+2e32 06 6c       ; ld   B, 0x6c
+2e34 d9          ; exx
+2e35 fa 0f 3d    ; jp   M, 0x3d0f
+2e38 63          ; ld   H, E
+2e39 8d          ; adc  A, L
+2e3a 08          ; ex   AF, AF'
+2e3b 0d          ; dec  C
+2e3c f5          ; push AF
+2e3d 3b          ; dec  SP
+2e3e 6e          ; ld   L, (HL)
+2e3f 20 c8       ; jr   NZ, -0x38
+2e41 4c          ; ld   C, H
+2e42 69          ; ld   L, C
+2e43 10 5e       ; djnz +0x5e
+2e45 d5          ; push DE
+2e46 60          ; ld   H, B
+2e47 41          ; ld   B, C
+2e48 e4 a2 67    ; call PO, 0x67a2
+2e4b 71          ; ld   (HL), C
+2e4c 72          ; ld   (HL), D
+2e4d 3c          ; inc  A
+2e4e 03          ; inc  BC
+2e4f e4 d1 4b    ; call PO, 0x4bd1
+2e52 04          ; inc  B
+2e53 d4 47 d2    ; call NC, 0xd247
+2e56 0d          ; dec  C
+2e57 85          ; add  A, L
+2e58 fd a5       ; and  IYl
+2e5a 0a          ; ld   A, (BC)
+2e5b b5          ; or   L
+2e5c 6b          ; ld   L, E
+2e5d 35          ; dec  (HL)
+2e5e b5          ; or   L
+2e5f a8          ; xor  B
+2e60 fa 42 b2    ; jp   M, 0xb242
+2e63 98          ; sbc  A, B
+2e64 6c          ; ld   L, H
+2e65 db bb       ; in   A, (0xbb)
+2e67 c9          ; ret
+2e68 d6 ac       ; sub  0xac
+2e6a bc          ; cp   H
+2e6b f9          ; ld   SP, HL
+2e6c 40          ; ld   B, B
+2e6d 32 d8 6c    ; ld   (0x6cd8), A
+2e70 e3          ; ex   (SP), HL
+2e71 45          ; ld   B, L
+2e72 df          ; rst  0x18
+2e73 5c          ; ld   E, H
+2e74 75          ; ld   (HL), L
+2e75 dc d6 0d    ; call C, 0x0dd6
+2e78 cf          ; rst  0x08
+2e79 ab          ; xor  E
+2e7a d1          ; pop  DE
+2e7b 3d          ; dec  A
+2e7c 59          ; ld   E, C
+2e7d 26 d9       ; ld   H, 0xd9
+2e7f 30 ac       ; jr   NC, -0x54
+2e81 51          ; ld   D, C
+2e82 de 00       ; sbc  A, 0x00
+2e84 3a c8 d7    ; ld   A, (0xd7c8)
+2e87 51          ; ld   D, C
+2e88 80          ; add  A, B
+2e89 bf          ; cp   A
+2e8a d0          ; ret  NC
+2e8b 61          ; ld   H, C
+2e8c 16 21       ; ld   D, 0x21
+2e8e b4          ; or   H
+2e8f f4 b5 56    ; call P, 0x56b5
+2e92 b3          ; or   E
+2e93 c4 23 cf    ; call NZ, 0xcf23
+2e96 ba          ; cp   D
+2e97 95          ; sub  L
+2e98 99          ; sbc  A, C
+2e99 b8          ; cp   B
+2e9a bd          ; cp   L
+2e9b a5          ; and  L
+2e9c 0f          ; rrca
+2e9d 28 02       ; jr   Z, +0x02
+2e9f b8          ; cp   B
+2ea0 9e          ; sbc  A, (HL)
+2ea1 5f          ; ld   E, A
+2ea2 05          ; dec  B
+2ea3 88          ; adc  A, B
+2ea4 08          ; ex   AF, AF'
+2ea5 c6 0c       ; add  A, 0x0c
+2ea7 d9          ; exx
+2ea8 b2          ; or   D
+2ea9 b1          ; or   C
+2eaa 0b          ; dec  BC
+2eab e9          ; jp   HL
+2eac 24          ; inc  H
+2ead 2f          ; cpl
+2eae 6f          ; ld   L, A
+2eaf 7c          ; ld   A, H
+2eb0 87          ; add  A, A
+2eb1 58          ; ld   E, B
+2eb2 68          ; ld   L, B
+2eb3 4c          ; ld   C, H
+2eb4 11 c1 61    ; ld   DE, 0x61c1
+2eb7 1d          ; dec  E
+2eb8 ab          ; xor  E
+2eb9 b6          ; or   (HL)
+2eba 66          ; ld   H, (HL)
+2ebb 2d          ; dec  L
+2ebc 3d          ; dec  A
+2ebd 76          ; halt
+2ebe dc 41 90    ; call C, 0x9041
+2ec1 01 db 71    ; ld   BC, 0x71db
+2ec4 06 98       ; ld   B, 0x98
+2ec6 d2 20 bc    ; jp   NC, 0xbc20
+2ec9 ef          ; rst  0x28
+2eca d5          ; push DE
+2ecb 10 2a       ; djnz +0x2a
+2ecd 71          ; ld   (HL), C
+2ece b1          ; or   C
+2ecf 85          ; add  A, L
+2ed0 89          ; adc  A, C
+2ed1 06 b6       ; ld   B, 0xb6
+2ed3 b5          ; or   L
+2ed4 1f          ; rra
+2ed5 9f          ; sbc  A, A
+2ed6 bf          ; cp   A
+2ed7 e4 a5 e8    ; call PO, 0xe8a5
+2eda b8          ; cp   B
+2edb d4 33 78    ; call NC, 0x7833
+2ede 07          ; rlca
+2edf c9          ; ret
+2ee0 a2          ; and  D
+2ee1 0f          ; rrca
+2ee2 00          ; nop
+2ee3 f9          ; ld   SP, HL
+2ee4 34          ; inc  (HL)
+2ee5 96          ; sub  (HL)
+2ee6 09          ; add  HL, BC
+2ee7 a8          ; xor  B
+2ee8 8e          ; adc  A, (HL)
+2ee9 e1          ; pop  HL
+2eea 0e 98       ; ld   C, 0x98
+2eec 18 7f       ; jr   +0x7f
+2eee 6a          ; ld   L, D
+2eef 0d          ; dec  C
+2ef0 bb          ; cp   E
+2ef1 08          ; ex   AF, AF'
+2ef2 6d          ; ld   L, L
+2ef3 3d          ; dec  A
+2ef4 2d          ; dec  L
+2ef5 91          ; sub  C
+2ef6 64          ; ld   H, H
+2ef7 6c          ; ld   L, H
+2ef8 97          ; sub  A
+2ef9 e6 63       ; and  0x63
+2efb 5c          ; ld   E, H
+2efc 01 6b 6b    ; ld   BC, 0x6b6b
+2eff 51          ; ld   D, C
+2f00 f4 1c 6c    ; call P, 0x6c1c
+2f03 61          ; ld   H, C
+2f04 62          ; ld   H, D
+2f05 85          ; add  A, L
+2f06 65          ; ld   H, L
+2f07 30 d8       ; jr   NC, -0x28
+2f09 f2 62 00    ; jp   P, 0x0062
+2f0c 4e          ; ld   C, (HL)
+2f0d 6c          ; ld   L, H
+2f0e 06 95       ; ld   B, 0x95
+2f10 ed 1b       ; nop
+2f12 01 a5 7b    ; ld   BC, 0x7ba5
+2f15 82          ; add  A, D
+2f16 08          ; ex   AF, AF'
+2f17 f4 c1 f5    ; call P, 0xf5c1
+2f1a 0f          ; rrca
+2f1b c4 57 65    ; call NZ, 0x6557
+2f1e b0          ; or   B
+2f1f d9          ; exx
+2f20 c6 12       ; add  A, 0x12
+2f22 b7          ; or   A
+2f23 e9          ; jp   HL
+2f24 50          ; ld   D, B
+2f25 8b          ; adc  A, E
+2f26 be          ; cp   (HL)
+2f27 b8          ; cp   B
+2f28 ea fc b9    ; jp   PE, 0xb9fc
+2f2b 88          ; adc  A, B
+2f2c 7c          ; ld   A, H
+2f2d 62          ; ld   H, D
+2f2e dd 1d       ; dec  E
+2f30 df          ; rst  0x18
+2f31 15          ; dec  D
+2f32 da 2d 49    ; jp   C, 0x492d
+2f35 8c          ; adc  A, H
+2f36 d3 7c       ; out  (0x7c), A
+2f38 f3          ; di
+2f39 fb          ; ei
+2f3a d4 4c 65    ; call NC, 0x654c
+2f3d 4d          ; ld   C, L
+2f3e b2          ; or   D
+2f3f 61          ; ld   H, C
+2f40 58          ; ld   E, B
+2f41 3a b5 51    ; ld   A, (0x51b5)
+2f44 ce a3       ; adc  A, 0xa3
+2f46 bc          ; cp   H
+2f47 00          ; nop
+2f48 74          ; ld   (HL), H
+2f49 d4 bb 30    ; call NC, 0x30bb
+2f4c e2 4a df    ; jp   PO, 0xdf4a
+2f4f a5          ; and  L
+2f50 41          ; ld   B, C
+2f51 3d          ; dec  A
+2f52 d8          ; ret  C
+2f53 95          ; sub  L
+2f54 d7          ; rst  0x10
+2f55 a4          ; and  H
+2f56 d1          ; pop  DE
+2f57 c4 6d d3    ; call NZ, 0xd36d
+2f5a d6 f4       ; sub  0xf4
+2f5c fb          ; ei
+2f5d 43          ; ld   B, E
+2f5e 69          ; ld   L, C
+2f5f e9          ; jp   HL
+2f60 6a          ; ld   L, D
+2f61 34          ; inc  (HL)
+2f62 6e          ; ld   L, (HL)
+2f63 d9          ; exx
+2f64 fc ad 67    ; call M, 0x67ad
+2f67 88          ; adc  A, B
+2f68 46          ; ld   B, (HL)
+2f69 da 60 b8    ; jp   C, 0xb860
+2f6c d0          ; ret  NC
+2f6d 44          ; ld   B, H
+2f6e 04          ; inc  B
+2f6f 2d          ; dec  L
+2f70 73          ; ld   (HL), E
+2f71 33          ; inc  SP
+2f72 03          ; inc  BC
+2f73 1d          ; dec  E
+2f74 e5          ; push HL
+2f75 aa          ; xor  D
+2f76 0a          ; ld   A, (BC)
+2f77 4c          ; ld   C, H
+2f78 5f          ; ld   E, A
+2f79 dd 0d       ; dec  C
+2f7b 7c          ; ld   A, H
+2f7c c9          ; ret
+2f7d 50          ; ld   D, B
+2f7e 05          ; dec  B
+2f7f 71          ; ld   (HL), C
+2f80 3c          ; inc  A
+2f81 27          ; daa
+2f82 02          ; ld   (BC), A
+2f83 41          ; ld   B, C
+2f84 aa          ; xor  D
+2f85 be          ; cp   (HL)
+2f86 0b          ; dec  BC
+2f87 10 10       ; djnz +0x10
+2f89 c9          ; ret
+2f8a 0c          ; inc  C
+2f8b 20 86       ; jr   NZ, -0x7a
+2f8d 57          ; ld   D, A
+2f8e 68          ; ld   L, B
+2f8f b5          ; or   L
+2f90 25          ; dec  H
+2f91 20 6f       ; jr   NZ, +0x6f
+2f93 85          ; add  A, L
+2f94 b3          ; or   E
+2f95 b9          ; cp   C
+2f96 66          ; ld   H, (HL)
+2f97 d4 09 ce    ; call NC, 0xce09
+2f9a 61          ; ld   H, C
+2f9b e4 9f 5e    ; call PO, 0x5e9f
+2f9e de f9       ; sbc  A, 0xf9
+2fa0 0e 29       ; ld   C, 0x29
+2fa2 d9          ; exx
+2fa3 c9          ; ret
+2fa4 98          ; sbc  A, B
+2fa5 b0          ; or   B
+2fa6 d0          ; ret  NC
+2fa7 98          ; sbc  A, B
+2fa8 22 c7 d7    ; ld   (0xd7c7), HL
+2fab a8          ; xor  B
+2fac b4          ; or   H
+2fad 59          ; ld   E, C
+2fae b3          ; or   E
+2faf 3d          ; dec  A
+2fb0 17          ; rla
+2fb1 2e b4       ; ld   L, 0xb4
+2fb3 0d          ; dec  C
+2fb4 81          ; add  A, C
+2fb5 b7          ; or   A
+2fb6 bd          ; cp   L
+2fb7 5c          ; ld   E, H
+2fb8 3b          ; dec  SP
+2fb9 c0          ; ret  NZ
+2fba ba          ; cp   D
+2fbb 6c          ; ld   L, H
+2fbc ad          ; xor  L
+2fbd ed b8       ; lddr
+2fbf 83          ; add  A, E
+2fc0 20 9a       ; jr   NZ, -0x66
+2fc2 bf          ; cp   A
+2fc3 b3          ; or   E
+2fc4 b6          ; or   (HL)
+2fc5 03          ; inc  BC
+2fc6 b6          ; or   (HL)
+2fc7 e2 0c 74    ; jp   PO, 0x740c
+2fca b1          ; or   C
+2fcb d2 9a ea    ; jp   NC, 0xea9a
+2fce d5          ; push DE
+2fcf 47          ; ld   B, A
+2fd0 39          ; add  HL, SP
+2fd1 9d          ; sbc  A, L
+2fd2 d2 77 af    ; jp   NC, 0xaf77
+2fd5 04          ; inc  B
+2fd6 db 26       ; in   A, (0x26)
+2fd8 15          ; dec  D
+2fd9 73          ; ld   (HL), E
+2fda dc 16 83    ; call C, 0x8316
+2fdd e3          ; ex   (SP), HL
+2fde 63          ; ld   H, E
+2fdf 0b          ; dec  BC
+2fe0 12          ; ld   (DE), A
+2fe1 94          ; sub  H
+2fe2 64          ; ld   H, H
+2fe3 3b          ; dec  SP
+2fe4 84          ; add  A, H
+2fe5 0d          ; dec  C
+2fe6 6d          ; ld   L, L
+2fe7 6a          ; ld   L, D
+2fe8 3e 7a       ; ld   A, 0x7a
+2fea 6a          ; ld   L, D
+2feb 5a          ; ld   E, D
+2fec a8          ; xor  B
+2fed e4 0e cf    ; call PO, 0xcf0e
+2ff0 0b          ; dec  BC
+2ff1 93          ; sub  E
+2ff2 09          ; add  HL, BC
+2ff3 ff          ; rst  0x38
+2ff4 9d          ; sbc  A, L
+2ff5 0a          ; ld   A, (BC)
+2ff6 00          ; nop
+2ff7 ae          ; xor  (HL)
+2ff8 27          ; daa
+2ff9 7d          ; ld   A, L
+2ffa 07          ; rlca
+2ffb 9e          ; sbc  A, (HL)
+2ffc b1          ; or   C
+2ffd f0          ; ret  P
+2ffe 0f          ; rrca
+2fff 93          ; sub  E
+3000 44          ; ld   B, H
+3001 87          ; add  A, A
+3002 08          ; ex   AF, AF'
+3003 a3          ; and  E
+3004 d2 1e 01    ; jp   NC, 0x011e
+3007 f2 68 69    ; jp   P, 0x6968
+300a 06 c2       ; ld   B, 0xc2
+300c fe f7       ; cp   0xf7
+300e 62          ; ld   H, D
+300f 57          ; ld   D, A
+3010 5d          ; ld   E, L
+3011 80          ; add  A, B
+3012 65          ; ld   H, L
+3013 67          ; ld   H, A
+3014 cb 19       ; rr   C
+3016 6c          ; ld   L, H
+3017 36 71       ; ld   (HL), 0x71
+3019 6e          ; ld   L, (HL)
+301a 6b          ; ld   L, E
+301b 06 e7       ; ld   B, 0xe7
+301d fe d4       ; cp   0xd4
+301f 1b          ; dec  DE
+3020 76          ; halt
+3021 89          ; adc  A, C
+3022 d3 2b       ; out  (0x2b), A
+3024 e0          ; ret  PO
+3025 10 da       ; djnz -0x26
+3027 7a          ; ld   A, D
+3028 5a          ; ld   E, D
+3029 67          ; ld   H, A
+302a dd 4a       ; ld   C, D
+302c cc f9 b9    ; call Z, 0xb9f9
+302f df          ; rst  0x18
+3030 6f          ; ld   L, A
+3031 8e          ; adc  A, (HL)
+3032 be          ; cp   (HL)
+3033 ef          ; rst  0x28
+3034 f9          ; ld   SP, HL
+3035 17          ; rla
+3036 b7          ; or   A
+3037 be          ; cp   (HL)
+3038 43          ; ld   B, E
+3039 60          ; ld   H, B
+303a b0          ; or   B
+303b 8e          ; adc  A, (HL)
+303c d5          ; push DE
+303d d6 d6       ; sub  0xd6
+303f a3          ; and  E
+3040 e8          ; ret  PE
+3041 a1          ; and  C
+3042 d1          ; pop  DE
+3043 93          ; sub  E
+3044 7e          ; ld   A, (HL)
+3045 38 d8       ; jr   C, -0x28
+3047 c2 c4 4f    ; jp   NZ, 0x4fc4
+304a df          ; rst  0x18
+304b f2 52 d1    ; jp   P, 0xd152
+304e bb          ; cp   E
+304f 67          ; ld   H, A
+3050 f1          ; pop  AF
+3051 a6          ; and  (HL)
+3052 bc          ; cp   H
+3053 57          ; ld   D, A
+3054 67          ; ld   H, A
+3055 3f          ; ccf
+3056 b5          ; or   L
+3057 06 dd       ; ld   B, 0xdd
+3059 48          ; ld   C, B
+305a b2          ; or   D
+305b 36 4b       ; ld   (HL), 0x4b
+305d d8          ; ret  C
+305e 0d          ; dec  C
+305f 2b          ; dec  HL
+3060 da af 0a    ; jp   C, 0x0aaf
+3063 1b          ; dec  DE
+3064 4c          ; ld   C, H
+3065 36 03       ; ld   (HL), 0x03
+3067 4a          ; ld   C, D
+3068 f6 41       ; or   0x41
+306a 04          ; inc  B
+306b 7a          ; ld   A, D
+306c 60          ; ld   H, B
+306d df          ; rst  0x18
+306e 60          ; ld   H, B
+306f ef          ; rst  0x28
+3070 c3 a8 67    ; jp   0x67a8
+3073 df          ; rst  0x18
+3074 55          ; ld   D, L
+3075 31 6e 8e    ; ld   SP, 0x8e6e
+3078 ef          ; rst  0x28
+3079 46          ; ld   B, (HL)
+307a 69          ; ld   L, C
+307b be          ; cp   (HL)
+307c 79          ; ld   A, C
+307d cb 61       ; bit  0x04, C
+307f b3          ; or   E
+3080 8c          ; adc  A, H
+3081 bc          ; cp   H
+3082 66          ; ld   H, (HL)
+3083 83          ; add  A, E
+3084 1a          ; ld   A, (DE)
+3085 25          ; dec  H
+3086 6f          ; ld   L, A
+3087 d2 a0 52    ; jp   NC, 0x52a0
+308a 68          ; ld   L, B
+308b e2 36 cc    ; jp   PO, 0xcc36
+308e 0c          ; inc  C
+308f 77          ; ld   (HL), A
+3090 95          ; sub  L
+3091 bb          ; cp   E
+3092 0b          ; dec  BC
+3093 47          ; ld   B, A
+3094 03          ; inc  BC
+3095 22 02 16    ; ld   (0x1602), HL
+3098 b9          ; cp   C
+3099 55          ; ld   D, L
+309a 05          ; dec  B
+309b 26 2f       ; ld   H, 0x2f
+309d c5          ; push BC
+309e ba          ; cp   D
+309f 3b          ; dec  SP
+30a0 be          ; cp   (HL)
+30a1 b2          ; or   D
+30a2 bd          ; cp   L
+30a3 0b          ; dec  BC
+30a4 28 2b       ; jr   Z, +0x2b
+30a6 b4          ; or   H
+30a7 5a          ; ld   E, D
+30a8 92          ; sub  D
+30a9 5c          ; ld   E, H
+30aa b3          ; or   E
+30ab 6a          ; ld   L, D
+30ac 04          ; inc  B
+30ad c2 d7 ff    ; jp   NZ, 0xffd7
+30b0 a7          ; and  A
+30b1 b5          ; or   L
+30b2 d0          ; ret  NC
+30b3 cf          ; rst  0x08
+30b4 31 2c d9    ; ld   SP, 0xd92c
+30b7 9e          ; sbc  A, (HL)
+30b8 8b          ; adc  A, E
+30b9 5b          ; ld   E, E
+30ba de ae       ; sbc  A, 0xae
+30bc 1d          ; dec  E
+30bd 9b          ; sbc  A, E
+30be 64          ; ld   H, H
+30bf c2 b0 ec    ; jp   NZ, 0xecb0
+30c2 63          ; ld   H, E
+30c3 f2 26 75    ; jp   P, 0x7526
+30c6 6a          ; ld   L, D
+30c7 a3          ; and  E
+30c8 9c          ; sbc  A, H
+30c9 02          ; ld   (BC), A
+30ca 6d          ; ld   L, L
+30cb 93          ; sub  E
+30cc 0a          ; ld   A, (BC)
+30cd 9c          ; sbc  A, H
+30ce 09          ; add  HL, BC
+30cf 06 a9       ; ld   B, 0xa9
+30d1 eb          ; ex   DE, HL
+30d2 0e 36       ; ld   C, 0x36
+30d4 3f          ; ccf
+30d5 72          ; ld   (HL), D
+30d6 07          ; rlca
+30d7 67          ; ld   H, A
+30d8 85          ; add  A, L
+30d9 05          ; dec  B
+30da 00          ; nop
+30db 57          ; ld   D, A
+30dc 13          ; inc  DE
+30dd 95          ; sub  L
+30de bf          ; cp   A
+30df 4a          ; ld   C, D
+30e0 82          ; add  A, D
+30e1 e2 b8 7a    ; jp   PO, 0x7ab8
+30e4 14          ; inc  D
+30e5 7b          ; ld   A, E
+30e6 b1          ; or   C
+30e7 2b          ; dec  HL
+30e8 ae          ; xor  (HL)
+30e9 0c          ; inc  C
+30ea b6          ; or   (HL)
+30eb 1b          ; dec  DE
+30ec 38 92       ; jr   C, -0x6e
+30ee d2 8e 9b    ; jp   NC, 0x9b8e
+30f1 e5          ; push HL
+30f2 d5          ; push DE
+30f3 be          ; cp   (HL)
+30f4 0d          ; dec  C
+30f5 7c          ; ld   A, H
+30f6 dc ef b7    ; call C, 0xb7ef
+30f9 0b          ; dec  BC
+30fa db df       ; in   A, (0xdf)
+30fc 21 86 d3    ; ld   HL, 0xd386
+30ff d2 d4 f1    ; jp   NC, 0xf1d4
+3102 d4 e2 42    ; call NC, 0x42e2
+3105 68          ; ld   L, B
+3106 dd b3       ; or   E
+3108 f8          ; ret  M
+3109 1f          ; rra
+310a da 83 6e    ; jp   C, 0x6e83
+310d 81          ; add  A, C
+310e be          ; cp   (HL)
+310f 16 cd       ; ld   D, 0xcd
+3111 f6 b9       ; or   0xb9
+3113 26 5b       ; ld   H, 0x5b
+3115 6f          ; ld   L, A
+3116 b0          ; or   B
+3117 77          ; ld   (HL), A
+3118 e1          ; pop  HL
+3119 18 b7       ; jr   -0x49
+311b 47          ; ld   B, A
+311c 77          ; ld   (HL), A
+311d 88          ; adc  A, B
+311e 08          ; ex   AF, AF'
+311f 5a          ; ld   E, D
+3120 e6 ff       ; and  0xff
+3122 0f          ; rrca
+3123 6a          ; ld   L, D
+3124 70          ; ld   (HL), B
+3125 66          ; ld   H, (HL)
+3126 06 3b       ; ld   B, 0x3b
+3128 ca 11 01    ; jp   Z, 0x0111
+312b 0b          ; dec  BC
+312c 5c          ; ld   E, H
+312d 8f          ; adc  A, A
+312e 65          ; ld   H, L
+312f 9e          ; sbc  A, (HL)
+3130 ff          ; rst  0x38
+3131 f8          ; ret  M
+3132 62          ; ld   H, D
+3133 ae          ; xor  (HL)
+3134 69          ; ld   L, C
+3135 61          ; ld   H, C
+3136 6b          ; ld   L, E
+3137 ff          ; rst  0x38
+3138 d3 16       ; out  (0x16), A
+313a 6c          ; ld   L, H
+313b cf          ; rst  0x08
+313c 45          ; ld   B, L
+313d a0          ; and  B
+313e 0a          ; ld   A, (BC)
+313f e2 78 d7    ; jp   PO, 0xd778
+3142 0d          ; dec  C
+3143 d2 ee 4e    ; jp   NC, 0x4eee
+3146 04          ; inc  B
+3147 83          ; add  A, E
+3148 54          ; ld   D, H
+3149 39          ; add  HL, SP
+314a 03          ; inc  BC
+314b b3          ; or   E
+314c c2 a7 67    ; jp   NZ, 0x67a7
+314f 26 61       ; ld   H, 0x61
+3151 d0          ; ret  NC
+3152 60          ; ld   H, B
+3153 16 f7       ; ld   D, 0xf7
+3155 49          ; ld   C, C
+3156 69          ; ld   L, C
+3157 47          ; ld   B, A
+3158 4d          ; ld   C, L
+3159 3e 6e       ; ld   A, 0x6e
+315b 77          ; ld   (HL), A
+315c db ae       ; in   A, (0xae)
+315e d1          ; pop  DE
+315f 6a          ; ld   L, D
+3160 4a          ; ld   C, D
+3161 d9          ; exx
+3162 d6 5a       ; sub  0x5a
+3164 dc 40 df    ; call C, 0xdf40
+3167 0b          ; dec  BC
+3168 66          ; ld   H, (HL)
+3169 37          ; scf
+316a d8          ; ret  C
+316b 3b          ; dec  SP
+316c f0          ; ret  P
+316d a9          ; xor  C
+316e bc          ; cp   H
+316f ae          ; xor  (HL)
+3170 53          ; ld   D, E
+3171 de bb       ; sbc  A, 0xbb
+3173 9e          ; sbc  A, (HL)
+3174 c5          ; push BC
+3175 47          ; ld   B, A
+3176 b2          ; or   D
+3177 cf          ; rst  0x08
+3178 7f          ; ld   A, A
+3179 30 b5       ; jr   NC, -0x4b
+317b ff          ; rst  0x38
+317c e9          ; jp   HL
+317d bd          ; cp   L
+317e bd          ; cp   L
+317f f2 1c ca    ; jp   P, 0xca1c
+3182 ba          ; cp   D
+3183 c2 8a 53    ; jp   NZ, 0x538a
+3186 b3          ; or   E
+3187 93          ; sub  E
+3188 30 24       ; jr   NC, +0x24
+318a b4          ; or   H
+318b a3          ; and  E
+318c a6          ; and  (HL)
+318d ba          ; cp   D
+318e d0          ; ret  NC
+318f 36 05       ; ld   (HL), 0x05
+3191 cd d7 06    ; call 0x06d7
+3194 93          ; sub  E
+3195 54          ; ld   D, H
+3196 de 57       ; sbc  A, 0x57
+3198 29          ; add  HL, HL
+3199 23          ; inc  HL
+319a d9          ; exx
+319b 67          ; ld   H, A
+319c bf          ; cp   A
+319d b3          ; or   E
+319e 66          ; ld   H, (HL)
+319f 7a          ; ld   A, D
+31a0 2e c4       ; ld   L, 0xc4
+31a2 61          ; ld   H, C
+31a3 4a          ; ld   C, D
+31a4 b8          ; cp   B
+31a5 5d          ; ld   E, L
+31a6 68          ; ld   L, B
+31a7 1b          ; dec  DE
+31a8 02          ; ld   (BC), A
+31a9 2a 6f 2b    ; ld   HL, (0x2b6f)
+31ac 94          ; sub  H
+31ad b4          ; or   H
+31ae 0b          ; dec  BC
+31af be          ; cp   (HL)
+31b0 37          ; scf
+31b1 c3 0c 8e    ; jp   0x8e0c
+31b4 a1          ; and  C
+31b5 5a          ; ld   E, D
+31b6 05          ; dec  B
+31b7 df          ; rst  0x18
+31b8 1b          ; dec  DE
+31b9 2d          ; dec  L
+31ba 02          ; ld   (BC), A
+31bb ef          ; rst  0x28
+31bc 8d          ; adc  A, L
+31bd 00          ; nop
+31be 00          ; nop
+31bf 00          ; nop
+31c0 00          ; nop
+31c1 00          ; nop
+31c2 00          ; nop
+31c3 00          ; nop
+31c4 00          ; nop
+31c5 00          ; nop
+31c6 00          ; nop
+31c7 00          ; nop
+31c8 00          ; nop
+31c9 00          ; nop
+31ca 00          ; nop
+31cb 00          ; nop
+31cc 00          ; nop
+31cd 00          ; nop
+31ce 00          ; nop
+31cf 00          ; nop
+31d0 00          ; nop
+31d1 00          ; nop
+31d2 00          ; nop
+31d3 00          ; nop
+31d4 00          ; nop
+31d5 00          ; nop
+31d6 00          ; nop
+31d7 00          ; nop
+31d8 00          ; nop
+31d9 00          ; nop
+31da 00          ; nop
+31db 00          ; nop
+31dc 00          ; nop
+31dd 00          ; nop
+31de 00          ; nop
+31df 00          ; nop
+31e0 00          ; nop
+31e1 00          ; nop
+31e2 00          ; nop
+31e3 00          ; nop
+31e4 00          ; nop
+31e5 00          ; nop
+31e6 00          ; nop
+31e7 00          ; nop
+31e8 00          ; nop
+31e9 00          ; nop
+31ea 00          ; nop
+31eb 00          ; nop
+31ec 00          ; nop
+31ed 00          ; nop
+31ee 00          ; nop
+31ef 00          ; nop
+31f0 00          ; nop
+31f1 00          ; nop
+31f2 00          ; nop
+31f3 00          ; nop
+31f4 00          ; nop
+31f5 00          ; nop
+31f6 00          ; nop
+31f7 00          ; nop
+31f8 00          ; nop
+31f9 00          ; nop
+31fa 00          ; nop
+31fb 00          ; nop
+31fc 00          ; nop
+31fd 00          ; nop
+31fe 00          ; nop
+31ff 00          ; nop

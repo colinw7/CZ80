@@ -1,7 +1,16 @@
 #include <CZ80.h>
 #include <CZ80OpP.h>
+#include <CZ80DebugData.h>
+#include <CZ80ExecData.h>
+#include <CZ80PortData.h>
+#include <CZ80SpeedData.h>
+#include <CZ80MemData.h>
+#include <CZ80Screen.h>
+#include <CZ80OpData.h>
+#include <CZ80RstData.h>
 #include <CFile.h>
 #include <CStrUtil.h>
+#include <cassert>
 
 #ifdef CL_PARSER
 #include <CCeilP.h>
@@ -16,15 +25,16 @@ CZ80()
   memset(memory_, 0, 65536);
   memset(flags_ , 0, 65536);
 
-  mhz_ = 4.00;
-  htz_ = 50.0;
+  mhz_ = 4194304; // 4Mhz
+  htz_ = 50;
   t_   = 0;
 
   allowInterrupts_ = true;
 
+  im0_ = 0x38;
   im2_ = 0xfe;
 
-  ifreq_ = int(mhz_*1e6/htz_);
+  ifreq_ = int(mhz_/htz_); // cycles per second
 
   setWord(0x0000, 0x76);
   setWord(0x0008, 0x76);
@@ -68,12 +78,16 @@ setDump(bool dump)
 {
   dump_ = dump;
 
-  if      (  dump_ && dump_file_ == nullptr)
-    dump_file_ = new CFile("CZ80.dump");
-  else if (! dump_ && dump_file_ != nullptr) {
-    delete dump_file_;
+  if (dump_) {
+    if (! dump_file_)
+      dump_file_ = new CFile("CZ80.dump");
+  }
+  else {
+    if (dump_file_) {
+      delete dump_file_;
 
-    dump_file_ = nullptr;
+      dump_file_ = nullptr;
+    }
   }
 }
 
@@ -102,13 +116,35 @@ reset()
 
   setStop(false);
 
-  if (debugData_) {
+  if (debugData_)
     debugData_->removeAllBreakpoints();
 
-    debugData_->callPostStepProcs();
-  }
+  callPostStepProcs();
 }
 
+void
+CZ80::
+callPreStepProcs()
+{
+  if (debugData_)
+    debugData_->callPreStepProcs();
+}
+
+void
+CZ80::
+callPostStepProcs()
+{
+  if (debugData_)
+    debugData_->callPostStepProcs();
+}
+
+void
+CZ80::
+callRegChanged(const CZ80Reg &reg)
+{
+  if (debugData_)
+    debugData_->callRegChanged(reg);
+}
 void
 CZ80::
 resetRegisters()
@@ -132,9 +168,16 @@ resetRegisters()
   setI(0);
   setR(0);
 
-  setIFF(0);
+  setIFF1(0x00);
 
   setIM(0);
+}
+
+void
+CZ80::
+setExecData(CZ80ExecData *execData)
+{
+  execData_ = execData;
 }
 
 void
@@ -183,20 +226,36 @@ setSpeedData(CZ80SpeedData *speedData)
 
 void
 CZ80::
+setStop(bool stop)
+{
+  if (stop != stop_) {
+    stop_ = stop;
+
+    if (execData_)
+      execData_->setStop(stop_);
+
+    if (debugData_)
+      debugData_->setStop(stop);
+  }
+}
+
+//------------
+
+void
+CZ80::
 setHalt(bool halt)
 {
   if (halt != halt_) {
     halt_ = halt;
 
     setT(ifreq_ - 4);
-  }
-}
 
-bool
-CZ80::
-getHalt() const
-{
-  return halt_;
+    if (execData_)
+      execData_->setHalt(halt_);
+
+    if (debugData_)
+      debugData_->setHalt(halt_);
+  }
 }
 
 //------------
@@ -266,18 +325,18 @@ getBreakpoints(std::vector<ushort> &addrs)
 
 void
 CZ80::
-keyPress(CKeyType key_type)
+keyPress(const CKeyEvent &kevent)
 {
   if (portData_)
-    portData_->keyPress(key_type);
+    portData_->keyPress(kevent);
 }
 
 void
 CZ80::
-keyRelease(CKeyType key_type)
+keyRelease(const CKeyEvent &kevent)
 {
   if (portData_)
-    portData_->keyRelease(key_type);
+    portData_->keyRelease(kevent);
 }
 
 //------------
@@ -498,30 +557,36 @@ void
 CZ80::
 setIFF(ushort iff)
 {
-  registers_.iff_ = iff;
+  if (iff != registers_.iff_) {
+    registers_.iff_ = iff;
 
-  if (debugData_)
-    debugData_->setIFFChanged(true);
+    if (debugData_)
+      debugData_->setIFFChanged(true);
+  }
 }
 
 void
 CZ80::
 setIFF1(uchar iff1)
 {
-  registers_.iff1_ = iff1;
+  if (iff1 != registers_.iff1_) {
+    registers_.iff1_ = iff1;
 
-  if (debugData_)
-    debugData_->setIFFChanged(true);
+    if (debugData_)
+      debugData_->setIFFChanged(true);
+  }
 }
 
 void
 CZ80::
 setIFF2(uchar iff2)
 {
-  registers_.iff2_ = iff2;
+  if (iff2 != registers_.iff2_) {
+    registers_.iff2_ = iff2;
 
-  if (debugData_)
-    debugData_->setIFFChanged(true);
+    if (debugData_)
+      debugData_->setIFFChanged(true);
+  }
 }
 
 void
@@ -675,6 +740,9 @@ decT(ushort d)
     t_ -= d;
   else
     t_ = 0;
+
+  if (execData_)
+    execData_->decT(d);
 }
 
 void
@@ -685,13 +753,16 @@ incT(ushort d)
     t_ += d;
   else
     t_ = interrupt();
+
+  if (execData_)
+    execData_->incT(d);
 }
 
 int
 CZ80::
 interrupt()
 {
-  if (! allowInterrupts_)
+  if (! getAllowInterrupts())
     return 0;
 
   if (speedData_)
@@ -702,39 +773,51 @@ interrupt()
   if (! getIFF1())
     return 0;
 
+  setIFF2(getIFF1());
+
   setHalt(false);
 
   switch (getIM() ) {
+    // call instruction on data bus
     case 0: {
       // TODO: proper implementation
 
       di();
 
-      call(56);
+      tracePC(0, im0_);
+
+      call(im0_);
 
       return 13;
     }
 
+    // call 0x38
     case 1: {
       di();
 
-      call(56);
+      tracePC(0, 0x38);
+
+      call(0x38);
 
       return 13;
     }
 
+    // call interrupt from I register and offset on data bus
     case 2: {
       int addr = (getI() << 8) | im2_;
 
       di();
+
+      tracePC(0, getWord(addr));
 
       call(getWord(addr));
 
       return 19;
     }
 
-    default:
+    default: {
       return 0;
+    }
   }
 }
 
@@ -770,44 +853,71 @@ setWord(ushort pos, ushort w)
 
 void
 CZ80::
+setBit(ushort pos, uchar bit)
+{
+  uchar c = getByte(pos);
+
+  SET_BIT(c, bit);
+
+  setByte(pos, c);
+}
+
+void
+CZ80::
+resetBit(ushort pos, uchar bit)
+{
+  uchar c = getByte(pos);
+
+  RESET_BIT(c, bit);
+
+  setByte(pos, c);
+}
+
+void
+CZ80::
 setBytes(uchar *c, ushort pos, ushort len)
 {
   // fail if read-only
 
-  if (flags_[pos] & CZ80_MEM_READ_ONLY) {
+  if (isReadOnly(pos, len)) {
+    if (isWriteTrigger(pos, len)) {
+      if (memData_ && memData_->memTrigger(c, pos, len))
+        return;
+    }
+
     std::cerr << "Invalid memory access @ " << std::hex << int(pos) <<
                  " from " << int(getPC()) << std::dec << std::endl;
+
+    assert(false);
+
     return;
   }
 
-  // set memory
+  //----
 
-  memcpy(&memory_[pos], c, len);
-
-  // debugger hook
+  // pre write notify
+  if (memData_)
+    memData_->memPreWrite(c, pos, len);
 
   if (debugData_)
-    debugData_->memChanged(pos, len);
+    debugData_->memPreWrite(pos, len);
 
-  // mem notify
+  // set memory
+  memcpy(&memory_[pos], c, len);
+
+  // post write notify
+  if (debugData_)
+    debugData_->memPostWrite(pos, len);
 
   if (memData_)
-    memData_->memWrite(c, pos, len);
+    memData_->memPostWrite(c, pos, len);
+
+  //----
 
   // update screen
 
-  if (screen_) {
-    ushort pos1 = pos;
-    ushort pos2 = pos + len - 1;
-
-    while (pos1 <= pos2 && ! (flags_[pos1] & CZ80_MEM_SCREEN))
-      ++pos1;
-
-    while (pos2 >= pos1 && ! (flags_[pos2] & CZ80_MEM_SCREEN))
-      --pos2;
-
-    if (pos1 <= pos2)
-      screen_->memChanged(pos1, pos2 - pos1 + 1);
+  if (screen_ && isScreen(pos, len)) {
+    screen_->screenMemChanged(pos, len);
   }
 }
 
@@ -847,6 +957,15 @@ getWord(ushort pos) const
   return (c[1] << 8) | c[0];
 }
 
+bool
+CZ80::
+getBit(ushort pos, uchar bit) const
+{
+  uchar c = getByte(pos);
+
+  return IS_BIT(c, bit);
+}
+
 void
 CZ80::
 getBytes(uchar *c, ushort pos, ushort len) const
@@ -855,7 +974,47 @@ getBytes(uchar *c, ushort pos, ushort len) const
     memcpy(c, &memory_[pos], len);
 }
 
+uchar
+CZ80::
+getMemory(ushort pos) const
+{
+  return memory_[pos];
+}
+
 //---------
+
+bool
+CZ80::
+isReadOnly(ushort pos, ushort len) const
+{
+  for (ushort i = 0; i < len; ++i, ++pos)
+    if (flags_[pos] & uint(CZ80MemType::READ_ONLY))
+      return true;
+
+  return false;
+}
+
+bool
+CZ80::
+isWriteTrigger(ushort pos, ushort len) const
+{
+  for (ushort i = 0; i < len; ++i, ++pos)
+    if (flags_[pos] & uint(CZ80MemType::WRITE_TRIGGER))
+      return true;
+
+  return false;
+}
+
+bool
+CZ80::
+isScreen(ushort pos, ushort len) const
+{
+  for (ushort i = 0; i < len; ++i, ++pos)
+    if (flags_[pos] & uint(CZ80MemType::SCREEN))
+      return true;
+
+  return false;
+}
 
 void
 CZ80::
@@ -984,6 +1143,8 @@ popPC()
   setPC(pop());
 }
 
+//---------
+
 ushort
 CZ80::
 pop()
@@ -994,8 +1155,6 @@ pop()
 
   return r;
 }
-
-//---------
 
 ushort
 CZ80::
@@ -2484,8 +2643,9 @@ rst(ushort id)
 
     popPC();
   }
-  else
+  else {
     call(id);
+  }
 }
 
 //------------
@@ -2871,16 +3031,14 @@ void
 CZ80::
 di()
 {
-  setIFF1(0);
-  setIFF2(0);
+  setIFF1(0x00);
 }
 
 void
 CZ80::
 ei()
 {
-  setIFF1(1);
-  setIFF2(1);
+  setIFF1(0x01);
 }
 
 void
@@ -3281,11 +3439,13 @@ undump(CFile *file, std::ostream &os)
 
   opData.z80 = this;
 
+  ushort pc = 0; // TODO
+
   while (! file->eof()) {
     if (! opData.undump(file))
       return false;
 
-    opData.printStr(os);
+    opData.printStr(pc, os);
 
     os << std::endl;
   }
@@ -3299,47 +3459,44 @@ void
 CZ80::
 getOpData(CZ80OpData *opData)
 {
-  ushort pc   = getPC();
-  bool   halt = getHalt();
+  ushort pc = getPC();
 
-  readOpData(opData);
-
-  setPC(pc);
-
-  setHalt(halt);
+  readOpData(pc, opData);
 }
 
-void
+bool
 CZ80::
-readOpData(CZ80OpData *opData)
+readOpData(ushort pc, CZ80OpData *opData)
 {
   opData->z80 = this;
-  opData->op  = readOp();
+  opData->op  = readOp(pc);
 
-  if (! opData->op) {
-    halt();
-    return;
-  }
+  if (! opData->op)
+    return false;
 
-  readOpValues(opData->op,
+  readOpValues(pc, opData->op,
                opData->values1, &opData->num_values1,
                opData->values2, &opData->num_values2);
+
+  return true;
 }
 
 CZ80Op *
 CZ80::
-readOp()
+readOp(ushort pc)
 {
-  uchar c = getByte();
+  int len = 0;
 
-  incPC();
+  uchar c = getByte(pc + len);
+
+  ++len;
 
   CZ80Op *op = &op_normal[c];
 
   if (! op->func) {
-    uchar c1 = getByte();
+    uchar c1 = getByte(pc + len);
 
-    incPC();
+    ++len;
 
     if      (c == 0xCB) {
       op = &op_cb[c1];
@@ -3348,14 +3505,14 @@ readOp()
       op = &op_dd[c1];
 
       if (! op->func) {
-        uchar c2 = getByte();
+        uchar c2 = getByte(pc + len);
 
-        incPC();
+        ++len;
 
         if      (c1 == 0xCB) {
-          uchar c3 = getByte();
+          uchar c3 = getByte(pc + len);
 
-          incPC();
+          ++len;
 
           op = &op_dd_cb[c3];
 
@@ -3370,14 +3527,14 @@ readOp()
       op = &op_fd[c1];
 
       if (! op->func) {
-        uchar c2 = getByte();
+        uchar c2 = getByte(pc + len);
 
-        incPC();
+        ++len;
 
         if      (c1 == 0xCB) {
-          uchar c3 = getByte();
+          uchar c3 = getByte(pc + len);
 
-          incPC();
+          ++len;
 
           op = &op_fd_cb[c3];
 
@@ -3387,22 +3544,26 @@ readOp()
     }
   }
 
+  op->len = len;
+
   return op;
 }
 
 void
 CZ80::
-readOpValues(CZ80Op *op, uchar *values1, uchar *num_values1,
+readOpValues(ushort pc, CZ80Op *op, uchar *values1, uchar *num_values1,
              uchar *values2, uchar *num_values2)
 {
+  int len = op->len;
+
   if (op->type1 != 0) {
     *num_values1 = getNumArgValues(op->type1, op->arg1);
 
     for (uint i = 0; i < *num_values1; ++i) {
       if (op->ind < 1280) {
-        values1[i] = getByte();
+        values1[i] = getByte(pc + len);
 
-        incPC();
+        ++len;
       }
       else
         values1[i] = op->edata;
@@ -3413,9 +3574,9 @@ readOpValues(CZ80Op *op, uchar *values1, uchar *num_values1,
 
       for (ushort i = 0; i < *num_values2; ++i) {
         if (op->ind < 1280) {
-          values2[i] = getByte();
+          values2[i] = getByte(pc + len);
 
-          incPC();
+          ++len;
         }
         else
           values2[i] = op->edata;
@@ -3428,6 +3589,8 @@ readOpValues(CZ80Op *op, uchar *values1, uchar *num_values1,
     *num_values1 = 0;
     *num_values2 = 0;
   }
+
+  op->len = len;
 }
 
 uchar
@@ -3608,8 +3771,7 @@ printRegValue8(std::ostream &os, uint reg)
 {
   uchar r = getRegValue8(reg);
 
-  os << getRegisterName(reg) << "  " <<
-        "0x" << CStrUtil::toHexString(r, 2);
+  os << getRegisterName(reg) << "  " << hexString("0x", r);
 }
 
 void
@@ -3619,9 +3781,7 @@ printRegValue16AndPtr(std::ostream &os, uint reg)
   ushort r  = getRegValue16(reg);
   ushort pr = getPRegValue16(reg);
 
-  os << getRegisterName(reg) << " " <<
-         "0x" << CStrUtil::toHexString(r , 4) <<
-        "(0x" << CStrUtil::toHexString(pr, 4) << ") ";
+  os << getRegisterName(reg) << " " << hexString("0x", r) << "(" << hexString("0x", pr) << ") ";
 }
 
 /*----------*/
@@ -3721,6 +3881,36 @@ getIndOp(uint ind)
 
 /*----------*/
 
+std::string
+CZ80::
+hexString(const std::string &prefix, uchar b)
+{
+  return prefix + hexString(b);
+}
+
+std::string
+CZ80::
+hexString(const std::string &prefix, ushort s)
+{
+  return prefix + hexString(s);
+}
+
+std::string
+CZ80::
+hexString(uchar b)
+{
+  return CStrUtil::toHexString(b, 2);
+}
+
+std::string
+CZ80::
+hexString(ushort s)
+{
+  return CStrUtil::toHexString(s, 4);
+}
+
+/*----------*/
+
 void
 CZ80::
 dumpOpCounts(std::ostream &os)
@@ -3784,32 +3974,46 @@ resetOpCounts()
 
 void
 CZ80::
-tracePC()
+tracePC(int d, ushort /*to*/)
 {
-  pc_buffer_.add(registers_.pc_);
+  ushort from = registers_.pc_ - d;
+
+  pcBuffer_.addValue(from);
+
+  if (debugData_)
+    debugData_->traceBackChanged();
 }
 
 void
 CZ80::
 traceBack()
 {
-  pc_buffer_.print(std::cout);
+  pcBuffer_.printValues(std::cout);
 }
 
-CZ80::CircBuffer::
+//------
+
+CircBuffer::
 CircBuffer()
 {
-  pos_      = 0;
-  last_pos_ = 0;
-  size_     = 32;
-  num_      = 0;
-
   buffer_.resize(size_);
 }
 
+ushort
+CircBuffer::
+getValue(uint ind) const
+{
+  int pos = last_pos_ - ind;
+
+  if (pos < 0)
+    pos += size_ - 1;
+
+  return buffer_[pos];
+}
+
 void
-CZ80::CircBuffer::
-add(ushort value)
+CircBuffer::
+addValue(ushort value)
 {
   if (num_ > 0 && buffer_[last_pos_] == value)
     return;
@@ -3825,35 +4029,17 @@ add(ushort value)
 }
 
 void
-CZ80::CircBuffer::
-print(std::ostream &os) const
+CircBuffer::
+printValues(std::ostream &os) const
 {
-  int pos = last_pos_;
-
   for (uint i = 0; i < num_; ++i) {
-    if (pos < 0) pos = size_ - 1;
+    ushort v = getValue(i);
 
-    if (i > 0) os << " ";
+    if (i > 0)
+      os << " ";
 
-    os << "0x" << CStrUtil::toHexString(buffer_[pos], 4);
-
-    --pos;
+    os << "0x" << CStrUtil::toHexString(v, 4);
   }
 
   os << std::endl;
-}
-
-//-------
-
-bool
-CZ80MemData::
-memRead(uchar *, ushort, ushort)
-{
-  return false;
-}
-
-void
-CZ80MemData::
-memWrite(const uchar *, ushort, ushort)
-{
 }

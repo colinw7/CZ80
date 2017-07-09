@@ -1,4 +1,8 @@
 #include <CZ80OpData.h>
+#include <CZ80.h>
+#include <CZ80Op.h>
+#include <CFile.h>
+#include <CStrUtil.h>
 
 const char *
 CZ80OpData::
@@ -42,7 +46,7 @@ undump(CFile *file)
 
   op = CZ80::getIndOp(s);
 
-  if (op == NULL)
+  if (! op)
     return false;
 
   file->read((uchar *) &b, sizeof(b));
@@ -80,10 +84,10 @@ undump(CFile *file)
 
 void
 CZ80OpData::
-dumpTxt(std::ostream &os)
+dumpTxt(ushort pc, std::ostream &os)
 {
-  std::string str1 = CStrUtil::toHexString(z80->getPC(), 4) + " " + toTxt();
-  std::string str2 = getOpString();
+  std::string str1 = CZ80::hexString(pc) + " " + toTxt();
+  std::string str2 = getOpString(pc);
 
   uint len = str1.size();
 
@@ -103,10 +107,10 @@ toTxt()
     str += op->getCode();
 
     for (uint i = 0; i < num_values1; ++i)
-      str += " " + CStrUtil::toHexString(values1[i], 2);
+      str += " " + CZ80::hexString(values1[i]);
 
     for (uint i = 0; i < num_values2; ++i)
-      str += " " + CStrUtil::toHexString(values2[i], 2);
+      str += " " + CZ80::hexString(values2[i]);
   }
   else {
     if (num_values1 > 0)
@@ -166,14 +170,14 @@ toValues(uchar **values, uint *num_values)
 
 void
 CZ80OpData::
-printStr(std::ostream &os)
+printStr(ushort pc, std::ostream &os)
 {
-  os << getOpString();
+  os << getOpString(pc);
 }
 
 std::string
 CZ80OpData::
-getOpString()
+getOpString(ushort pc)
 {
   std::string str = op->getName();
 
@@ -183,12 +187,12 @@ getOpString()
     for ( ; len1 < 5; ++len1)
       str += " ";
 
-    str += getArgString(op->type1, op->arg1, values1, num_values1);
+    str += getArgString(pc, op->type1, op->arg1, values1, num_values1);
 
     if (op->type2 != 0) {
       str += ", ";
 
-      str += getArgString(op->type2, op->arg2, values2, num_values2);
+      str += getArgString(pc, op->type2, op->arg2, values2, num_values2);
     }
   }
 
@@ -197,20 +201,20 @@ getOpString()
 
 std::string
 CZ80OpData::
-getArgString(uint type, uint arg, uchar *args, ushort)
+getArgString(ushort pc, uint type, uint arg, uchar *args, ushort)
 {
   std::string str, name;
 
   if      (type == A_NUM) {
     if      (arg == 1)
-      str += "0x" + CStrUtil::toHexString(args[0], 2);
+      str += CZ80::hexString("0x", args[0]);
     else if (arg == 2) {
       ushort s = (args[1] << 8) | args[0];
 
-      if (z80 != NULL && z80->getValueLabel(s, name))
+      if (z80 && z80->getValueLabel(s, name))
         str += name;
       else
-        str += "0x" + CStrUtil::toHexString(s, 4);
+        str += CZ80::hexString("0x", s);
     }
   }
   else if (type == A_S_NUM) {
@@ -219,41 +223,42 @@ getArgString(uint type, uint arg, uchar *args, ushort)
 
 #ifdef CZ80_RELATIVE_OFFSETS
       if (o >= 0)
-        str += "+0x" + CStrUtil::toHexString( o, 2);
+        str += "+" + CZ80::hexString("0x",  o);
       else
-        str += "-0x" + CStrUtil::toHexString(-o, 2);
+        str += "-" + CZ80::hexString("0x", -o);
 #else
-      if (z80 != NULL) {
-        ushort s = z80->getPC() + o;
+      if (z80) {
+        ushort s = pc + o;
 
         if (z80->getValueLabel(s, name))
           str += name;
         else
-          str += "0x" + CStrUtil::toHexString(s, 4);
+          str += CZ80::hexString("0x", s);
       }
       else {
         if (o >= 0)
-          str += "+0x" + CStrUtil::toHexString( o, 2);
+          str += "+" + CZ80::hexString("0x", (uchar) o);
         else
-          str += "-0x" + CStrUtil::toHexString(-o, 2);
+          str += "-" + CZ80::hexString("0x", (uchar)-o);
       }
 #endif
     }
     else if (arg == 2) {
       ushort s = (args[1] << 8) | args[0];
 
-      str += "0x" + CStrUtil::toHexString(s, 4);
+      str += CZ80::hexString("0x", s);
     }
   }
-  else if (type == A_P_REG)
+  else if (type == A_P_REG) {
     str += "(" + CZ80::getRegisterName(arg) + ")";
+  }
   else if (type == A_P_NUM) {
     if      (arg == 1)
-      str += "(0x" + CStrUtil::toHexString(args[0], 2) + ")";
+      str += "(" + CZ80::hexString("0x", args[0]) + ")";
     else if (arg == 2) {
       ushort s = (args[1] << 8) | args[0];
 
-      str += "(0x" + CStrUtil::toHexString(s, 4) + ")";
+      str += "(" + CZ80::hexString("0x", s) + ")";
     }
   }
   else if (type == A_PO_REG) {
@@ -262,25 +267,28 @@ getArgString(uint type, uint arg, uchar *args, ushort)
     str += "(" + CZ80::getRegisterName(arg);
 
     if (o >= 0)
-      str += "+0x" + CStrUtil::toHexString( o, 2) + ")";
+      str += "+" + CZ80::hexString("0x", (uchar) o) + ")";
     else
-      str += "-0x" + CStrUtil::toHexString(-o, 2) + ")";
+      str += "-" + CZ80::hexString("0x", (uchar)-o) + ")";
   }
-  else if (type == A_FLAG)
+  else if (type == A_FLAG) {
     str += CZ80::getFlagName(arg);
-  else if (type == A_REG)
+  }
+  else if (type == A_REG) {
     str += CZ80::getRegisterName(arg);
-  else if (type == A_CONST)
-    str += "0x" + CStrUtil::toHexString(arg, 2);
+  }
+  else if (type == A_CONST) {
+    str += CZ80::hexString("0x", (uchar) arg);
+  }
   else if (type == A_PO_REG_A) {
     schar o = *(schar *) &args[0];
 
     str += "(" + CZ80::getRegisterName(arg);
 
     if (o >= 0)
-      str += "+0x" + CStrUtil::toHexString( o, 2) + ")->A";
+      str += "+" + CZ80::hexString("0x", (uchar) o) + ")->A";
     else
-      str += "-0x" + CStrUtil::toHexString(-o, 2) + ")->A";
+      str += "-" + CZ80::hexString("0x", (uchar)-o) + ")->A";
   }
   else if (type == A_PO_REG_B) {
     schar o = *(schar *) &args[0];
@@ -288,9 +296,9 @@ getArgString(uint type, uint arg, uchar *args, ushort)
     str += "(" + CZ80::getRegisterName(arg);
 
     if (o >= 0)
-      str += "+0x" + CStrUtil::toHexString( o, 2) + ")->B";
+      str += "+" + CZ80::hexString("0x", (uchar) o) + ")->B";
     else
-      str += "-0x" + CStrUtil::toHexString(-o, 2) + ")->B";
+      str += "-" + CZ80::hexString("0x", (uchar)-o) + ")->B";
   }
   else if (type == A_PO_REG_C) {
     schar o = *(schar *) &args[0];
@@ -298,9 +306,9 @@ getArgString(uint type, uint arg, uchar *args, ushort)
     str += "(" + CZ80::getRegisterName(arg);
 
     if (o >= 0)
-      str += "+0x" + CStrUtil::toHexString( o, 2) + ")->C";
+      str += "+" + CZ80::hexString("0x", (uchar) o) + ")->C";
     else
-      str += "-0x" + CStrUtil::toHexString(-o, 2) + ")->C";
+      str += "-" + CZ80::hexString("0x", (uchar)-o) + ")->C";
   }
   else if (type == A_PO_REG_D) {
     schar o = *(schar *) &args[0];
@@ -308,9 +316,9 @@ getArgString(uint type, uint arg, uchar *args, ushort)
     str += "(" + CZ80::getRegisterName(arg);
 
     if (o >= 0)
-      str += "+0x" + CStrUtil::toHexString( o, 2) + ")->D";
+      str += "+" + CZ80::hexString("0x", (uchar) o) + ")->D";
     else
-      str += "-0x" + CStrUtil::toHexString(-o, 2) + ")->D";
+      str += "-" + CZ80::hexString("0x", (uchar)-o) + ")->D";
   }
   else if (type == A_PO_REG_E) {
     schar o = *(schar *) &args[0];
@@ -318,9 +326,9 @@ getArgString(uint type, uint arg, uchar *args, ushort)
     str += "(" + CZ80::getRegisterName(arg);
 
     if (o >= 0)
-      str += "+0x" + CStrUtil::toHexString( o, 2) + ")->E";
+      str += "+" + CZ80::hexString("0x", (uchar) o) + ")->E";
     else
-      str += "-0x" + CStrUtil::toHexString(-o, 2) + ")->E";
+      str += "-" + CZ80::hexString("0x", (uchar)-o) + ")->E";
   }
   else if (type == A_PO_REG_H) {
     schar o = *(schar *) &args[0];
@@ -328,9 +336,9 @@ getArgString(uint type, uint arg, uchar *args, ushort)
     str += "(" + CZ80::getRegisterName(arg);
 
     if (o >= 0)
-      str += "+0x" + CStrUtil::toHexString( o, 2) + ")->H";
+      str += "+" + CZ80::hexString("0x", (uchar) o) + ")->H";
     else
-      str += "-0x" + CStrUtil::toHexString(-o, 2) + ")->H";
+      str += "-" + CZ80::hexString("0x", (uchar)-o) + ")->H";
   }
   else if (type == A_PO_REG_L) {
     schar o = *(schar *) &args[0];
@@ -338,9 +346,9 @@ getArgString(uint type, uint arg, uchar *args, ushort)
     str += "(" + CZ80::getRegisterName(arg);
 
     if (o >= 0)
-      str += "+0x" + CStrUtil::toHexString( o, 2) + ")->L";
+      str += "+" + CZ80::hexString("0x", (uchar) o) + ")->L";
     else
-      str += "-0x" + CStrUtil::toHexString(-o, 2) + ")->L";
+      str += "-" + CZ80::hexString("0x", (uchar)-o) + ")->L";
   }
   else
     str += "??";

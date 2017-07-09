@@ -1,34 +1,27 @@
 #include <CZ80DebugData.h>
+#include <CZ80Trace.h>
+#include <CBits.h>
 
 #define CZ80_CALL_TRACE_PROC(n) { \
-TraceList::iterator ps = trace_list_.begin(); \
-TraceList::iterator pe = trace_list_.end  (); \
- \
-for ( ; ps != pe; ++ps) \
-  (*ps)->n(); \
+for (const auto &trace : traceList_) \
+  trace->n(); \
 }
 
 #define CZ80_CALL_TRACE_PROC_1(n,a1) { \
-TraceList::iterator ps = trace_list_.begin(); \
-TraceList::iterator pe = trace_list_.end  (); \
- \
-for ( ; ps != pe; ++ps) \
-  (*ps)->n(a1); \
+for (const auto &trace : traceList_) \
+  trace->n(a1); \
 }
 
 #define CZ80_CALL_TRACE_PROC_2(n,a1,a2) { \
-TraceList::iterator ps = trace_list_.begin(); \
-TraceList::iterator pe = trace_list_.end  (); \
- \
-for ( ; ps != pe; ++ps) \
-  (*ps)->n(a1,a2); \
+for (const auto &trace : traceList_) \
+  trace->n(a1,a2); \
 }
 
 void
 CZ80DebugData::
 addTrace(CZ80Trace *trace)
 {
-  trace_list_.push_back(trace);
+  traceList_.push_back(trace);
 }
 
 void
@@ -73,31 +66,36 @@ void
 CZ80DebugData::
 callPostStepProcs()
 {
-  TraceList::iterator ps = trace_list_.begin();
-  TraceList::iterator pe = trace_list_.end  ();
+  for (const auto &trace : traceList_) {
+    if (af_changed_  ) trace->regChanged(CZ80Reg::AF);
+    if (bc_changed_  ) trace->regChanged(CZ80Reg::BC);
+    if (de_changed_  ) trace->regChanged(CZ80Reg::DE);
+    if (hl_changed_  ) trace->regChanged(CZ80Reg::HL);
+    if (ix_changed_  ) trace->regChanged(CZ80Reg::IX);
+    if (iy_changed_  ) trace->regChanged(CZ80Reg::IY);
+    if (sp_changed_  ) trace->regChanged(CZ80Reg::SP);
+    if (pc_changed_  ) trace->regChanged(CZ80Reg::PC);
+    if (i_changed_   ) trace->regChanged(CZ80Reg::I);
+    if (im_changed_  ) trace->regChanged(CZ80Reg::IM);
+    if (iff_changed_ ) trace->regChanged(CZ80Reg::IFF);
+    if (af_1_changed_) trace->regChanged(CZ80Reg::AF1);
+    if (bc_1_changed_) trace->regChanged(CZ80Reg::BC1);
+    if (de_1_changed_) trace->regChanged(CZ80Reg::DE1);
+    if (hl_1_changed_) trace->regChanged(CZ80Reg::HL1);
 
-  for ( ; ps != pe; ++ps) {
-    if (af_changed_  ) (*ps)->regChanged(CZ80_REG_AF);
-    if (bc_changed_  ) (*ps)->regChanged(CZ80_REG_BC);
-    if (de_changed_  ) (*ps)->regChanged(CZ80_REG_DE);
-    if (hl_changed_  ) (*ps)->regChanged(CZ80_REG_HL);
-    if (ix_changed_  ) (*ps)->regChanged(CZ80_REG_IX);
-    if (iy_changed_  ) (*ps)->regChanged(CZ80_REG_IY);
-    if (sp_changed_  ) (*ps)->regChanged(CZ80_REG_SP);
-    if (pc_changed_  ) (*ps)->regChanged(CZ80_REG_PC);
-    if (i_changed_   ) (*ps)->regChanged(CZ80_REG_I);
-    if (im_changed_  ) (*ps)->regChanged(CZ80_REG_IM);
-    if (iff_changed_ ) (*ps)->regChanged(CZ80_REG_IFF);
-    if (af_1_changed_) (*ps)->regChanged(CZ80_REG_AF1);
-    if (bc_1_changed_) (*ps)->regChanged(CZ80_REG_BC1);
-    if (de_1_changed_) (*ps)->regChanged(CZ80_REG_DE1);
-    if (hl_1_changed_) (*ps)->regChanged(CZ80_REG_HL1);
+    if (memChanged_)
+      trace->memChanged(memChangedPos1_, memChangedPos2_ - memChangedPos1_ + 1);
 
-    if (mem_changed_)
-      (*ps)->memChanged(mem_changed_pos1_, mem_changed_pos2_ - mem_changed_pos1_ + 1);
-
-    (*ps)->postStepProc();
+    trace->postStepProc();
   }
+}
+
+void
+CZ80DebugData::
+callRegChanged(const CZ80Reg &reg)
+{
+  for (const auto &trace : traceList_)
+    trace->regChanged(reg);
 }
 
 void
@@ -112,7 +110,7 @@ CZ80DebugData::
 addBreakpoint(ushort pc)
 {
   ushort row = pc >> 5;
-  ushort col = pc & 0x1F;
+  ushort col = pc & 0x1F; // 0-31 (32 bit flags)
 
   SET_BIT(breakpoints_[row], col);
 
@@ -124,7 +122,7 @@ CZ80DebugData::
 removeBreakpoint(ushort pc)
 {
   ushort row = pc >> 5;
-  ushort col = pc & 0x1F;
+  ushort col = pc & 0x1F; // 0-31 (32 bit flags)
 
   RST_BIT(breakpoints_[row], col);
 
@@ -168,17 +166,44 @@ getBreakpoints(std::vector<ushort> &addrs)
 
 void
 CZ80DebugData::
-memChanged(ushort pos, ushort len)
+memPreWrite(ushort /*pos*/, ushort /*len*/)
+{
+}
+
+void
+CZ80DebugData::
+memPostWrite(ushort pos, ushort len)
 {
   ushort pos2 = pos + len - 1;
 
-  if (! mem_changed_) {
-    mem_changed_      = true;
-    mem_changed_pos1_ = pos;
-    mem_changed_pos2_ = pos2;
+  if (! memChanged_) {
+    memChanged_     = true;
+    memChangedPos1_ = pos;
+    memChangedPos2_ = pos2;
   }
   else {
-    mem_changed_pos1_ = std::min(mem_changed_pos1_, pos);
-    mem_changed_pos2_ = std::max(mem_changed_pos2_, pos2);
+    memChangedPos1_ = std::min(memChangedPos1_, pos);
+    memChangedPos2_ = std::max(memChangedPos2_, pos2);
   }
+}
+
+void
+CZ80DebugData::
+traceBackChanged()
+{
+  CZ80_CALL_TRACE_PROC(traceBackChanged);
+}
+
+void
+CZ80DebugData::
+setStop(bool b)
+{
+  CZ80_CALL_TRACE_PROC_1(setStop, b);
+}
+
+void
+CZ80DebugData::
+setHalt(bool b)
+{
+  CZ80_CALL_TRACE_PROC_1(setHalt, b);
 }

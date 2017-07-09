@@ -1,10 +1,13 @@
-#include <std_c++.h>
-#include <CStrUtil/CStrUtil.h>
-#include <CXLib/CXLib.h>
-#include <CZ80TclLib/CZ80TclLib.h>
-#include <CZ80TclLib/CZ80TclLibScreen.h>
+#include <CZ80TclLib.h>
+#include <CZ80TclLibScreen.h>
+#include <CZ80RstData.h>
+#include <CZ80OpData.h>
 
-#include "CZ80TclLib.k"
+#include <CTclAppCommand.h>
+#include <CXLib.h>
+#include <CStrUtil.h>
+
+#include <CZ80TclLib.k>
 
 #define CZ80TclLibAppCommand(N) \
 class N : public CTclAppCommand { \
@@ -208,7 +211,7 @@ setMemoryText()
 
   z80_->setPC(pos);
 
-  string str;
+  std::string str;
 
   unsigned int pos1 = pos;
 
@@ -243,11 +246,11 @@ setMemoryText()
   z80_->setPC(pos1);
 }
 
-string
+std::string
 CZ80TclLib::
 getByteChar(unsigned char c)
 {
-  string str;
+  std::string str;
 
   if (c > 31 && c < 80) {
     if      (c == '$')
@@ -289,7 +292,7 @@ setInstructionsText()
 
   CZ80OpData op_data;
 
-  string str;
+  std::string str;
 
   unsigned int this_pc = z80_->getPC();
   unsigned int last_pc = this_pc;
@@ -310,10 +313,10 @@ setInstructionsText()
 
     //-----
 
-    z80_->readOpData(&op_data);
+    z80_->readOpData(this_pc, &op_data);
 
     last_pc = this_pc;
-    this_pc = z80_->getPC();
+    this_pc = this_pc + op_data.op->len;
 
     //-----
 
@@ -338,7 +341,7 @@ setInstructionsText()
     str = " ; ";
 
     if (op_data.op != NULL)
-      str += op_data.getOpString();
+      str += op_data.getOpString(this_pc);
     else
       str += "??";
 
@@ -364,7 +367,7 @@ setStackText()
 
   sp -= 4;
 
-  string str;
+  std::string str;
 
   for (unsigned short i = 0; i < 16; ++i) {
     unsigned short sp1 = sp + i;
@@ -392,12 +395,12 @@ void
 CZ80TclLib::
 setBreakpointText()
 {
-  static list<unsigned int> breakpoints_;
+  static std::list<unsigned int> breakpoints_;
 
   eval("CZ80TclLibClearBreakpointText");
 
-  list<unsigned int>::iterator p1 = breakpoints_.begin();
-  list<unsigned int>::iterator p2 = breakpoints_.end  ();
+  std::list<unsigned int>::iterator p1 = breakpoints_.begin();
+  std::list<unsigned int>::iterator p2 = breakpoints_.end  ();
 
   for ( ; p1 != p2; ++p1)
     eval("CZ80TclLibUnmarkBreakpoint {%d}", *p1);
@@ -406,11 +409,11 @@ setBreakpointText()
 
   //----
 
-  vector<unsigned short> addrs;
+  std::vector<unsigned short> addrs;
 
   z80_->getBreakpoints(addrs);
 
-  string str;
+  std::string str;
 
   for (unsigned int i = 0; i < addrs.size(); ++i) {
     str = CStrUtil::toHexString(addrs[i], 4);
@@ -451,7 +454,7 @@ addCommands()
   new CZ80TclLibScreenCanvasCmd(this);
 }
 
-string
+std::string
 CZ80TclLib::
 getTclStr()
 {
@@ -495,7 +498,7 @@ regChanged(CZ80Reg reg)
 {
   if (! debug_ || ! follow_) return;
 
-  if (reg == CZ80_REG_AF  || reg == CZ80_REG_NONE) {
+  if (reg == CZ80Reg::AF  || reg == CZ80Reg::NONE) {
     setStringVar("cz80_tcl_af", CStrUtil::toHexString(z80_->getAF(), 4));
 
     setIntegerVar("cz80_tcl_c_flag", z80_->tstCFlag());
@@ -507,36 +510,36 @@ regChanged(CZ80Reg reg)
     setIntegerVar("cz80_tcl_z_flag", z80_->tstZFlag());
     setIntegerVar("cz80_tcl_s_flag", z80_->tstSFlag());
   }
-  if (reg == CZ80_REG_BC  || reg == CZ80_REG_NONE)
+  if (reg == CZ80Reg::BC  || reg == CZ80Reg::NONE)
     setStringVar("cz80_tcl_bc", CStrUtil::toHexString(z80_->getBC(), 4));
-  if (reg == CZ80_REG_DE  || reg == CZ80_REG_NONE)
+  if (reg == CZ80Reg::DE  || reg == CZ80Reg::NONE)
     setStringVar("cz80_tcl_de", CStrUtil::toHexString(z80_->getDE(), 4));
-  if (reg == CZ80_REG_HL  || reg == CZ80_REG_NONE)
+  if (reg == CZ80Reg::HL  || reg == CZ80Reg::NONE)
     setStringVar("cz80_tcl_hl", CStrUtil::toHexString(z80_->getHL(), 4));
-  if (reg == CZ80_REG_IX  || reg == CZ80_REG_NONE)
+  if (reg == CZ80Reg::IX  || reg == CZ80Reg::NONE)
     setStringVar("cz80_tcl_ix" , CStrUtil::toHexString(z80_->getIX (), 4));
-  if (reg == CZ80_REG_IY  || reg == CZ80_REG_NONE)
+  if (reg == CZ80Reg::IY  || reg == CZ80Reg::NONE)
     setStringVar("cz80_tcl_iy" , CStrUtil::toHexString(z80_->getIY (), 4));
-  if (reg == CZ80_REG_SP  || reg == CZ80_REG_NONE) {
+  if (reg == CZ80Reg::SP  || reg == CZ80Reg::NONE) {
     setStringVar("cz80_tcl_sp", CStrUtil::toHexString(z80_->getSP(), 4));
 
     setStackText();
   }
-  if (reg == CZ80_REG_PC  || reg == CZ80_REG_NONE)
+  if (reg == CZ80Reg::PC  || reg == CZ80Reg::NONE)
     setStringVar("cz80_tcl_pc" , CStrUtil::toHexString(z80_->getPC (), 4));
-  if (reg == CZ80_REG_I   || reg == CZ80_REG_NONE)
+  if (reg == CZ80Reg::I   || reg == CZ80Reg::NONE)
     setStringVar("cz80_tcl_i"  , CStrUtil::toHexString(z80_->getI  (), 2));
-  if (reg == CZ80_REG_R   || reg == CZ80_REG_NONE)
+  if (reg == CZ80Reg::R   || reg == CZ80Reg::NONE)
     setStringVar("cz80_tcl_r"  , CStrUtil::toHexString(z80_->getR  (), 2));
-  if (reg == CZ80_REG_AF1 || reg == CZ80_REG_NONE)
+  if (reg == CZ80Reg::AF1 || reg == CZ80Reg::NONE)
     setStringVar("cz80_tcl_af_1" , CStrUtil::toHexString(z80_->getAF1(), 4));
-  if (reg == CZ80_REG_BC1 || reg == CZ80_REG_NONE)
+  if (reg == CZ80Reg::BC1 || reg == CZ80Reg::NONE)
     setStringVar("cz80_tcl_bc_1" , CStrUtil::toHexString(z80_->getBC1(), 4));
-  if (reg == CZ80_REG_DE1 || reg == CZ80_REG_NONE)
+  if (reg == CZ80Reg::DE1 || reg == CZ80Reg::NONE)
     setStringVar("cz80_tcl_de_1" , CStrUtil::toHexString(z80_->getDE1(), 4));
-  if (reg == CZ80_REG_HL1 || reg == CZ80_REG_NONE)
+  if (reg == CZ80Reg::HL1 || reg == CZ80Reg::NONE)
     setStringVar("cz80_tcl_hl_1" , CStrUtil::toHexString(z80_->getHL1(), 4));
-  if (reg == CZ80_REG_IFF || reg == CZ80_REG_NONE)
+  if (reg == CZ80Reg::IFF || reg == CZ80Reg::NONE)
     setStringVar("cz80_tcl_iff", CStrUtil::toHexString(z80_->getIFF(), 2));
 }
 
@@ -555,7 +558,7 @@ memChanged(unsigned short pos, unsigned short len)
 
       unsigned char c = z80_->getByte(pos);
 
-      string str = getByteChar(c);
+      std::string str = getByteChar(c);
 
       eval("CZ80TclLibSetMem %d %d {%s} \"%s\"",
            posd + 1, posl, CStrUtil::toHexString(c, 2).c_str(), str.c_str());
@@ -577,7 +580,7 @@ void
 CZ80TclLib::
 updateAll()
 {
-  regChanged(CZ80_REG_NONE);
+  regChanged(CZ80Reg::NONE);
 
   updateOp();
 
@@ -592,7 +595,7 @@ updateOp()
 
   z80_->getOpData(&op_data);
 
-  string str = op_data.getOpString();
+  std::string str = op_data.getOpString(z80_->getPC());
 
   setStringVar("cz80_tcl_op_data", str);
 }

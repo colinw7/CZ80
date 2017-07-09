@@ -1,4 +1,5 @@
 #include <CZ80Disassemble.h>
+#include <CZ80OpData.h>
 
 bool
 CZ80::
@@ -12,12 +13,12 @@ CZ80::
 disassemble(ushort pos, ushort len, std::ostream &os)
 {
   ushort pos1 = pos;
-  ushort pos2 = getPC() + len;
+  ushort pos2 = pos + len;
 
   std::string str;
   ushort      len1, i;
 
-  CZ80OpData op_data;
+  CZ80OpData opData;
 
   //----
 
@@ -25,19 +26,20 @@ disassemble(ushort pos, ushort len, std::ostream &os)
 
   uint id = 1;
 
-  setPC(pos);
+  // parse labels addresses
+  while (pos1 < pos2) {
+    readOpData(pos1, &opData);
 
-  while ((pos1 = getPC()) < pos2) {
-    readOpData(&op_data);
-
-    if (op_data.op == NULL)
+    if (! opData.op)
       continue;
 
-    if      (op_data.op->id == OP_JP || op_data.op->id == OP_CALL) {
-      if      (op_data.op->type1 == A_NUM)
-        addr = op_data.getUWord1();
-      else if (op_data.op->type2 == A_NUM)
-        addr = op_data.getUWord2();
+    int epos = pos1 + opData.op->len;
+
+    if      (opData.op->id == OP_JP || opData.op->id == OP_CALL) {
+      if      (opData.op->type1 == A_NUM)
+        addr = opData.getUWord1();
+      else if (opData.op->type2 == A_NUM)
+        addr = opData.getUWord2();
       else
         continue;
 
@@ -47,11 +49,11 @@ disassemble(ushort pos, ushort len, std::ostream &os)
         ++id;
       }
     }
-    else if (op_data.op->id == OP_JR || op_data.op->id == OP_DJNZ) {
-      if      (op_data.op->type1 == A_S_NUM)
-        addr = getPC() + op_data.getSByte1();
-      else if (op_data.op->type2 == A_S_NUM)
-        addr = getPC() + op_data.getSByte2();
+    else if (opData.op->id == OP_JR || opData.op->id == OP_DJNZ) {
+      if      (opData.op->type1 == A_S_NUM)
+        addr = epos + opData.getSByte1();
+      else if (opData.op->type2 == A_S_NUM)
+        addr = epos + opData.getSByte2();
 
       if (! getValueLabel(addr, str)) {
         setLabelValue("LABEL_" + CStrUtil::toString(id), addr);
@@ -59,30 +61,35 @@ disassemble(ushort pos, ushort len, std::ostream &os)
         ++id;
       }
     }
+
+    pos1 += opData.op->len;
   }
 
   //----
 
-  setPC(pos);
+  // disassemble instructions
+  pos1 = pos;
 
-  os << "  ORG  0x" << CStrUtil::toHexString(pos, 4) << std::endl;
+  os << "  ORG  0x" << CStrUtil::toHexString(pos1, 4) << std::endl;
 
   os << std::endl;
 
-  while ((pos1 = getPC()) < pos2) {
+  while (pos1 < pos2) {
     if (getValueLabel(pos1, str))
       os << str << ":" << std::endl;
 
-    //-----
+    //----
 
-    readOpData(&op_data);
+    readOpData(pos1, &opData);
 
-    if (op_data.op == NULL)
+    if (! opData.op)
       continue;
 
-    //-----
+    int epos = pos1 + opData.op->len;
 
-    str = op_data.getOpString();
+    //----
+
+    str = opData.getOpString(pos1);
 
     os << "  " << str;
 
@@ -95,7 +102,7 @@ disassemble(ushort pos, ushort len, std::ostream &os)
 
     len1 = 4;
 
-    for (i = pos1; i < getPC(); ++i) {
+    for (i = pos1; i < epos; ++i) {
       os << " " << CStrUtil::toHexString(getByte(i), 2);
 
       len1 += 3;
@@ -105,6 +112,10 @@ disassemble(ushort pos, ushort len, std::ostream &os)
       os << " ";
 
     os << std::endl;
+
+    //----
+
+    pos1 += opData.op->len;
   }
 
   return true;

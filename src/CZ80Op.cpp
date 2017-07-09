@@ -1,5 +1,6 @@
 #include <CZ80.h>
 #include <CZ80Op.h>
+#include <CZ80OpData.h>
 #include <CStrUtil.h>
 
 const char *
@@ -18,7 +19,9 @@ dumpCount(std::ostream &os)
   while (count_str.size() < 8)
     count_str += " ";
 
-  std::string txt = toTxt();
+  ushort pc = 0; // TODO ?
+
+  std::string txt = toTxt(pc);
 
   os << count_str << " " << txt << std::endl;
 
@@ -27,21 +30,21 @@ dumpCount(std::ostream &os)
 
 std::string
 CZ80Op::
-toTxt()
+toTxt(ushort pc)
 {
-  CZ80OpData op_data;
+  CZ80OpData opData;
 
-  op_data.z80 = NULL;
-  op_data.op  = this;
+  opData.z80 = nullptr;
+  opData.op  = this;
 
-  op_data.num_values1 = 2;
-  op_data.values1[0]  = 0;
-  op_data.values1[1]  = 0;
-  op_data.num_values2 = 2;
-  op_data.values2[0]  = 0;
-  op_data.values2[1]  = 0;
+  opData.num_values1 = 2;
+  opData.values1[0]  = 0;
+  opData.values1[1]  = 0;
+  opData.num_values2 = 2;
+  opData.values2[0]  = 0;
+  opData.values2[1]  = 0;
 
-  return op_data.getOpString();
+  return opData.getOpString(pc);
 }
 
 std::string
@@ -184,21 +187,25 @@ getSize()
   if (ind >= 1280)
     ++size;
 
-  if      (type1 == A_NUM || type1 == A_S_NUM || type1 == A_P_NUM)
+  if      (type1 == A_NUM || type1 == A_S_NUM || type1 == A_P_NUM) {
     size += arg1;
+  }
   else if (type1 == A_PO_REG   || type1 == A_PO_REG_A ||
            type1 == A_PO_REG_B || type1 == A_PO_REG_C ||
            type1 == A_PO_REG_D || type1 == A_PO_REG_E ||
-           type1 == A_PO_REG_H || type1 == A_PO_REG_L)
+           type1 == A_PO_REG_H || type1 == A_PO_REG_L) {
     ++size;
+  }
 
-  if      (type2 == A_NUM || type2 == A_S_NUM || type2 == A_P_NUM)
+  if      (type2 == A_NUM || type2 == A_S_NUM || type2 == A_P_NUM) {
     size += arg2;
+  }
   else if (type2 == A_PO_REG   || type2 == A_PO_REG_A ||
            type2 == A_PO_REG_B || type2 == A_PO_REG_C ||
            type2 == A_PO_REG_D || type2 == A_PO_REG_E ||
-           type2 == A_PO_REG_H || type2 == A_PO_REG_L)
+           type2 == A_PO_REG_H || type2 == A_PO_REG_L) {
     ++size;
+  }
 
   return size;
 }

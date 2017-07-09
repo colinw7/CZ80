@@ -1,4 +1,5 @@
 #include <CZ80Rst.h>
+#include <CZ80RstData.h>
 
 void
 CZ80StdRstData::
@@ -12,37 +13,37 @@ rst(ushort id)
 
       switch (id1) {
         case 0x80: { // PRINT_A
-          std::cout << "A = " << CStrUtil::toHexString(z80.getA(), 2);
+          std::cout << "A = " << CZ80::hexString(z80.getA());
           if (newline_) std::cout << std::endl;
           break;
         }
         case 0x81: { // PRINT_B
-          std::cout << "B = " << CStrUtil::toHexString(z80.getB(), 2);
+          std::cout << "B = " << CZ80::hexString(z80.getB());
           if (newline_) std::cout << std::endl;
           break;
         }
         case 0x82: { // PRINT_C
-          std::cout << "C = " << CStrUtil::toHexString(z80.getC(), 2);
+          std::cout << "C = " << CZ80::hexString(z80.getC());
           if (newline_) std::cout << std::endl;
           break;
         }
         case 0x83: { // PRINT_D
-          std::cout << "D = " << CStrUtil::toHexString(z80.getD(), 2);
+          std::cout << "D = " << CZ80::hexString(z80.getD());
           if (newline_) std::cout << std::endl;
           break;
         }
         case 0x84: { // PRINT_E
-          std::cout << "E = " << CStrUtil::toHexString(z80.getE(), 2);
+          std::cout << "E = " << CZ80::hexString(z80.getE());
           if (newline_) std::cout << std::endl;
           break;
         }
         case 0x85: { // PRINT_H
-          std::cout << "H = " << CStrUtil::toHexString(z80.getH(), 2);
+          std::cout << "H = " << CZ80::hexString(z80.getH());
           if (newline_) std::cout << std::endl;
           break;
         }
         case 0x86: { // PRINT_L
-          std::cout << "L = " << CStrUtil::toHexString(z80.getL(), 2);
+          std::cout << "L = " << CZ80::hexString(z80.getL());
           if (newline_) std::cout << std::endl;
           break;
         }
@@ -52,7 +53,7 @@ rst(ushort id)
           break;
         }
         case 0x88: { // PRINT_F
-          std::cout << "F = " << CStrUtil::toHexString(z80.getF(), 2);
+          std::cout << "F = " << CZ80::hexString(z80.getF());
           if (newline_) std::cout << std::endl;
           break;
         }
@@ -63,54 +64,54 @@ rst(ushort id)
         }
 
         case 0x90: { // PRINT_AF
-          std::cout << "AF = " << CStrUtil::toHexString(z80.getAF(), 4);
+          std::cout << "AF = " << CZ80::hexString(z80.getAF());
           if (newline_) std::cout << std::endl;
           break;
         }
         case 0x91: { // PRINT_BC
-          std::cout << "BC = " << CStrUtil::toHexString(z80.getBC(), 4);
+          std::cout << "BC = " << CZ80::hexString(z80.getBC());
           if (newline_) std::cout << std::endl;
           break;
         }
         case 0x92: { // PRINT_DE
-          std::cout << "DE = " << CStrUtil::toHexString(z80.getDE(), 4);
+          std::cout << "DE = " << CZ80::hexString(z80.getDE());
           if (newline_) std::cout << std::endl;
           break;
         }
         case 0x93: { // PRINT_HL
-          std::cout << "HL = " << CStrUtil::toHexString(z80.getHL(), 4);
+          std::cout << "HL = " << CZ80::hexString(z80.getHL());
           if (newline_) std::cout << std::endl;
           break;
         }
         case 0x94: { // PRINT_IX
-          std::cout << "IX = " << CStrUtil::toHexString(z80.getIX(), 4);
+          std::cout << "IX = " << CZ80::hexString(z80.getIX());
           if (newline_) std::cout << std::endl;
           break;
         }
         case 0x95: { // PRINT_IY
-          std::cout << "IY = " << CStrUtil::toHexString(z80.getIY(), 4);
+          std::cout << "IY = " << CZ80::hexString(z80.getIY());
           if (newline_) std::cout << std::endl;
           break;
         }
         case 0x96: { // PRINT_SP
-          std::cout << "SP = " << CStrUtil::toHexString(z80.getSP(), 4);
+          std::cout << "SP = " << CZ80::hexString(z80.getSP());
           if (newline_) std::cout << std::endl;
           break;
         }
         case 0x97: { // PRINT_PC
-          std::cout << "PC = " << CStrUtil::toHexString(z80.getPC(), 4);
+          std::cout << "PC = " << CZ80::hexString(z80.getPC());
           if (newline_) std::cout << std::endl;
           break;
         }
         case 0x98: { // PRINT_PHL
-          std::cout << "(HL) = " << CStrUtil::toHexString(z80.getPHL(), 2);
+          std::cout << "(HL) = " << CZ80::hexString(z80.getPHL());
           if (newline_) std::cout << std::endl;
           break;
         }
         case 0x99: { // PRINT_PO_IX
           short o = (short) z80.getByte(pc); pc += 1;
 
-          std::cout << "(IX+" << o << ") = " << CStrUtil::toHexString(z80.getPOIX(o), 2);
+          std::cout << "(IX+" << o << ") = " << CZ80::hexString(z80.getPOIX(o));
           if (newline_) std::cout << std::endl;
 
           break;
@@ -118,7 +119,7 @@ rst(ushort id)
         case 0x9A: { // PRINT_PO_IY
           short o = (short) z80.getByte(pc); pc += 1;
 
-          std::cout << "(IY+" << o << ") = " << CStrUtil::toHexString(z80.getPOIY(o), 2);
+          std::cout << "(IY+" << o << ") = " << CZ80::hexString(z80.getPOIY(o));
           if (newline_) std::cout << std::endl;
 
           break;
@@ -128,7 +129,7 @@ rst(ushort id)
           ushort a = z80.getWord(pc); pc += 2;
           uchar  d = z80.getByte(a );
 
-          std::cout << CStrUtil::toHexString(a, 4) << " = " << CStrUtil::toHexString(d, 2);
+          std::cout << CZ80::hexString(a) << " = " << CZ80::hexString(d);
           if (newline_) std::cout << std::endl;
 
           break;
@@ -137,7 +138,7 @@ rst(ushort id)
           ushort a = z80.getWord(pc); pc += 2;
           ushort d = z80.getWord(a );
 
-          std::cout << CStrUtil::toHexString(a, 4) << " = " << CStrUtil::toHexString(d, 4);
+          std::cout << CZ80::hexString(a) << " = " << CZ80::hexString(d);
           if (newline_) std::cout << std::endl;
 
           break;
@@ -146,12 +147,12 @@ rst(ushort id)
           ushort a = z80.getWord(pc); pc += 2;
           ushort n = z80.getWord(pc); pc += 2;
 
-          std::cout << CStrUtil::toHexString(a, 4) << " =";
+          std::cout << CZ80::hexString(a) << " =";
 
           for (uint i = 0; i < n; ++i) {
             uchar d = z80.getByte(a + i);
 
-            std::cout << " " << CStrUtil::toHexString(d, 2);
+            std::cout << " " << CZ80::hexString(d);
           }
 
           if (newline_) std::cout << std::endl;
@@ -162,12 +163,12 @@ rst(ushort id)
           ushort a = z80.getWord(pc); pc += 2;
           ushort n = z80.getWord(pc); pc += 2;
 
-          std::cout << CStrUtil::toHexString(a, 4) << " =";
+          std::cout << CZ80::hexString(a) << " =";
 
           for (uint i = 0; i < n; ++i) {
             ushort d = z80.getWord(a + 2*i);
 
-            std::cout << " " << CStrUtil::toHexString(d, 4);
+            std::cout << " " << CZ80::hexString(d);
           }
 
           if (newline_) std::cout << std::endl;
@@ -177,7 +178,7 @@ rst(ushort id)
         case 0xA4: { // PRINT_VALUE
           ushort a = z80.getWord(pc); pc += 2;
 
-          std::cout << CStrUtil::toHexString(a, 4);
+          std::cout << CZ80::hexString(a);
 
           if (newline_) std::cout << std::endl;
 
@@ -211,8 +212,8 @@ rst(ushort id)
           ushort a2 = z80.getA();
 
           if (a1 != a2)
-            std::cerr << "Error " << CStrUtil::toHexString(a1, 2) << " != " <<
-                                     CStrUtil::toHexString(a2, 2) << std::endl;
+            std::cerr << "Error " << CZ80::hexString(a1) << " != " <<
+                                     CZ80::hexString(a2) << std::endl;
 
           break;
         }
@@ -221,8 +222,8 @@ rst(ushort id)
           ushort b2 = z80.getB();
 
           if (b1 != b2)
-            std::cerr << "Error " << CStrUtil::toHexString(b1, 2) << " != " <<
-                                     CStrUtil::toHexString(b2, 2) << std::endl;
+            std::cerr << "Error " << CZ80::hexString(b1) << " != " <<
+                                     CZ80::hexString(b2) << std::endl;
 
           break;
         }
@@ -231,8 +232,8 @@ rst(ushort id)
           ushort c2 = z80.getC();
 
           if (c1 != c2)
-            std::cerr << "Error " << CStrUtil::toHexString(c1, 2) << " != " <<
-                                     CStrUtil::toHexString(c2, 2) << std::endl;
+            std::cerr << "Error " << CZ80::hexString(c1) << " != " <<
+                                     CZ80::hexString(c2) << std::endl;
 
           break;
         }
@@ -241,8 +242,8 @@ rst(ushort id)
           ushort d2 = z80.getD();
 
           if (d1 != d2)
-            std::cerr << "Error " << CStrUtil::toHexString(d1, 2) << " != " <<
-                                     CStrUtil::toHexString(d2, 2) << std::endl;
+            std::cerr << "Error " << CZ80::hexString(d1) << " != " <<
+                                     CZ80::hexString(d2) << std::endl;
 
           break;
         }
@@ -251,8 +252,8 @@ rst(ushort id)
           ushort e2 = z80.getE();
 
           if (e1 != e2)
-            std::cerr << "Error " << CStrUtil::toHexString(e1, 2) << " != " <<
-                                     CStrUtil::toHexString(e2, 2) << std::endl;
+            std::cerr << "Error " << CZ80::hexString(e1) << " != " <<
+                                     CZ80::hexString(e2) << std::endl;
 
           break;
         }
@@ -261,8 +262,8 @@ rst(ushort id)
           ushort h2 = z80.getH();
 
           if (h1 != h2)
-            std::cerr << "Error " << CStrUtil::toHexString(h1, 2) << " != " <<
-                                     CStrUtil::toHexString(h2, 2) << std::endl;
+            std::cerr << "Error " << CZ80::hexString(h1) << " != " <<
+                                     CZ80::hexString(h2) << std::endl;
 
           break;
         }
@@ -271,8 +272,8 @@ rst(ushort id)
           ushort l2 = z80.getL();
 
           if (l1 != l2)
-            std::cerr << "Error " << CStrUtil::toHexString(l1, 2) << " != " <<
-                                     CStrUtil::toHexString(l2, 2) << std::endl;
+            std::cerr << "Error " << CZ80::hexString(l1) << " != " <<
+                                     CZ80::hexString(l2) << std::endl;
 
           break;
         }
@@ -282,8 +283,8 @@ rst(ushort id)
           ushort af2 = z80.getAF();
 
           if (af2 != af1)
-            std::cerr << "Error " << CStrUtil::toHexString(af1, 4) << " != " <<
-                                     CStrUtil::toHexString(af2, 4) << std::endl;
+            std::cerr << "Error " << CZ80::hexString(af1) << " != " <<
+                                     CZ80::hexString(af2) << std::endl;
 
           break;
         }
@@ -292,8 +293,8 @@ rst(ushort id)
           ushort bc2 = z80.getBC();
 
           if (bc2 != bc1)
-            std::cerr << "Error " << CStrUtil::toHexString(bc1, 4) << " != " <<
-                                     CStrUtil::toHexString(bc2, 4) << std::endl;
+            std::cerr << "Error " << CZ80::hexString(bc1) << " != " <<
+                                     CZ80::hexString(bc2) << std::endl;
 
           break;
         }
@@ -302,8 +303,8 @@ rst(ushort id)
           ushort de2 = z80.getDE();
 
           if (de2 != de1)
-            std::cerr << "Error " << CStrUtil::toHexString(de1, 4) << " != " <<
-                                     CStrUtil::toHexString(de2, 4) << std::endl;
+            std::cerr << "Error " << CZ80::hexString(de1) << " != " <<
+                                     CZ80::hexString(de2) << std::endl;
 
           break;
         }
@@ -312,8 +313,8 @@ rst(ushort id)
           ushort hl2 = z80.getHL();
 
           if (hl2 != hl1)
-            std::cerr << "Error " << CStrUtil::toHexString(hl1, 4) << " != " <<
-                                     CStrUtil::toHexString(hl2, 4) << std::endl;
+            std::cerr << "Error " << CZ80::hexString(hl1) << " != " <<
+                                     CZ80::hexString(hl2) << std::endl;
 
           break;
         }
@@ -322,8 +323,8 @@ rst(ushort id)
           ushort ix2 = z80.getIX();
 
           if (ix2 != ix1)
-            std::cerr << "Error " << CStrUtil::toHexString(ix1, 4) << " != " <<
-                                     CStrUtil::toHexString(ix2, 4) << std::endl;
+            std::cerr << "Error " << CZ80::hexString(ix1) << " != " <<
+                                     CZ80::hexString(ix2) << std::endl;
 
           break;
         }
@@ -332,8 +333,8 @@ rst(ushort id)
           ushort iy2 = z80.getIY();
 
           if (iy2 != iy1)
-            std::cerr << "Error " << CStrUtil::toHexString(iy1, 4) << " != " <<
-                                     CStrUtil::toHexString(iy2, 4) << std::endl;
+            std::cerr << "Error " << CZ80::hexString(iy1) << " != " <<
+                                     CZ80::hexString(iy2) << std::endl;
 
           break;
         }
@@ -341,7 +342,8 @@ rst(ushort id)
           ushort a = z80.getWord(pc); pc += 2;
           ushort d = z80.getWord(a );
 
-          if (z80.getSP() != d) std::cerr << "Error" << std::endl;
+          if (z80.getSP() != d)
+            std::cerr << "Error" << std::endl;
 
           break;
         }
@@ -352,8 +354,8 @@ rst(ushort id)
           uchar  b2 = z80.getByte(pc); pc += 1;
 
           if (b1 != b2)
-            std::cerr << "Error " << CStrUtil::toHexString(b1, 2) << " != " <<
-                                     CStrUtil::toHexString(b2, 2) << std::endl;
+            std::cerr << "Error " << CZ80::hexString(b1) << " != " <<
+                                     CZ80::hexString(b2) << std::endl;
 
           break;
         }
@@ -363,8 +365,8 @@ rst(ushort id)
           uchar  w2 = z80.getWord(pc); pc += 2;
 
           if (w1 != w2)
-            std::cerr << "Error " << CStrUtil::toHexString(w1, 4) << " != " <<
-                                     CStrUtil::toHexString(w2, 4) << std::endl;
+            std::cerr << "Error " << CZ80::hexString(w1) << " != " <<
+                                     CZ80::hexString(w2) << std::endl;
 
           break;
         }

@@ -1,4 +1,11 @@
 #include <CZ80LabelData.h>
+#include <CZ80.h>
+#include <CZ80Op.h>
+#include <CStrUtil.h>
+
+#ifdef CL_PARSER
+#include <CCeilP.h>
+#endif
 
 void
 CZ80LabelData::
@@ -18,6 +25,8 @@ isLabelName(const std::string &name)
 #ifdef CL_PARSER
   return ClParserInst->isVariable(name);
 #else
+  assert(name.size());
+
   return false;
 #endif
 }
@@ -61,6 +70,10 @@ getLabelValue(const std::string &name, uint *value)
 
   return true;
 #else
+  assert(name.size());
+
+  *value = 0;
+
   return false;
 #endif
 }
@@ -76,7 +89,7 @@ bool
 CZ80LabelData::
 getValueLabel(uint value, std::string &name)
 {
-  LabelValueNameMap::iterator p = label_value_name_map_.find(value);
+  auto p = label_value_name_map_.find(value);
 
   if (p == label_value_name_map_.end())
     return false;

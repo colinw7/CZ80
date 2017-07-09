@@ -120,3 +120,16 @@ loadBin(CFile *file, ushort *pos, ushort *len)
 
   return true;
 }
+
+void
+CZ80::
+loadBin(const uchar *data, size_t len)
+{
+  setPC(0);
+
+  for (size_t i = 0; i < len; ++i) {
+    setByte(data[i]);
+
+    incPC();
+  }
+}

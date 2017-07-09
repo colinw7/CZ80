@@ -1,0 +1,7 @@
+add hl,<bc,de,hl,sp>..........  ERROR **** crc expected:d9a4ca05 found:77a4e8de
+add ix,<bc,de,ix,sp>..........  ERROR **** crc expected:b1df8ec0 found:98e56e75
+add iy,<bc,de,iy,sp>..........  ERROR **** crc expected:39c8589b found:6d35a6eb
+aluop a,nn....................  ERROR **** crc expected:51c19c2e found:ff09e96c
+aluop a,<b,c,d,e,h,l,(hl),a>..  ERROR **** crc expected:06c7aa8e found:ae5ece1e
+aluop a,<ixh,ixl,iyh,iyl>.....  ERROR **** crc expected:a886cc44 found:c61652dc
+aluop a,(<ix,iy>+1)...........  ERROR **** crc expected:d3f2d74a found:8ea1fb41

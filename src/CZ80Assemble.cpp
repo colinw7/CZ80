@@ -1,6 +1,5 @@
 #include <CZ80Assemble.h>
-
-#include <cstdarg>
+#include <CZ80OpData.h>
 
 bool
 CZ80::
@@ -15,14 +14,14 @@ bool
 CZ80::
 assemble(CFile *ifile, CFile *ofile)
 {
-  return assemble(ifile, ofile);
+  return assemble(ifile, (CFileBase *) ofile);
 }
 
 bool
 CZ80::
 assemble(CFile *ifile, CFileBase *ofile)
 {
-  assemble_data_.init();
+  assembleData_.init();
 
   bool flag = true;
 
@@ -35,12 +34,12 @@ assemble(CFile *ifile, CFileBase *ofile)
 
     setPC(0);
 
-    assemble_data_.initPass();
+    assembleData_.initPass();
 
     assembleLoadLine(&parse);
 
     while (! parse.eof()) {
-      if (getVerbose() && pass == 2 && ! assemble_data_.isStream()) {
+      if (getVerbose() && pass == 2 && ! assembleData_.isStream()) {
         std::string str = parse.getBuffer();
 
         if (str != "")
@@ -55,7 +54,7 @@ assemble(CFile *ifile, CFileBase *ofile)
       }
 
       if (pass == 2) {
-        if (! assemble_data_.isStream()) {
+        if (! assembleData_.isStream()) {
           if (op_str != "")
             ofile->write(op_str + '\n');
         }
@@ -73,7 +72,7 @@ assemble(CFile *ifile, CFileBase *ofile)
 
   // Dump values for stream
 
-  if (assemble_data_.isStream())
+  if (assembleData_.isStream())
     assembleDumpValues(ofile);
 
   return flag;
@@ -85,38 +84,38 @@ assembleLoadLine(CFileParse *parse)
 {
   parse->loadLine();
 
-  assemble_data_.nextLine(parse);
+  assembleData_.nextLine(parse);
 }
 
 void
 CZ80::
 assembleDumpValues(CFileBase *ofile)
 {
-  assemble_data_.dumpValues(ofile);
+  assembleData_.dumpValues(ofile);
 }
 
 bool
 CZ80::
 assembleParseOp(CFileParse *parse, std::string &op_str, uint pass, bool *continued)
 {
-  bool set_op_str = ! assemble_data_.isStream() && (pass == 2);
+  bool set_op_str = ! assembleData_.isStream() && (pass == 2);
 
   *continued = false;
 
-  CZ80OpData op_data;
+  CZ80OpData opData;
   CZ80Op     op, *op1;
 
-  op_data.z80 = this;
-  op_data.op  = &op;
+  opData.z80 = this;
+  opData.op  = &op;
 
-  op.func  = NULL;
+  op.func  = nullptr;
   op.type1 = A_NONE;
   op.arg1  = 0;
   op.type2 = A_NONE;
   op.arg2  = 0;
 
-  op_data.num_values1 = 0;
-  op_data.num_values2 = 0;
+  opData.num_values1 = 0;
+  opData.num_values2 = 0;
 
   CZ80Macro::ArgList macroArgs;
   std::string        macroBody;
@@ -147,7 +146,7 @@ assembleParseOp(CFileParse *parse, std::string &op_str, uint pass, bool *continu
   if      (parse->isChar(':')) {
     parse->skipChar();
 
-    assemble_data_.setLastLabel(str);
+    assembleData_.setLastLabel(str);
 
     assembleSetLabelValue(str, getPC());
 
@@ -184,6 +183,16 @@ assembleParseOp(CFileParse *parse, std::string &op_str, uint pass, bool *continu
 
     assembleSetLabelValue(str, i);
   }
+  else if (CStrUtil::casecmp(str, "TITLE") == 0) {
+    std::string title;
+
+    parse->skipSpace();
+
+    if (! parse->readString(title)) {
+      assembleError("Invalid title value");
+      return false;
+    }
+  }
   else if (CStrUtil::casecmp(str, "ORG") == 0) {
     if (! assembleParseInteger(parse, pass, &i)) {
       assembleError("Invalid origin value");
@@ -191,11 +200,11 @@ assembleParseOp(CFileParse *parse, std::string &op_str, uint pass, bool *continu
     }
 
 #if 0
-    if (pass == 2 && assemble_data_.isStream()) {
+    if (pass == 2 && assembleData_.isStream()) {
       ushort pc = getPC();
 
       for ( ; i < pc; ++i)
-        assemble_data_.addValue(i, 0);
+        assembleData_.addValue(i, 0);
     }
 #endif
 
@@ -217,12 +226,12 @@ assembleParseOp(CFileParse *parse, std::string &op_str, uint pass, bool *continu
       return false;
     }
 
-    if (assemble_data_.getLastLabel() == "") {
+    if (assembleData_.getLastLabel() == "") {
       assembleError("No label for equate");
       return false;
     }
 
-    assembleSetLabelValue(assemble_data_.getLastLabel(), i);
+    assembleSetLabelValue(assembleData_.getLastLabel(), i);
 
     if (set_op_str) {
       str1 = "";
@@ -245,7 +254,7 @@ assembleParseOp(CFileParse *parse, std::string &op_str, uint pass, bool *continu
       expr += c;
     }
 
-    if (assemble_data_.getLastLabel() == "") {
+    if (assembleData_.getLastLabel() == "") {
       assembleError("No label for expression");
       return false;
     }
@@ -255,7 +264,7 @@ assembleParseOp(CFileParse *parse, std::string &op_str, uint pass, bool *continu
       return false;
     }
 
-    assembleSetLabelValue(assemble_data_.getLastLabel(), i);
+    assembleSetLabelValue(assembleData_.getLastLabel(), i);
 
     if (set_op_str) {
       str1 = "";
@@ -269,7 +278,7 @@ assembleParseOp(CFileParse *parse, std::string &op_str, uint pass, bool *continu
   }
   else if (CStrUtil::casecmp(str, "DEFB") == 0) {
     if (set_op_str) {
-      str1 = CStrUtil::toHexString(getPC(), 4);
+      str1 = hexString(getPC());
       str2 = " ; DEFB";
     }
 
@@ -361,12 +370,12 @@ assembleParseOp(CFileParse *parse, std::string &op_str, uint pass, bool *continu
         }
 
         if (set_op_str) {
-          str1 += " " + CStrUtil::toHexString(c, 2);
+          str1 += " " + hexString(c);
           str2 += c;
         }
 
-        if (pass == 2 && assemble_data_.isStream())
-          assemble_data_.addValue(getPC(), c);
+        if (pass == 2 && assembleData_.isStream())
+          assembleData_.addValue(getPC(), c);
 
         incPC();
       }
@@ -393,8 +402,8 @@ assembleParseOp(CFileParse *parse, std::string &op_str, uint pass, bool *continu
           str2 += " 0x" + CStrUtil::toHexString(i & 0xFF, 2);
         }
 
-        if (pass == 2 && assemble_data_.isStream())
-          assemble_data_.addValue(getPC(), i & 0xFF);
+        if (pass == 2 && assembleData_.isStream())
+          assembleData_.addValue(getPC(), i & 0xFF);
 
         incPC();
 
@@ -418,7 +427,7 @@ assembleParseOp(CFileParse *parse, std::string &op_str, uint pass, bool *continu
   }
   else if (CStrUtil::casecmp(str, "DEFW") == 0) {
     if (set_op_str) {
-      str1 = CStrUtil::toHexString(getPC(), 4);
+      str1 = hexString(getPC());
       str2 = " ; DEFW";
     }
 
@@ -429,14 +438,14 @@ assembleParseOp(CFileParse *parse, std::string &op_str, uint pass, bool *continu
       }
 
       if (set_op_str) {
-        str1 += ' '   + CStrUtil::toHexString( i & 0x00FF      , 2);
-        str1 += ' '   + CStrUtil::toHexString((i & 0xFF00) >> 8, 2);
-        str2 += " 0x" + CStrUtil::toHexString( i & 0xFFFF      , 4);
+        str1 += ' '   + CStrUtil::toHexString(LO_WORD(i), 2);
+        str1 += ' '   + CStrUtil::toHexString(HI_WORD(i), 2);
+        str2 += " 0x" + CStrUtil::toHexString(i & 0xFFFF, 4);
       }
 
-      if (pass == 2 && assemble_data_.isStream()) {
-        assemble_data_.addValue(getPC()    ,  i & 0x00FF      );
-        assemble_data_.addValue(getPC() + 1, (i & 0xFF00) >> 8);
+      if (pass == 2 && assembleData_.isStream()) {
+        assembleData_.addValue(getPC()    , LO_WORD(i));
+        assembleData_.addValue(getPC() + 1, HI_WORD(i));
       }
 
       incPC(2);
@@ -490,16 +499,16 @@ assembleParseOp(CFileParse *parse, std::string &op_str, uint pass, bool *continu
         str2 += ", " + CStrUtil::toHexString(j, 2);
 
       if (set_op_str) {
-        str1 = CStrUtil::toHexString(getPC(), 4);
+        str1 = hexString(getPC());
 
         for (uint i1 = 0; i1 < i; ++i1)
           str1 += ' ' + CStrUtil::toHexString(j, 2);
       }
     }
 
-    if (pass == 2 && assemble_data_.isStream()) {
+    if (pass == 2 && assembleData_.isStream()) {
       for (uint i1 = 0; i1 < i; ++i1)
-        assemble_data_.addValue(getPC() + i1, j);
+        assembleData_.addValue(getPC() + i1, j);
     }
 
     incPC(i);
@@ -649,13 +658,13 @@ assembleParseOp(CFileParse *parse, std::string &op_str, uint pass, bool *continu
           op.type1 = A_FLAG;
           op.arg1  = flag_id;
 
-          op_data.num_values1 = 0;
+          opData.num_values1 = 0;
         }
         else if (assembleStringToRegisterId(str, &reg_id)) {
           op.type1 = A_REG;
           op.arg1  = reg_id;
 
-          op_data.num_values1 = 0;
+          opData.num_values1 = 0;
         }
         else {
           parse->unread(str);
@@ -669,17 +678,17 @@ assembleParseOp(CFileParse *parse, std::string &op_str, uint pass, bool *continu
               op.type1 = A_S_NUM;
               op.arg1  = 2;
 
-              op_data.num_values1 = 2;
-              op_data.values1[0]  =  i & 0x00FF;
-              op_data.values1[1]  = (i & 0xFF00) >> 8;
+              opData.num_values1 = 2;
+              opData.values1[0]  = LO_WORD(i);
+              opData.values1[1]  = HI_WORD(i);
             }
             else {
               op.type1 = A_NUM;
               op.arg1  = 2;
 
-              op_data.num_values1 = 2;
-              op_data.values1[0]  =  i & 0x00FF;
-              op_data.values1[1]  = (i & 0xFF00) >> 8;
+              opData.num_values1 = 2;
+              opData.values1[0]  = LO_WORD(i);
+              opData.values1[1]  = HI_WORD(i);
             }
           }
           else {
@@ -693,7 +702,7 @@ assembleParseOp(CFileParse *parse, std::string &op_str, uint pass, bool *continu
           op.type1 = A_REG;
           op.arg1  = reg_id;
 
-          op_data.num_values1 = 0;
+          opData.num_values1 = 0;
         }
         else {
           parse->unread(str);
@@ -707,17 +716,17 @@ assembleParseOp(CFileParse *parse, std::string &op_str, uint pass, bool *continu
               op.type1 = A_S_NUM;
               op.arg1  = 2;
 
-              op_data.num_values1 = 2;
-              op_data.values1[0]  =  i & 0x00FF;
-              op_data.values1[1]  = (i & 0xFF00) >> 8;
+              opData.num_values1 = 2;
+              opData.values1[0]  = LO_WORD(i);
+              opData.values1[1]  = HI_WORD(i);
             }
             else {
               op.type1 = A_NUM;
               op.arg1  = 2;
 
-              op_data.num_values1 = 2;
-              op_data.values1[0]  =  i & 0x00FF;
-              op_data.values1[1]  = (i & 0xFF00) >> 8;
+              opData.num_values1 = 2;
+              opData.values1[0]  = LO_WORD(i);
+              opData.values1[1]  = HI_WORD(i);
             }
           }
           else {
@@ -746,9 +755,9 @@ assembleParseOp(CFileParse *parse, std::string &op_str, uint pass, bool *continu
         op.type1 = A_S_NUM;
         op.arg1  = 2;
 
-        op_data.num_values1 = 2;
-        op_data.values1[0]  =  i & 0x00FF;
-        op_data.values1[1]  = (i & 0xFF00) >> 8;
+        opData.num_values1 = 2;
+        opData.values1[0]  = LO_WORD(i);
+        opData.values1[1]  = HI_WORD(i);
       }
       else {
         //assembleError("Invalid operator for offset");
@@ -756,9 +765,9 @@ assembleParseOp(CFileParse *parse, std::string &op_str, uint pass, bool *continu
         op.type1 = A_NUM;
         op.arg1  = 2;
 
-        op_data.num_values1 = 2;
-        op_data.values1[0]  =  i & 0x00FF;
-        op_data.values1[1]  = (i & 0xFF00) >> 8;
+        opData.num_values1 = 2;
+        opData.values1[0]  = LO_WORD(i);
+        opData.values1[1]  = HI_WORD(i);
       }
     }
     else if (assembleParseInteger(parse, pass, &i)) {
@@ -776,17 +785,17 @@ assembleParseOp(CFileParse *parse, std::string &op_str, uint pass, bool *continu
         op.type1 = A_S_NUM;
         op.arg1  = 2;
 
-        op_data.num_values1 = 2;
-        op_data.values1[0]  =  i & 0x00FF;
-        op_data.values1[1]  = (i & 0xFF00) >> 8;
+        opData.num_values1 = 2;
+        opData.values1[0]  = LO_WORD(i);
+        opData.values1[1]  = HI_WORD(i);
       }
       else {
         op.type1 = A_NUM;
         op.arg1  = 2;
 
-        op_data.num_values1 = 2;
-        op_data.values1[0]  =  i & 0x00FF;
-        op_data.values1[1]  = (i & 0xFF00) >> 8;
+        opData.num_values1 = 2;
+        opData.values1[0]  = LO_WORD(i);
+        opData.values1[1]  = HI_WORD(i);
       }
     }
     else if (parse->isChar('(')) {
@@ -811,21 +820,21 @@ assembleParseOp(CFileParse *parse, std::string &op_str, uint pass, bool *continu
               op.type1 = A_PO_REG;
               op.arg1  = reg_id;
 
-              op_data.num_values1 = 1;
-              op_data.values1[0]  = i & 0x00FF;
+              opData.num_values1 = 1;
+              opData.values1[0]  = LO_WORD(i);
             }
             else {
               op.type1 = A_P_REG;
               op.arg1  = reg_id;
 
-              op_data.num_values1 = 0;
+              opData.num_values1 = 0;
             }
           }
           else {
             op.type1 = A_P_REG;
             op.arg1  = reg_id;
 
-            op_data.num_values1 = 0;
+            opData.num_values1 = 0;
           }
         }
         else {
@@ -835,9 +844,9 @@ assembleParseOp(CFileParse *parse, std::string &op_str, uint pass, bool *continu
             op.type1 = A_P_NUM;
             op.arg1  = 2;
 
-            op_data.num_values1 = 2;
-            op_data.values1[0]  =  i & 0x00FF;
-            op_data.values1[1]  = (i & 0xFF00) >> 8;
+            opData.num_values1 = 2;
+            opData.values1[0]  = LO_WORD(i);
+            opData.values1[1]  = HI_WORD(i);
           }
           else {
             assembleError("Invalid destination %s", str.c_str());
@@ -849,9 +858,9 @@ assembleParseOp(CFileParse *parse, std::string &op_str, uint pass, bool *continu
         op.type1 = A_P_NUM;
         op.arg1  = 2;
 
-        op_data.num_values1 = 2;
-        op_data.values1[0]  =  i & 0x00FF;
-        op_data.values1[1]  = (i & 0xFF00) >> 8;
+        opData.num_values1 = 2;
+        opData.values1[0]  = LO_WORD(i);
+        opData.values1[1]  = HI_WORD(i);
       }
       else {
         assembleError("Invalid destination %s", str.c_str());
@@ -933,7 +942,7 @@ assembleParseOp(CFileParse *parse, std::string &op_str, uint pass, bool *continu
             op.type2 = A_REG;
             op.arg2  = reg_id;
 
-            op_data.num_values2 = 0;
+            opData.num_values2 = 0;
           }
           else {
             parse->unread(str);
@@ -947,17 +956,17 @@ assembleParseOp(CFileParse *parse, std::string &op_str, uint pass, bool *continu
                 op.type2 = A_S_NUM;
                 op.arg2  = 2;
 
-                op_data.num_values2 = 2;
-                op_data.values2[0]  =  i & 0x00FF;
-                op_data.values2[1]  = (i & 0xFF00) >> 8;
+                opData.num_values2 = 2;
+                opData.values2[0]  = LO_WORD(i);
+                opData.values2[1]  = HI_WORD(i);
               }
               else {
                 op.type2 = A_NUM;
                 op.arg2  = 2;
 
-                op_data.num_values2 = 2;
-                op_data.values2[0]  =  i & 0x00FF;
-                op_data.values2[1]  = (i & 0xFF00) >> 8;
+                opData.num_values2 = 2;
+                opData.values2[0]  = LO_WORD(i);
+                opData.values2[1]  = HI_WORD(i);
               }
             }
             else {
@@ -985,9 +994,9 @@ assembleParseOp(CFileParse *parse, std::string &op_str, uint pass, bool *continu
             op.type2 = A_S_NUM;
             op.arg2  = 2;
 
-            op_data.num_values2 = 2;
-            op_data.values2[0]  =  i & 0x00FF;
-            op_data.values2[1]  = (i & 0xFF00) >> 8;
+            opData.num_values2 = 2;
+            opData.values2[0]  = LO_WORD(i);
+            opData.values2[1]  = HI_WORD(i);
           }
           else {
             //assembleError("Invalid operator for offset");
@@ -995,15 +1004,15 @@ assembleParseOp(CFileParse *parse, std::string &op_str, uint pass, bool *continu
             op.type2 = A_NUM;
             op.arg2  = 2;
 
-            op_data.num_values2 = 2;
-            op_data.values2[0]  =  i & 0x00FF;
-            op_data.values2[1]  = (i & 0xFF00) >> 8;
+            opData.num_values2 = 2;
+            opData.values2[0]  = LO_WORD(i);
+            opData.values2[1]  = HI_WORD(i);
           }
         }
         else if (assembleParseInteger(parse, pass, &i)) {
           if (op.id == OP_IN  || op.id == OP_OUT) {
             op.type2 = A_CONST;
-            op.arg2  = i & 0x00FF;
+            op.arg2  = LO_WORD(i);
           }
           else if (op.id == OP_JR || op.id == OP_DJNZ) {
             char o = i - getPC() - 2;
@@ -1013,17 +1022,17 @@ assembleParseOp(CFileParse *parse, std::string &op_str, uint pass, bool *continu
             op.type2 = A_S_NUM;
             op.arg2  = 2;
 
-            op_data.num_values2 = 2;
-            op_data.values2[0]  =  i & 0x00FF;
-            op_data.values2[1]  = (i & 0xFF00) >> 8;
+            opData.num_values2 = 2;
+            opData.values2[0]  = LO_WORD(i);
+            opData.values2[1]  = HI_WORD(i);
           }
           else {
             op.type2 = A_NUM;
             op.arg2  = 2;
 
-            op_data.num_values2 = 2;
-            op_data.values2[0]  =  i & 0x00FF;
-            op_data.values2[1]  = (i & 0xFF00) >> 8;
+            opData.num_values2 = 2;
+            opData.values2[0]  = LO_WORD(i);
+            opData.values2[1]  = HI_WORD(i);
           }
         }
         else if (parse->isChar('(')) {
@@ -1048,21 +1057,21 @@ assembleParseOp(CFileParse *parse, std::string &op_str, uint pass, bool *continu
                   op.type2 = A_PO_REG;
                   op.arg2  = reg_id;
 
-                  op_data.num_values2 = 1;
-                  op_data.values2[0]  = i & 0x00FF;
+                  opData.num_values2 = 1;
+                  opData.values2[0]  = LO_WORD(i);
                 }
                 else {
                   op.type2 = A_P_REG;
                   op.arg2  = reg_id;
 
-                  op_data.num_values2 = 0;
+                  opData.num_values2 = 0;
                 }
               }
               else {
                 op.type2 = A_P_REG;
                 op.arg2  = reg_id;
 
-                op_data.num_values2 = 0;
+                opData.num_values2 = 0;
               }
             }
             else {
@@ -1072,9 +1081,9 @@ assembleParseOp(CFileParse *parse, std::string &op_str, uint pass, bool *continu
                 op.type2 = A_P_NUM;
                 op.arg2  = 2;
 
-                op_data.num_values2 = 2;
-                op_data.values2[0]  =  i & 0x00FF;
-                op_data.values2[1]  = (i & 0xFF00) >> 8;
+                opData.num_values2 = 2;
+                opData.values2[0]  = LO_WORD(i);
+                opData.values2[1]  = HI_WORD(i);
               }
               else {
                 assembleError("Invalid destination %s", str.c_str());
@@ -1086,9 +1095,9 @@ assembleParseOp(CFileParse *parse, std::string &op_str, uint pass, bool *continu
             op.type2 = A_P_NUM;
             op.arg2  = 2;
 
-            op_data.num_values2 = 2;
-            op_data.values2[0]  =  i & 0x00FF;
-            op_data.values2[1]  = (i & 0xFF00) >> 8;
+            opData.num_values2 = 2;
+            opData.values2[0]  = LO_WORD(i);
+            opData.values2[1]  = HI_WORD(i);
           }
           else {
             assembleError("Invalid destination %s", str.c_str());
@@ -1170,17 +1179,17 @@ assembleParseOp(CFileParse *parse, std::string &op_str, uint pass, bool *continu
       return false;
     }
 
-    op_data.op = op1;
+    opData.op = op1;
 
-    if (op_data.op->type1 == A_NUM || op_data.op->type1 == A_S_NUM)
-      op_data.num_values1 = op_data.op->arg1;
+    if (opData.op->type1 == A_NUM || opData.op->type1 == A_S_NUM)
+      opData.num_values1 = opData.op->arg1;
 
-    if (op_data.op->type2 == A_NUM || op_data.op->type2 == A_S_NUM)
-      op_data.num_values2 = op_data.op->arg2;
+    if (opData.op->type2 == A_NUM || opData.op->type2 == A_S_NUM)
+      opData.num_values2 = opData.op->arg2;
 
     if (set_op_str) {
-      str1 = CStrUtil::toHexString(getPC(), 4) + " " + op_data.toTxt();
-      str2 = op_data.getOpString();
+      str1 = hexString(getPC()) + " " + opData.toTxt();
+      str2 = opData.getOpString(getPC());
 
       uint len = str1.size();
 
@@ -1190,17 +1199,17 @@ assembleParseOp(CFileParse *parse, std::string &op_str, uint pass, bool *continu
       op_str = str1 + " ; " + str2;
     }
 
-    if (pass == 2 && assemble_data_.isStream()) {
+    if (pass == 2 && assembleData_.isStream()) {
       uchar *values;
       uint   num_values;
 
-      op_data.toValues(&values, &num_values);
+      opData.toValues(&values, &num_values);
 
       for (uint i = 0; i < num_values; ++i)
-        assemble_data_.addValue(getPC() + i, values[i]);
+        assembleData_.addValue(getPC() + i, values[i]);
     }
 
-    incPC(op_data.getSize());
+    incPC(opData.getSize());
   }
 
   return true;
@@ -1237,9 +1246,9 @@ assembleParseInteger(CFileParse *parse, uint pass, uint *i)
       parse->skipSpace();
 
       if      (parse->isChar('L'))
-        *i =  *i & 0x00FF;
+        *i = LO_WORD(*i);
       else if (parse->isChar('H'))
-        *i = (*i & 0xFF00) >> 8;
+        *i = HI_WORD(*i);
       else {
         assembleError("Invalid value modified");
         return false;
@@ -1451,7 +1460,7 @@ assembleSetLabelValue(const std::string &name, uint value)
     ClParserInst->setVariableValue(name, pval);
 #endif
 
-  assemble_data_.setNameValue(name, value);
+  assembleData_.setNameValue(name, value);
 }
 
 bool
@@ -1482,6 +1491,11 @@ assembleEvalExpr(const std::string &expr, uint *value)
 
   return true;
 #else
+  if (! expr.size())
+    return false;
+
+  *value = 0;
+
   return false;
 #endif
 }
@@ -1494,9 +1508,9 @@ assembleError(const char *format, ...)
 
   va_start(vargs, format);
 
-  std::cerr << "Line " << assemble_data_.getCurrentLineNum() << ": ";
+  std::cerr << "Line " << assembleData_.getCurrentLineNum() << ": ";
   std::cerr << CStrUtil::vstrprintf(format, &vargs) << ": ";
-  std::cerr << "'" << assemble_data_.getCurrentLine() << "'" << std::endl;
+  std::cerr << "'" << assembleData_.getCurrentLine() << "'" << std::endl;
 
   va_end(vargs);
 }
@@ -1520,21 +1534,23 @@ void
 CZ80::
 assembleOp(CZ80Op *op, std::ostream &os)
 {
-  if (op->func == NULL)
+  if (! op->func)
     return;
 
-  CZ80OpData op_data;
+  ushort pc = 0; // TODO ?
 
-  op_data.z80         = this;
-  op_data.op          = op;
-  op_data.values1[0]  = 0;
-  op_data.values1[1]  = 0;
-  op_data.num_values1 = 2;
-  op_data.values2[0]  = 0;
-  op_data.values2[1]  = 0;
-  op_data.num_values2 = 2;
+  CZ80OpData opData;
 
-  std::string str = op_data.getOpString();
+  opData.z80         = this;
+  opData.op          = op;
+  opData.values1[0]  = 0;
+  opData.values1[1]  = 0;
+  opData.num_values1 = 2;
+  opData.values2[0]  = 0;
+  opData.values2[1]  = 0;
+  opData.num_values2 = 2;
+
+  std::string str = opData.getOpString(pc);
 
   os << str << std::endl;
 
@@ -1598,7 +1614,7 @@ bool
 CZ80::
 assembleGetMacro(const std::string &name, std::vector<std::string> &args, std::string &body) const
 {
-  MacroMap::const_iterator p = assemble_macros_.find(name);
+  auto p = assemble_macros_.find(name);
 
   if (p == assemble_macros_.end())
     return false;
@@ -1615,7 +1631,7 @@ void
 CZ80::
 assembleDumpSymbols()
 {
-  assemble_data_.dumpSymbols();
+  assembleData_.dumpSymbols();
 }
 
 //------
@@ -1731,11 +1747,9 @@ void
 CZ80AssembleData::
 dumpSymbols() const
 {
-  NameValueMap::const_iterator p1, p2;
+  for (const auto &nameValue : name_values_) {
+    uint value = nameValue.second & 0xFFFF;
 
-  for (p1 = name_values_.begin(), p2 = name_values_.end(); p1 != p2; ++p1) {
-    uint value = (*p1).second & 0xFFFF;
-
-    std::cout << (*p1).first << "=" << CStrUtil::toHexString(value, 4) << std::endl;
+    std::cout << nameValue.first << "=" << CStrUtil::toHexString(value, 4) << std::endl;
   }
 }

@@ -1,6 +1,10 @@
 #include <CZ80.h>
+#include <CZ80Trace.h>
+#include <CZ80OpData.h>
+#include <CZ80PortData.h>
+#include <CZ80RstData.h>
+
 #include <CArgs.h>
-#include <CFile.h>
 #include <CTempFile.h>
 #include <CAtExit.h>
 #include <CStrUtil.h>
@@ -26,7 +30,7 @@ struct CZ80TestTrace : public CZ80Trace {
 
       z80.getOpData(&op_data);
 
-      op_data.printStr(std::cout);
+      op_data.printStr(z80.getPC(), std::cout);
 
       std::cout << std::endl;
     }
@@ -50,6 +54,41 @@ struct CZ80AtExit : public CAtExit {
   }
 };
 
+class CPMPortData : public CZ80PortData {
+ public:
+  CPMPortData(CZ80 &z80) :
+   CZ80PortData(z80) {
+  }
+
+  uchar in(uchar port, uchar qual) override {
+    if (port == 0) {
+      uchar c = z80.getC();
+
+      if      (c == 2) {
+        uchar e = z80.getE();
+
+        std::cerr << char(e);
+      }
+      else if (c == 9) {
+        ushort de = z80.getDE();
+
+        for (int i = 0; ; ++i) {
+          char c = z80.getByte(de + i);
+
+          if (c == '$')
+            break;
+
+          std::cerr << c;
+        }
+      }
+    }
+    else
+      std::cerr << std::hex << int(port) << " " << std::hex << int(qual) << std::endl;
+
+    return 0;
+  }
+};
+
 int
 main(int argc, char **argv)
 {
@@ -69,6 +108,7 @@ main(int argc, char **argv)
               "-stream:f (stream assembly 8 chars per line) "
               "-icount:f (display instruction count on exit) "
               "-dsym:f   (display symbol table) "
+              "-cpm:f    (run as cpm) "
               );
 
   cargs.parse(&argc, argv);
@@ -87,6 +127,7 @@ main(int argc, char **argv)
   bool                     stream_flag = cargs.getBooleanArg   ("-stream");
   bool                     icount_flag = cargs.getBooleanArg   ("-icount");
   bool                     dsym_flag   = cargs.getBooleanArg   ("-dsym");
+  bool                     cpm_flag    = cargs.getBooleanArg   ("-cpm");
 
   if (dump_flag)
     z80.setDump(true);
@@ -199,6 +240,26 @@ main(int argc, char **argv)
         z80.loadBin(&file);
       else
         z80.load(&file);
+
+      z80.execute();
+    }
+    else if (cpm_flag) {
+      z80.setLoadPos(0x100);
+
+      z80.loadBin(&file);
+
+      z80.setByte(0, 0xd3);
+      z80.setByte(1, 0x00);
+
+      z80.setByte(5, 0xdb);
+      z80.setByte(6, 0x00);
+      z80.setByte(7, 0xc9);
+
+      z80.setAllowInterrupts(false);
+
+      CPMPortData cpm_data(z80);
+
+      z80.setPortData(&cpm_data);
 
       z80.execute();
     }

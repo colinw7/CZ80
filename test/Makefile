@@ -19,6 +19,7 @@ OBJS = $(patsubst %.cpp,$(OBJ_DIR)/%.o,$(SRC))
 LIBS = -lCZ80 -lCArgs -lCFile -lCOS -lCStrUtil
 
 CPPFLAGS = \
+-std=c++11 \
 -I$(INC_DIR) \
 -I../../CZ80/include \
 -I../../CArgs/include \

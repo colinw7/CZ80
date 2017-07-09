@@ -1,0 +1,1713 @@
+#include "macros.asc"
+
+;       .title  'Z80 instruction set exerciser'
+
+; zexlax.z80 - Z80 instruction set exerciser
+; Copyright (C) 1994  Frank D. Cringle
+;
+; This program is free software; you can redistribute it and/or
+; modify it under the terms of the GNU General Public License
+; as published by the Free Software Foundation; either version 2
+; of the License, or (at your option) any later version.
+;
+; This program is distributed in the hope that it will be useful,
+; but WITHOUT ANY WARRANTY; without even the implied warranty of
+; MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+; GNU General Public License for more details.
+;
+; You should have received a copy of the GNU General Public License
+; along with this program; if not, write to the Free Software
+; Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+
+; aseg
+
+  org  0x100
+
+  jp   start
+
+; machine state before test (needs to be at predictably constant address)
+
+msbt:
+  DEFS 14
+spbt:
+  DEFS 2
+
+; For the purposes of this test program, the machine state consists of:
+;       a 2 byte memory operand, followed by
+;       the registers iy,ix,hl,de,bc,af,sp
+; for a total of 16 bytes.
+
+; The program tests instructions (or groups of similar instructions)
+; by cycling through a sequence of machine states, executing the test
+; instruction for each one and running a 32-bit crc over the resulting
+; machine states.  At the end of the sequence the crc is compared to
+; an expected value that was found empirically on a real Z80.
+
+; A test case is defined by a descriptor which consists of:
+;       a flag mask byte,
+;       the base case,
+;       the incement vector,
+;       the shift vector,
+;       the expected crc,
+;       a short descriptive message.
+;
+; The flag mask byte is used to prevent undefined flag bits from
+; influencing the results.  Documented flags are as per Mostek Z80
+; Technical Manual.
+;
+; The next three parts of the descriptor are 20 byte vectors
+; corresponding to a 4 byte instruction and a 16 byte machine state.
+; The first part is the base case, which is the first test case of
+; the sequence.  This base is then modified according to the next 2
+; vectors.  Each 1 bit in the increment vector specifies a bit to be
+; cycled in the form of a binary counter.  For instance, if the byte
+; corresponding to the accumulator is set to 0xff in the increment
+; vector, the test will be repeated for all 256 values of the
+; accumulator.  Note that 1 bits don't have to be contiguous.  The
+; number of test cases 'caused' by the increment vector is equal to
+; 2^(number of 1 bits).  The shift vector is similar, but specifies a
+; set of bits in the test case that are to be successively inverted.
+; Thus the shift vector 'causes' a number of test cases equal to the
+; number of 1 bits in it.
+
+; The total number of test cases is the product of those caused by the
+; counter and shift vectors and can easily become unweildy.  Each
+; individual test case can take a few milliseconds to execute, due to
+; the overhead of test setup and crc calculation, so test design is a
+; compromise between coverage and execution time.
+
+; This program is designed to detect differences between
+; implementations and is not ideal for diagnosing the causes of any
+; discrepancies.  However, provided a reference implementation (or
+; real system) is available, a failing test case can be isolated by
+; hand using a binary search of the test space.
+
+start:
+  ld   sp,0x8000
+  ld   de,msg1
+  ld   c,9
+  call bdos
+
+  ld   hl,tests        ; first test case
+loop:
+  ld   a,(hl)          ; end of list ?
+  inc  hl
+  or   (hl)
+  jp   z,done
+  dec  hl
+  call stt
+  jp   loop
+
+done:
+  ld   de,msg2
+  ld   c,9
+  call bdos
+  halt
+
+tests:
+  DEFW alu8x
+  DEFW 0
+  DEFW alu8rx
+  DEFW alu8r
+  DEFW alu8i
+  DEFW 0
+
+  DEFW adc16
+  DEFW add16
+  DEFW add16x
+  DEFW add16y
+  DEFW alu8i
+  DEFW alu8r
+  DEFW alu8rx
+  DEFW alu8x
+  DEFW bitx
+  DEFW bitz80
+  DEFW cpd1
+  DEFW cpi1
+  DEFW daa
+  DEFW inca
+  DEFW incb
+  DEFW incbc
+  DEFW incc
+  DEFW incd
+  DEFW incde
+  DEFW ince
+  DEFW inch
+  DEFW inchl
+  DEFW incix
+  DEFW inciy
+  DEFW incl
+  DEFW incm
+  DEFW incsp
+  DEFW incx
+  DEFW incxh
+  DEFW incxl
+  DEFW incyh
+  DEFW incyl
+  DEFW ld161
+  DEFW ld162
+  DEFW ld163
+  DEFW ld164
+  DEFW ld165
+  DEFW ld166
+  DEFW ld167
+  DEFW ld168
+  DEFW ld16im
+  DEFW ld16ix
+  DEFW ld8bd
+  DEFW ld8im
+  DEFW ld8imx
+  DEFW ld8ix1
+  DEFW ld8ix2
+  DEFW ld8ix3
+  DEFW ld8ixy
+  DEFW ld8rr
+  DEFW ld8rrx
+  DEFW lda
+  DEFW ldd1
+  DEFW ldd2
+  DEFW ldi1
+  DEFW ldi2
+  DEFW neg
+  DEFW rld
+  DEFW rot8080
+  DEFW rotxy
+  DEFW rotz80
+  DEFW srz80
+  DEFW srzx
+  DEFW st8ix1
+  DEFW st8ix2
+  DEFW st8ix3
+  DEFW stabd
+  DEFW 0
+
+#define TSTR(INSN,MEMOP,IY,IX,HL,DE,BC,FLAGS,ACC,SP) \
+lab_##__MACRO_ID__: | \
+  DEFB INSN | \
+defs_size: | \
+  EXPR lab_##__MACRO_ID__+4-PC | \
+  DEFS defs_size,0 | \
+  DEFW MEMOP,IY,IX,HL,DE,BC | \
+  DEFB FLAGS | \
+  DEFB ACC | \
+  DEFW SP
+
+#define TMSG(M) \
+lab_##__MACRO_ID__: | \
+  DEFB M | \
+defs_size: | \
+  EXPR lab_##__MACRO_ID__+30-PC | \
+  DEFS defs_size,'.' | \
+  DEFB '$'
+
+; <adc,sbc> hl,<bc,de,hl,sp> (38,912 cycles)
+adc16:
+  DEFB 0xc7            ; flag mask
+  TSTR(0xed 0x42,0x832c,0x4f88,0xf22b,0xb339,0x7e1f,0x1563,0xd3,0x89,0x465e)
+  TSTR(0 0x38,0,0,0,0xf821,0,0,0,0,0)         ; (1024 cycles)
+  TSTR(0,0,0,0,-1,-1,-1,0xd7,0,-1)              ; (38 cycles)
+  DEFB 0xf8,0xb4,0xea,0xa9                     ; expected crc
+  TMSG('<adc,sbc> hl,<bc,de,hl,sp>')
+
+; add hl,<bc,de,hl,sp> (19,456 cycles)
+add16:
+  DEFB 0xc7            ; flag mask
+  TSTR(9,0xc4a5,0xc4c7,0xd226,0xa050,0x58ea,0x8566,0xc6,0xde,0x9bc9)
+  TSTR(0x30,0,0,0,0xf821,0,0,0,0,0)             ; (512 cycles)
+  TSTR(0,0,0,0,-1,-1,-1,0xd7,0,-1)              ; (38 cycles)
+  DEFB 0x89,0xfd,0xb6,0x35                     ; expected crc
+  TMSG('add hl,<bc,de,hl,sp>')
+
+; add ix,<bc,de,ix,sp> (19,456 cycles)
+add16x:
+  DEFB 0xc7            ; flag mask
+  TSTR(0xdd 9,0xddac,0xc294,0x635b,0x33d3,0x6a76,0xfa20,0x94,0x68,0x36f5)
+  TSTR(0 0x30,0,0,0xf821,0,0,0,0,0,0)         ; (512 cycles)
+  TSTR(0,0,0,-1,0,-1,-1,0xd7,0,-1)              ; (38 cycles)
+  DEFB 0xc1,0x33,0x79,0x0b                     ; expected crc
+  TMSG('add ix,<bc,de,ix,sp>')
+
+; add iy,<bc,de,iy,sp> (19,456 cycles)
+add16y:
+  DEFB 0xc7            ; flag mask
+  TSTR(0xfd 9,0xc7c2,0xf407,0x51c1,0x3e96,0x0bf4,0x510f,0x92,0x1e,0x71ea)
+  TSTR(0 0x30,0,0xf821,0,0,0,0,0,0,0)         ; (512 cycles)
+  TSTR(0,0,-1,0,0,-1,-1,0xd7,0,-1)              ; (38 cycles)
+  DEFB 0xe8,0x81,0x7b,0x9e                     ; expected crc
+  TMSG('add iy,<bc,de,iy,sp>')
+
+; aluop a,nn (28,672 cycles)
+alu8i:
+  DEFB 0xd7            ; flag mask
+  TSTR(0xc6,0x9140,0x7e3c,0x7a67,0xdf6d,0x5b61,0x0b29,0x10,0x66,0x85b2)
+  TSTR(0x38,0,0,0,0,0,0,0,-1,0)                 ; (2048 cycles)
+  TSTR(0 -1,0,0,0,0,0,0,0xd7,0,0)             ; (14 cycles)
+  DEFB 0x48,0x79,0x93,0x60                     ; expected crc
+  TMSG('aluop a,nn')
+
+; aluop a,<b,c,d,e,h,l,(hl),a> (753,664 cycles)
+alu8r:
+  DEFB 0xd7            ; flag mask
+  TSTR(0x80,0xc53e,0x573a,0x4c4d,msbt,0xe309,0xa666,0xd0,0x3b,0xadbb)
+  TSTR(0x3f,0,0,0,0,0,0,0,-1,0)                 ; (16,384 cycles)
+  TSTR(0,0xff,0,0,0,-1,-1,0xd7,0,0)             ; (46 cycles)
+  DEFB 0xfe,0x43,0xb0,0x16                     ; expected crc
+  TMSG('aluop a,<b,c,d,e,h,l,(hl),a>')
+
+; aluop a,<ixh,ixl,iyh,iyl> (376,832 cycles)
+alu8rx:
+  DEFB 0xd7            ; flag mask
+  TSTR(0xdd 0x84,0xd6f7,0xc76e,0xaccf,0x2847,0x22dd,0xc035,0xc5,0x38,0x234b)
+  TSTR(0x20 0x39,0,0,0,0,0,0,0,-1,0)          ; (8,192 cycles)
+  TSTR(0,0xff,0,0,0,-1,-1,0xd7,0,0)             ; (46 cycles)
+  DEFB 0xa4,0x02,0x6d,0x5a                     ; expected crc
+  TMSG('aluop a,<ixh,ixl,iyh,iyl>')
+
+; aluop a,(<ix,iy>+1) (229,376 cycles)
+alu8x:
+  DEFB 0xd7            ; flag mask
+  TSTR(0xdd 0x86 1,0x90b7,msbt-1,msbt-1,0x32fd,0x406e,0xc1dc,0x45,0x6e,0xe5fa)
+  TSTR(0x20 0x38,0,1,1,0,0,0,0,-1,0)          ; (16,384 cycles)
+  TSTR(0,0xff,0,0,0,0,0,0xd7,0,0)               ; (14 cycles)
+  DEFB 0xe8,0x49,0x67,0x6e                     ; expected crc
+  TMSG('aluop a,(<ix,iy>+1)')
+
+; bit n,(<ix,iy>+1) (2048 cycles)
+bitx:
+  DEFB 0x53            ; flag mask
+  TSTR(0xdd 0xcb 1 0x46,0x2075,msbt-1,msbt-1,0x3cfc,0xa79a,0x3d74,0x51,0x27,0xca14)
+  TSTR(0x20 0 0 0x38,0,0,0,0,0,0,0x53,0,0)    ; (256 cycles)
+  TSTR(0,0xff,0,0,0,0,0,0,0,0)                  ; (8 cycles)
+  DEFB 0xa8,0xee,0x08,0x67                     ; expected crc
+  TMSG('bit n,(<ix,iy>+1)')
+
+; bit n,<b,c,d,e,h,l,(hl),a> (49,152 cycles)
+bitz80:
+  DEFB 0x53            ; flag mask
+  TSTR(0xcb 0x40,0x3ef1,0x9dfc,0x7acc,msbt,0xbe61,0x7a86,0x50,0x24,0x1998)
+  TSTR(0 0x3f,0,0,0,0,0,0,0x53,0,0)           ; (1024 cycles)
+  TSTR(0,0xff,0,0,0,-1,-1,0,-1,0)               ; (48 cycles)
+  DEFB 0x7b,0x55,0xe6,0xc8                     ; expected crc
+  TMSG('bit n,<b,c,d,e,h,l,(hl),a>')
+
+; cpd<r> (1) (6144 cycles)
+cpd1:
+  DEFB 0xd7            ; flag mask
+  TSTR(0xed 0xa9,0xc7b6,0x72b4,0x18f6,msbt+17,0x8dbd,1,0xc0,0x30,0x94a3)
+  TSTR(0 0x10,0,0,0,0,0,010,0,-1,0)           ; (1024 cycles)
+  TSTR(0,0,0,0,0,0,0,0xd7,0,0)                  ; (6 cycles)
+  DEFB 0xa8,0x7e,0x6c,0xfa                     ; expected crc
+  TMSG('cpd<r>')
+
+; cpi<r> (1) (6144 cycles)
+cpi1:
+  DEFB 0xd7            ; flag mask
+  TSTR(0xed 0xa1,0x4d48,0xaf4a,0x906b,msbt,0x4e71,1,0x93,0x6a,0x907c)
+  TSTR(0 0x10,0,0,0,0,0,010,0,-1,0)           ; (1024 cycles)
+  TSTR(0,0,0,0,0,0,0,0xd7,0,0)                  ; (6 cycles)
+  DEFB 0x06,0xde,0xb3,0x56                     ; expected crc
+  TMSG('cpi<r>')
+
+; <daa,cpl,scf,ccf>
+daa:
+  DEFB 0xd7            ; flag mask
+  TSTR(0x27,0x2141,0x09fa,0x1d60,0xa559,0x8d5b,0x9079,0x04,0x8e,0x299d)
+  TSTR(0x18,0,0,0,0,0,0,0xd7,-1,0)              ; (65,536 cycles)
+  TSTR(0,0,0,0,0,0,0,0,0,0)                     ; (1 cycle)
+  DEFB 0x9b,0x4b,0xa6,0x75                     ; expected crc
+  TMSG('<daa,cpl,scf,ccf>')
+
+; <inc,dec> a (3072 cycles)
+inca:
+  DEFB 0xd7            ; flag mask
+  TSTR(0x3c,0x4adf,0xd5d8,0xe598,0x8a2b,0xa7b0,0x431b,0x44,0x5a,0xd030)
+  TSTR(0x01,0,0,0,0,0,0,0,-1,0)                 ; (512 cycles)
+  TSTR(0,0,0,0,0,0,0,0xd7,0,0)                  ; (6 cycles)
+  DEFB 0xd1,0x88,0x15,0xa4                     ; expected crc
+  TMSG('<inc,dec> a')
+
+; <inc,dec> b (3072 cycles)
+incb:
+  DEFB 0xd7            ; flag mask
+  TSTR(0x04,0xd623,0x432d,0x7a61,0x8180,0x5a86,0x1e85,0x86,0x58,0x9bbb)
+  TSTR(0x01,0,0,0,0,0,0xff00,0,0,0)             ; (512 cycles)
+  TSTR(0,0,0,0,0,0,0,0xd7,0,0)                  ; (6 cycles)
+  DEFB 0x5f,0x68,0x22,0x64                     ; expected crc
+  TMSG('<inc,dec> b')
+
+; <inc,dec> bc (1536 cycles)
+incbc:
+  DEFB 0xd7            ; flag mask
+  TSTR(0x03,0xcd97,0x44ab,0x8dc9,0xe3e3,0x11cc,0xe8a4,0x02,0x49,0x2a4d)
+  TSTR(0x08,0,0,0,0,0,0xf821,0,0,0)             ; (256 cycles)
+  TSTR(0,0,0,0,0,0,0,0xd7,0,0)                  ; (6 cycles)
+  DEFB 0xd2,0xae,0x3b,0xec                     ; expected crc
+  TMSG('<inc,dec> bc')
+
+; <inc,dec> c (3072 cycles)
+incc:
+  DEFB 0xd7            ; flag mask
+  TSTR(0x0c,0xd789,0x0935,0x055b,0x9f85,0x8b27,0xd208,0x95,0x05,0x0660)
+  TSTR(0x01,0,0,0,0,0,0xff,0,0,0)               ; (512 cycles)
+  TSTR(0,0,0,0,0,0,0,0xd7,0,0)                  ; (6 cycles)
+  DEFB 0xc2,0x84,0x55,0x4c                     ; expected crc
+  TMSG('<inc,dec> c')
+
+; <inc,dec> d (3072 cycles)
+incd:
+  DEFB 0xd7            ; flag mask
+  TSTR(0x14,0xa0ea,0x5fba,0x65fb,0x981c,0x38cc,0xdebc,0x43,0x5c,0x03bd)
+  TSTR(0x01,0,0,0,0,0xff00,0,0,0,0)             ; (512 cycles)
+  TSTR(0,0,0,0,0,0,0,0xd7,0,0)                  ; (6 cycles)
+  DEFB 0x45,0x23,0xde,0x10                     ; expected crc
+  TMSG('<inc,dec> d')
+
+; <inc,dec> de (1536 cycles)
+incde:
+  DEFB 0xd7            ; flag mask
+  TSTR(0x13,0x342e,0x131d,0x28c9,0x0aca,0x9967,0x3a2e,0x92,0xf6,0x9d54)
+  TSTR(0x08,0,0,0,0,0xf821,0,0,0,0)             ; (256 cycles)
+  TSTR(0,0,0,0,0,0,0,0xd7,0,0)                  ; (6 cycles)
+  DEFB 0xae,0xc6,0xd4,0x2c                     ; expected crc
+  TMSG('<inc,dec> de')
+
+; <inc,dec> e (3072 cycles)
+ince:
+  DEFB 0xd7            ; flag mask
+  TSTR(0x1c,0x602f,0x4c0d,0x2402,0xe2f5,0xa0f4,0xa10a,0x13,0x32,0x5925)
+  TSTR(0x01,0,0,0,0,0xff,0,0,0,0)               ; (512 cycles)
+  TSTR(0,0,0,0,0,0,0,0xd7,0,0)                  ; (6 cycles)
+  DEFB 0xe1,0x75,0xaf,0xcc                     ; expected crc
+  TMSG('<inc,dec> e')
+
+; <inc,dec> h (3072 cycles)
+inch:
+  DEFB 0xd7            ; flag mask
+  TSTR(0x24,0x1506,0xf2eb,0xe8dd,0x262b,0x11a6,0xbc1a,0x17,0x06,0x2818)
+  TSTR(0x01,0,0,0,0xff00,0,0,0,0,0)             ; (512 cycles)
+  TSTR(0,0,0,0,0,0,0,0xd7,0,0)                  ; (6 cycles)
+  DEFB 0x1c,0xed,0x84,0x7d                     ; expected crc
+  TMSG('<inc,dec> h')
+
+; <inc,dec> hl (1536 cycles)
+inchl:
+  DEFB 0xd7            ; flag mask
+  TSTR(0x23,0xc3f4,0x07a5,0x1b6d,0x4f04,0xe2c2,0x822a,0x57,0xe0,0xc3e1)
+  TSTR(0x08,0,0,0,0xf821,0,0,0,0,0)             ; (256 cycles)
+  TSTR(0,0,0,0,0,0,0,0xd7,0,0)                  ; (6 cycles)
+  DEFB 0xfc,0x0d,0x6d,0x4a                     ; expected crc
+  TMSG('<inc,dec> hl')
+
+; <inc,dec> ix (1536 cycles)
+incix:
+  DEFB 0xd7            ; flag mask
+  TSTR(0xdd 0x23,0xbc3c,0x0d9b,0xe081,0xadfd,0x9a7f,0x96e5,0x13,0x85,0x0be2)
+  TSTR(0 8,0,0,0xf821,0,0,0,0,0,0)            ; (256 cycles)
+  TSTR(0,0,0,0,0,0,0,0xd7,0,0)                  ; (6 cycles)
+  DEFB 0xa5,0x4d,0xbe,0x31                     ; expected crc
+  TMSG('<inc,dec> ix')
+
+; <inc,dec> iy (1536 cycles)
+inciy:
+  DEFB 0xd7            ; flag mask
+  TSTR(0xfd 0x23,0x9402,0x637a,0x3182,0xc65a,0xb2e9,0xabb4,0x16,0xf2,0x6d05)
+  TSTR(0 8,0,0xf821,0,0,0,0,0,0,0)            ; (256 cycles)
+  TSTR(0,0,0,0,0,0,0,0xd7,0,0)                  ; (6 cycles)
+  DEFB 0x50,0x5d,0x51,0xa3                     ; expected crc
+  TMSG('<inc,dec> iy')
+
+; <inc,dec> l (3072 cycles)
+incl:
+  DEFB 0xd7            ; flag mask
+  TSTR(0x2c,0x8031,0xa520,0x4356,0xb409,0xf4c1,0xdfa2,0xd1,0x3c,0x3ea2)
+  TSTR(0x01,0,0,0,0xff,0,0,0,0,0)               ; (512 cycles)
+  TSTR(0,0,0,0,0,0,0,0xd7,0,0)                  ; (6 cycles)
+  DEFB 0x56,0xcd,0x06,0xf3                     ; expected crc
+  TMSG('<inc,dec> l')
+
+; <inc,dec> (hl) (3072 cycles)
+incm:
+  DEFB 0xd7            ; flag mask
+  TSTR(0x34,0xb856,0x0c7c,0xe53e,msbt,0x877e,0xda58,0x15,0x5c,0x1f37)
+  TSTR(0x01,0xff,0,0,0,0,0,0,0,0)               ; (512 cycles)
+  TSTR(0,0,0,0,0,0,0,0xd7,0,0)                  ; (6 cycles)
+  DEFB 0xb8,0x3a,0xdc,0xef                     ; expected crc
+  TMSG('<inc,dec> (hl)')
+
+; <inc,dec> sp (1536 cycles)
+incsp:
+  DEFB 0xd7            ; flag mask
+  TSTR(0x33,0x346f,0xd482,0xd169,0xdeb6,0xa494,0xf476,0x53,0x02,0x855b)
+  TSTR(0x08,0,0,0,0,0,0,0,0,0xf821)             ; (256 cycles)
+  TSTR(0,0,0,0,0,0,0,0xd7,0,0)                  ; (6 cycles)
+  DEFB 0x5d,0xac,0xd5,0x27                     ; expected crc
+  TMSG('<inc,dec> sp')
+
+; <inc,dec> (<ix,iy>+1) (6144 cycles)
+incx:
+  DEFB 0xd7            ; flag mask
+  TSTR(0xdd 0x34 1,0xfa6e,msbt-1,msbt-1,0x2c28,0x8894,0x5057,0x16,0x33,0x286f)
+  TSTR(0x20 1,0xff,0,0,0,0,0,0,0,0)           ; (1024 cycles)
+  TSTR(0,0,0,0,0,0,0,0xd7,0,0)                  ; (6 cycles)
+  DEFB 0x20,0x58,0x14,0x70                     ; expected crc
+  TMSG('<inc,dec> (<ix,iy>+1)')
+
+; <inc,dec> ixh (3072 cycles)
+incxh:
+  DEFB 0xd7            ; flag mask
+  TSTR(0xdd 0x24,0xb838,0x316c,0xc6d4,0x3e01,0x8358,0x15b4,0x81,0xde,0x4259)
+  TSTR(0 1,0,0xff00,0,0,0,0,0,0,0)            ; (512 cycles)
+  TSTR(0,0,0,0,0,0,0,0xd7,0,0)                  ; (6 cycles)
+  DEFB 0x6f,0x46,0x36,0x62                     ; expected crc
+  TMSG('<inc,dec> ixh')
+
+; <inc,dec> ixl (3072 cycles)
+incxl:
+  DEFB 0xd7            ; flag mask
+  TSTR(0xdd 0x2c,0x4d14,0x7460,0x76d4,0x06e7,0x32a2,0x213c,0xd6,0xd7,0x99a5)
+  TSTR(0 1,0,0xff,0,0,0,0,0,0,0)              ; (512 cycles)
+  TSTR(0,0,0,0,0,0,0,0xd7,0,0)                  ; (6 cycles)
+  DEFB 0x02,0x7b,0xef,0x2c                     ; expected crc
+  TMSG('<inc,dec> ixl')
+
+; <inc,dec> iyh (3072 cycles)
+incyh:
+  DEFB 0xd7            ; flag mask
+  TSTR(0xdd 0x24,0x2836,0x9f6f,0x9116,0x61b9,0x82cb,0xe219,0x92,0x73,0xa98c)
+  TSTR(0 1,0xff00,0,0,0,0,0,0,0,0)            ; (512 cycles)
+  TSTR(0,0,0,0,0,0,0,0xd7,0,0)                  ; (6 cycles)
+  DEFB 0x2d,0x96,0x6c,0xf3                     ; expected crc
+  TMSG('<inc,dec> iyh')
+
+; <inc,dec> iyl (3072 cycles)
+incyl:
+  DEFB 0xd7            ; flag mask
+  TSTR(0xdd 0x2c,0xd7c6,0x62d5,0xa09e,0x7039,0x3e7e,0x9f12,0x90,0xd9,0x220f)
+  TSTR(0 1,0xff,0,0,0,0,0,0,0,0)              ; (512 cycles)
+  TSTR(0,0,0,0,0,0,0,0xd7,0,0)                  ; (6 cycles)
+  DEFB 0xfb,0xcb,0xba,0x95                     ; expected crc
+  TMSG('<inc,dec> iyl')
+
+; ld <bc,de>,(nnnn) (32 cycles)
+ld161:
+  DEFB 0xd7            ; flag mask
+  TSTR(0xed 0x4b msbt@L msbt@H,0xf9a8,0xf559,0x93a4,0xf5ed,0x6f96,0xd968,0x86,0xe6,0x4bd8)
+  TSTR(0 0x10,0,0,0,0,0,0,0,0,0)              ; (2 cycles)
+  TSTR(0,-1,0,0,0,0,0,0,0,0)                    ; (16 cycles)
+  DEFB 0x4d,0x45,0xa9,0xac                     ; expected crc
+  TMSG('ld <bc,de>,(nnnn)')
+
+; ld hl,(nnnn) (16 cycles)
+ld162:
+  DEFB 0xd7            ; flag mask
+  TSTR(0x2a msbt@L msbt@H,0x9863,0x7830,0x2077,0xb1fe,0xb9fa,0xabb8,0x04,0x06,0x6015)
+  TSTR(0,0,0,0,0,0,0,0,0,0)                     ; (1 cycle)
+  TSTR(0,-1,0,0,0,0,0,0,0,0)                    ; (16 cycles)
+  DEFB 0x5f,0x97,0x24,0x87                     ; expected crc
+  TMSG('ld hl,(nnnn)')
+
+; ld sp,(nnnn) (16 cycles)
+ld163:
+  DEFB 0xd7            ; flag mask
+  TSTR(0xed 0x7b msbt@L msbt@H,0x8dfc,0x57d7,0x2161,0xca18,0xc185,0x27da,0x83,0x1e,0xf460)
+  TSTR(0,0,0,0,0,0,0,0,0,0)                     ; (1 cycles)
+  TSTR(0,-1,0,0,0,0,0,0,0,0)                    ; (16 cycles)
+  DEFB 0x7a,0xce,0xa1,0x1b                     ; expected crc
+  TMSG('ld sp,(nnnn)')
+
+; ld <ix,iy>,(nnnn) (32 cycles)
+ld164:
+  DEFB 0xd7            ; flag mask
+  TSTR(0xdd 0x2a msbt@L msbt@H,0xded7,0xa6fa,0xf780,0x244c,0x87de,0xbcc2,0x16,0x63,0x4c96)
+  TSTR(0x20,0,0,0,0,0,0,0,0,0)                  ; (2 cycles)
+  TSTR(0,-1,0,0,0,0,0,0,0,0)                    ; (16 cycles)
+  DEFB 0x85,0x8b,0xf1,0x6d                     ; expected crc
+  TMSG('ld <ix,iy>,(nnnn)')
+
+; ld (nnnn),<bc,de> (64 cycles)
+ld165:
+  DEFB 0xd7            ; flag mask
+  TSTR(0xed 0x43 msbt@L msbt@H,0x1f98,0x844d,0xe8ac,0xc9ed,0xc95d,0x8f61,0x80,0x3f,0xc7bf)
+  TSTR(0 0x10,0,0,0,0,0,0,0,0,0)              ; (2 cycles)
+  TSTR(0,0,0,0,0,-1,-1,0,0,0)                   ; (32 cycles)
+  DEFB 0x64,0x1e,0x87,0x15                     ; expected crc
+  TMSG('ld (nnnn),<bc,de>')
+
+; ld (nnnn),hl (16 cycles)
+ld166:
+  DEFB 0xd7            ; flag mask
+  TSTR(0x22 msbt@L msbt@H,0xd003,0x7772,0x7f53,0x3f72,0x64ea,0xe180,0x10,0x2d,0x35e9)
+  TSTR(0,0,0,0,0,0,0,0,0,0)                     ; (1 cycle)
+  TSTR(0,0,0,0,-1,0,0,0,0,0)                    ; (16 cycles)
+  DEFB 0xa3,0x60,0x8b,0x47                     ; expected crc
+  TMSG('ld (nnnn),hl')
+
+; ld (nnnn),sp (16 cycles)
+ld167:
+  DEFB 0xd7            ; flag mask
+  TSTR(0xed 0x73 msbt@L msbt@H,0xc0dc,0xd1d6,0xed5a,0xf356,0xafda,0x6ca7,0x44,0x9f,0x3f0a)
+  TSTR(0,0,0,0,0,0,0,0,0,0)                     ; (1 cycle)
+  TSTR(0,0,0,0,0,0,0,0,0,-1)                    ; (16 cycles)
+  DEFB 0x16,0x58,0x5f,0xd7                     ; expected crc
+  TMSG('ld (nnnn),sp')
+
+; ld (nnnn),<ix,iy> (64 cycles)
+ld168:
+  DEFB 0xd7            ; flag mask
+  TSTR(0xdd 0x22 msbt@L msbt@H,0x6cc3,0x0d91,0x6900,0x8ef8,0xe3d6,0xc3f7,0xc6,0xd9,0xc2df)
+  TSTR(0x20,0,0,0,0,0,0,0,0,0)                  ; (2 cycles)
+  TSTR(0,0,-1,-1,0,0,0,0,0,0)                   ; (32 cycles)
+  DEFB 0xba,0x10,0x2a,0x6b                     ; expected crc
+  TMSG('ld (nnnn),<ix,iy>')
+
+; ld <bc,de,hl,sp>,nnnn (64 cycles)
+ld16im:
+  DEFB 0xd7            ; flag mask
+  TSTR(1,0x5c1c,0x2d46,0x8eb9,0x6078,0x74b1,0xb30e,0x46,0xd1,0x30cc)
+  TSTR(0x30,0,0,0,0,0,0,0,0,0)                  ; (4 cycles)
+  TSTR(0 0xff 0xff,0,0,0,0,0,0,0,0,0)         ; (16 cycles)
+  DEFB 0xde,0x39,0x19,0x69                     ; expected crc
+  TMSG('ld <bc,de,hl,sp>,nnnn')
+
+; ld <ix,iy>,nnnn (32 cycles)
+ld16ix:
+  DEFB 0xd7            ; flag mask
+  TSTR(0xdd 0x21,0x87e8,0x2006,0xbd12,0xb69b,0x7253,0xa1e5,0x51,0x13,0xf1bd)
+  TSTR(0x20,0,0,0,0,0,0,0,0,0)                  ; (2 cycles)
+  TSTR(0 0 0xff 0xff,0,0,0,0,0,0,0,0,0)       ; (16 cycles)
+  DEFB 0x22,0x7d,0xd5,0x25                     ; expected crc
+  TMSG('ld <ix,iy>,nnnn')
+
+; ld a,<(bc),(de)> (44 cycles)
+ld8bd:
+  DEFB 0xd7            ; flag mask
+  TSTR(0x0a,0xb3a8,0x1d2a,0x7f8e,0x42ac,msbt,msbt,0xc6,0xb1,0xef8e)
+  TSTR(0x10,0,0,0,0,0,0,0,0,0)                  ; (2 cycles)
+  TSTR(0,0xff,0,0,0,0,0,0xd7,-1,0)              ; (22 cycles)
+  DEFB 0xb0,0x81,0x89,0x35                     ; expected crc
+  TMSG('ld a,<(bc),(de)>')
+
+; ld <b,c,d,e,h,l,(hl),a>,nn (64 cycles)
+ld8im:
+  DEFB 0xd7            ; flag mask
+  TSTR(6,0xc407,0xf49d,0xd13d,0x0339,0xde89,0x7455,0x53,0xc0,0x5509)
+  TSTR(0x38,0,0,0,0,0,0,0,0,0)                  ; (8 cycles)
+  TSTR(0,0,0,0,0,0,0,0,-1,0)                    ; (8 cycles)
+  DEFB 0xf1,0xda,0xb5,0x56                     ; expected crc
+  TMSG('ld <b,c,d,e,h,l,(hl),a>,nn')
+
+; ld (<ix,iy>+1),nn (32 cycles)
+ld8imx:
+  DEFB 0xd7            ; flag mask
+  TSTR(0xdd 0x36 1,0x1b45,msbt-1,msbt-1,0xd5c1,0x61c7,0xbdc4,0xc0,0x85,0xcd16)
+  TSTR(0x20,0,0,0,0,0,0,0,0,0)                  ; (2 cycles)
+  TSTR(0 0 0 -1,0,0,0,0,0,0,0,-1,0)           ; (16 cycles)
+  DEFB 0x26,0xdb,0x47,0x7e                     ; expected crc
+  TMSG('ld (<ix,iy>+1),nn')
+
+; ld <b,c,d,e>,(<ix,iy>+1) (512 cycles)
+ld8ix1:
+   DEFB 0xd7            ; flag mask
+  TSTR(0xdd 0x46 1,0xd016,msbt-1,msbt-1,0x4260,0x7f39,0x0404,0x97,0x4a,0xd085)
+  TSTR(0x20 0x18,0,1,1,0,0,0,0,0,0)           ; (32 cycles)
+  TSTR(0,-1,0,0,0,0,0,0,0,0)                    ; (16 cycles)
+  DEFB 0xcc,0x11,0x06,0xa8                     ; expected crc
+  TMSG('ld <b,c,d,e>,(<ix,iy>+1)')
+
+; ld <h,l>,(<ix,iy>+1) (256 cycles)
+ld8ix2:
+  DEFB 0xd7            ; flag mask
+  TSTR(0xdd 0x66 1,0x84e0,msbt-1,msbt-1,0x9c52,0xa799,0x49b6,0x93,0x00,0xeead)
+  TSTR(0x20 0x08,0,1,1,0,0,0,0,0,0)           ; (16 cycles)
+  TSTR(0,-1,0,0,0,0,0,0,0,0)                    ; (16 cycles)
+  DEFB 0xfa,0x2a,0x4d,0x03                     ; expected crc
+  TMSG('ld <h,l>,(<ix,iy>+1)')
+
+; ld a,(<ix,iy>+1) (128 cycles)
+ld8ix3:
+  DEFB 0xd7            ; flag mask
+  TSTR(0xdd 0x7e 1,0xd8b6,msbt-1,msbt-1,0xc612,0xdf07,0x9cd0,0x43,0xa6,0xa0e5)
+  TSTR(0x20,0,1,1,0,0,0,0,0,0)                  ; (8 cycles)
+  TSTR(0,-1,0,0,0,0,0,0,0,0)                    ; (16 cycles)
+  DEFB 0xa5,0xe9,0xac,0x64                     ; expected crc
+  TMSG('ld a,(<ix,iy>+1)')
+
+; ld <ixh,ixl,iyh,iyl>,nn (32 cycles)
+ld8ixy:
+  DEFB 0xd7            ; flag mask
+  TSTR(0xdd 0x26,0x3c53,0x4640,0xe179,0x7711,0xc107,0x1afa,0x81,0xad,0x5d9b)
+  TSTR(0x20 8,0,0,0,0,0,0,0,0,0)              ; (4 cycles)
+  TSTR(0,0,0,0,0,0,0,0,-1,0)                    ; (8 cycles)
+  DEFB 0x24,0xe8,0x82,0x8b                     ; expected crc
+  TMSG('ld <ixh,ixl,iyh,iyl>,nn')
+
+; ld <b,c,d,e,h,l,a>,<b,c,d,e,h,l,a> (3456 cycles)
+ld8rr:
+  DEFB 0xd7            ; flag mask
+  TSTR(0x40,0x72a4,0xa024,0x61ac,msbt,0x82c7,0x718f,0x97,0x8f,0xef8e)
+  TSTR(0x3f,0,0,0,0,0,0,0,0,0)                  ; (64 cycles)
+  TSTR(0,0xff,0,0,0,-1,-1,0xd7,-1,0)            ; (54 cycles)
+  DEFB 0x74,0x4b,0x01,0x18                     ; expected crc
+  TMSG('ld <bcdehla>,<bcdehla>')
+
+; ld <b,c,d,e,ixy,a>,<b,c,d,e,ixy,a> (6912 cycles)
+ld8rrx:
+  DEFB 0xd7            ; flag mask
+  TSTR(0xdd 0x40,0xbcc5,msbt,msbt,msbt,0x2fc2,0x98c0,0x83,0x1f,0x3bcd)
+  TSTR(0x20 0x3f,0,0,0,0,0,0,0,0,0)           ; (128 cycles)
+  TSTR(0,0xff,0,0,0,-1,-1,0xd7,-1,0)            ; (54 cycles)
+  DEFB 0x47,0x8b,0xa3,0x6b                     ; expected crc
+  TMSG('ld <bcdexya>,<bcdexya>')
+
+; ld a,(nnnn) / ld (nnnn),a (44 cycles)
+lda:
+  DEFB 0xd7            ; flag mask
+  TSTR(0x32 msbt@L msbt@H,0xfd68,0xf4ec,0x44a0,0xb543,0x0653,0xcdba,0xd2,0x4f,0x1fd8)
+  TSTR(0x08,0,0,0,0,0,0,0,0,0)                  ; (2 cycle)
+  TSTR(0,0xff,0,0,0,0,0,0xd7,-1,0)              ; (22 cycles)
+  DEFB 0xc9,0x26,0x2d,0xe5                     ; expected crc
+  TMSG('ld a,(nnnn) / ld (nnnn),a')
+
+; ldd<r> (1) (44 cycles)
+ldd1:
+  DEFB 0xd7            ; flag mask
+  TSTR(0xed 0xa8,0x9852,0x68fa,0x66a1,msbt+3,msbt+1,1,0xc1,0x68,0x20b7)
+  TSTR(0 0x10,0,0,0,0,0,0,0,0,0)              ; (2 cycles)
+  TSTR(0,-1,0,0,0,0,0,0xd7,0,0)                 ; (22 cycles)
+  DEFB 0x94,0xf4,0x27,0x69                     ; expected crc
+  TMSG('ldd<r> (1)')
+
+; ldd<r> (2) (44 cycles)
+ldd2:
+  DEFB 0xd7            ; flag mask
+  TSTR(0xed 0xa8,0xf12e,0xeb2a,0xd5ba,msbt+3,msbt+1,2,0x47,0xff,0xfbe4)
+  TSTR(0 0x10,0,0,0,0,0,0,0,0,0)              ; (2 cycles)
+  TSTR(0,-1,0,0,0,0,0,0xd7,0,0)                 ; (22 cycles)
+  DEFB 0x5a,0x90,0x7e,0xd4                     ; expected crc
+  TMSG('ldd<r> (2)')
+
+; ldi<r> (1) (44 cycles)
+ldi1:
+  DEFB 0xd7            ; flag mask
+  TSTR(0xed 0xa0,0xfe30,0x03cd,0x6058,msbt+2,msbt,1,0x04,0x60,0x2688)
+  TSTR(0 0x10,0,0,0,0,0,0,0,0,0)              ; (2 cycles)
+  TSTR(0,-1,0,0,0,0,0,0xd7,0,0)                 ; (22 cycles)
+  DEFB 0x9a,0xbd,0xf6,0xb5                     ; expected crc
+  TMSG('ldi<r> (1)')
+
+; ldi<r> (2) (44 cycles)
+ldi2:
+  DEFB 0xd7            ; flag mask
+  TSTR(0xed 0xa0,0x4ace,0xc26e,0xb188,msbt+2,msbt,2,0x14,0x2d,0xa39f)
+  TSTR(0 0x10,0,0,0,0,0,0,0,0,0)              ; (2 cycles)
+  TSTR(0,-1,0,0,0,0,0,0xd7,0,0)                 ; (22 cycles)
+  DEFB 0xeb,0x59,0x89,0x1b                     ; expected crc
+  TMSG('ldi<r> (2)')
+
+; neg (16,384 cycles)
+neg:
+  DEFB 0xd7            ; flag mask
+  TSTR(0xed 0x44,0x38a2,0x5f6b,0xd934,0x57e4,0xd2d6,0x4642,0x43,0x5a,0x09cc)
+  TSTR(0,0,0,0,0,0,0,0xd7,-1,0)                 ; (16,384 cycles)
+  TSTR(0,0,0,0,0,0,0,0,0,0)                     ; (1 cycle)
+  DEFB 0x6a,0x3c,0x3b,0xbd                     ; expected crc
+  TMSG('neg')
+
+; <rld,rrd> (7168 cycles)
+rld:
+  DEFB 0xd7            ; flag mask
+  TSTR(0xed 0x67,0x91cb,0xc48b,0xfa62,msbt,0xe720,0xb479,0x40,0x06,0x8ae2)
+  TSTR(0 8,0xff,0,0,0,0,0,0,0,0)              ; (512 cycles)
+  TSTR(0,0,0,0,0,0,0,0xd7,-1,0)                 ; (14 cycles)
+  DEFB 0x95,0x5b,0xa3,0x26                     ; expected crc
+  TMSG('<rrd,rld>')
+
+; <rlca,rrca,rla,rra> (6144 cycles)
+rot8080:
+  DEFB   0xd7            ; flag mask
+  TSTR(7,0xcb92,0x6d43,0x0a90,0xc284,0x0c53,0xf50e,0x91,0xeb,0x40fc)
+  TSTR(0x18,0,0,0,0,0,0,0,-1,0)                 ; (1024 cycles)
+  TSTR(0,0,0,0,0,0,0,0xd7,0,0)                  ; (6 cycles)
+  DEFB 0x25,0x13,0x30,0xae                     ; expected crc
+  TMSG('<rlca,rrca,rla,rra>')
+
+; shift/rotate (<ix,iy>+1) (416 cycles)
+rotxy:
+  DEFB 0xd7            ; flag mask
+  TSTR(0xdd 0xcb 1 6,0xddaf,msbt-1,msbt-1,0xff3c,0xdbf6,0x94f4,0x82,0x80,0x61d9)
+  TSTR(0x20 0 0 0x38,0,0,0,0,0,0,0x80,0,0)    ; (32 cycles)
+  TSTR(0,0xff,0,0,0,0,0,0x57,0,0)               ; (13 cycles)
+  DEFB 0x71,0x3a,0xcd,0x81                     ; expected crc
+  TMSG('shf/rot (<ix,iy>+1)')
+
+; shift/rotate <b,c,d,e,h,l,(hl),a> (6784 cycles)
+rotz80:
+  DEFB 0xd7            ; flag mask
+  TSTR(0xcb,0xcceb,0x5d4a,0xe007,msbt,0x1395,0x30ee,0x43,0x78,0x3dad)
+  TSTR(0 0x3f,0,0,0,0,0,0,0x80,0,0)           ; (128 cycles)
+  TSTR(0,0xff,0,0,0,-1,-1,0x57,-1,0)            ; (53 cycles)
+  DEFB 0xeb,0x60,0x4d,0x58                     ; expected crc
+  TMSG('shf/rot <b,c,d,e,h,l,(hl),a>')
+
+; <set,res> n,<b,c,d,e,h,l,(hl),a> (7936 cycles)
+srz80:
+  DEFB 0xd7            ; flag mask
+  TSTR(0xcb 0x80,0x2cd5,0x97ab,0x39ff,msbt,0xd14b,0x6ab2,0x53,0x27,0xb538)
+  TSTR(0 0x7f,0,0,0,0,0,0,0,0,0)              ; (128 cycles)
+  TSTR(0,0xff,0,0,0,-1,-1,0xd7,-1,0)            ; (62 cycles)
+  DEFB 0x8b,0x57,0xf0,0x08                     ; expected crc
+  TMSG('<set,res> n,<bcdehl(hl)a>')
+
+; <set,res> n,(<ix,iy>+1) (1792 cycles)
+srzx:
+  DEFB 0xd7            ; flag mask
+  TSTR(0xdd 0xcb 1 0x86,0xfb44,msbt-1,msbt-1,0xba09,0x68be,0x32d8,0x10,0x5e,0xa867)
+  TSTR(0x20 0 0 0x78,0,0,0,0,0,0,0,0,0)       ; (128 cycles)
+  TSTR(0,0xff,0,0,0,0,0,0xd7,0,0)               ;(14 cycles)
+  DEFB 0xcc,0x63,0xf9,0x8a                     ; expected crc
+  TMSG('<set,res> n,(<ix,iy>+1)')
+
+; ld (<ix,iy>+1),<b,c,d,e> (1024 cycles)
+st8ix1:
+  DEFB 0xd7            ; flag mask
+  TSTR(0xdd 0x70 1,0x270d,msbt-1,msbt-1,0xb73a,0x887b,0x99ee,0x86,0x70,0xca07)
+  TSTR(0x20 0x03,0,1,1,0,0,0,0,0,0)           ; (32 cycles)
+  TSTR(0,0,0,0,0,-1,-1,0,0,0)                   ; (32 cycles)
+  DEFB 0x04,0x62,0x6a,0xbf                     ; expected crc
+  TMSG('ld (<ix,iy>+1),<b,c,d,e>')
+
+; ld (<ix,iy>+1),<h,l> (256 cycles)
+st8ix2:
+  DEFB 0xd7            ; flag mask
+  TSTR(0xdd 0x74 1,0xb664,msbt-1,msbt-1,0xe8ac,0xb5f5,0xaafe,0x12,0x10,0x9566)
+  TSTR(0x20 0x01,0,1,1,0,0,0,0,0,0)           ; (16 cycles)
+  TSTR(0,0,0,0,-1,0,0,0,0,0)                    ; (32 cycles)
+  DEFB 0x6a,0x1a,0x88,0x31                     ; expected crc
+  TMSG('ld (<ix,iy>+1),<h,l>')
+
+; ld (<ix,iy>+1),a (64 cycles)
+st8ix3:
+  DEFB 0xd7            ; flag mask
+  TSTR(0xdd 0x77 1,0x67af,msbt-1,msbt-1,0x4f13,0x0644,0xbcd7,0x50,0xac,0x5faf)
+  TSTR(0x20,0,1,1,0,0,0,0,0,0)                  ; (8 cycles)
+  TSTR(0,0,0,0,0,0,0,0,-1,0)                    ; (8 cycles)
+  DEFB 0xcc,0xbe,0x5a,0x96                     ; expected crc
+  TMSG('ld (<ix,iy>+1),a')
+
+; ld (<bc,de>),a (96 cycles)
+stabd:
+  DEFB 0xd7            ; flag mask
+  TSTR(2,0x0c3b,0xb592,0x6cff,0x959e,msbt,msbt+1,0xc1,0x21,0xbde7)
+  TSTR(0x18,0,0,0,0,0,0,0,0,0)                  ; (4 cycles)
+  TSTR(0,-1,0,0,0,0,0,0,-1,0)                   ; (24 cycles)
+  DEFB 0x7a,0x4c,0x11,0x4f                     ; expected crc
+  TMSG('ld (<bc,de>),a')
+
+; start test pointed to by (hl)
+stt:
+  push hl
+  ld   a,(hl)          ; get pointer to test
+  inc  hl
+  ld   h,(hl)
+  ld   l,a
+  ld   a,(hl)          ; flag mask
+  ld   (flgmsk+1),a
+  inc  hl
+  push hl
+  ld   de,20
+  add  hl,de           ; point to incmask
+  ld   de,counter
+  call initmask
+  pop  hl
+  push hl
+  ld   de,40
+  add  hl,de           ; point to scanmask
+  ld   de,shifter
+  call initmask
+  ld   hl,shifter
+  ld   (hl),1          ; first bit
+  pop  hl
+  push hl
+  ld   de,iut          ; copy initial instruction under test
+  ld   bc,4
+  ldir
+  ld   de,msbt         ; copy initial machine state
+  ld   bc,16
+  ldir
+  ld   de,44           ; skip incmask, scanmask and expcrc
+  add  hl,de
+  ex   de,hl
+  ld   c,9
+  call bdos            ; show test name
+  call initcrc         ; initialise crc
+; test loop
+tlp:
+  ld   a,(iut)
+  cp   0x76            ; pragmatically avoid halt intructions
+  jp   z,tlp2
+  and  0xdf
+  cp   0xdd
+  jp   nz,tlp1
+  ld   a,(iut+1)
+  cp   0x76
+tlp1:
+  call nz,test         ; execute the test instruction
+tlp2:
+  call count           ; increment the counter
+  call nz,shift        ; shift the scan bit
+  pop  hl              ; pointer to test case
+  jp   z,tlp3          ; done if shift returned NZ
+  ld   de,60
+  add  hl,de           ; point to expected crc
+  call cmpcrc
+  ld   de,okmsg
+  jp   z,tlpok
+  ld   de,ermsg1
+  ld   c,9
+  call bdos
+  call phex8
+  ld   de,ermsg2
+  ld   c,9
+  call bdos
+  ld   hl,crcval
+  call phex8
+  ld   de,crlf
+tlpok:
+  ld   c,9
+  call bdos
+  pop  hl
+  inc  hl
+  inc  hl
+  ret
+
+tlp3:
+  push hl
+  ld   a,1             ; initialise count and shift scanners
+  ld   (cntbit),a
+  ld   (shfbit),a
+  ld   hl,counter
+  ld   (cntbyt),hl
+  ld   hl,shifter
+  ld   (shfbyt),hl
+
+  ld   b,4             ; bytes in iut field
+  pop  hl              ; pointer to test case
+  push hl
+  ld   de,iut
+  call setup           ; setup iut
+  ld   b,16            ; bytes in machine state
+  ld   de,msbt
+  call setup           ; setup machine state
+  jp   tlp
+
+; setup a field of the test case
+; b  = number of bytes
+; hl = pointer to base case
+; de = destination
+setup:
+  call subyte
+  inc  hl
+  dec  b
+  jp   nz,setup
+  ret
+
+subyte:
+  push bc
+  push de
+  push hl
+  ld   c,(hl)          ; get base byte
+  ld   de,20
+  add  hl,de           ; point to incmask
+  ld   a,(hl)
+  cp   0
+  jp   z,subshf
+  ld   b,8             ; 8 bits
+subclp:
+  rrca
+  push af
+  ld   a,0
+  call c,nxtcbit       ; get next counter bit if mask bit was set
+  xor  c               ; flip bit if counter bit was set
+  rrca
+  ld   c,a
+  pop  af
+  dec  b
+  jp   nz,subclp
+  ld   b,8
+subshf:
+  ld   de,20
+  add  hl,de           ; point to shift mask
+  ld   a,(hl)
+  cp   0
+  jp   z,substr
+  ld   b,8             ; 8 bits
+sbshf1:
+  rrca
+  push af
+  ld   a,0
+  call c,nxtsbit       ; get next shifter bit if mask bit was set
+  xor  c               ; flip bit if shifter bit was set
+  rrca
+  ld   c,a
+  pop  af
+  dec  b
+  jp   nz,sbshf1
+substr:
+  pop  hl
+  pop  de
+  ld   a,c
+  ld   (de),a          ; mangled byte to destination
+  inc  de
+  pop  bc
+  ret
+
+; get next counter bit in low bit of a
+cntbit:
+  DEFS 1
+cntbyt:
+  DEFS 2
+
+nxtcbit:
+  push bc
+  push hl
+  ld   hl,(cntbyt)
+  ld   b,(hl)
+  ld   hl,cntbit
+  ld   a,(hl)
+  ld   c,a
+  rlca
+  ld   (hl),a
+  cp   1
+  jp   nz,ncb1
+  ld   hl,(cntbyt)
+  inc  hl
+  ld   (cntbyt),hl
+ncb1:
+  ld   a,b
+  and  c
+  pop  hl
+  pop  bc
+  ret  z
+  ld   a,1
+  ret
+
+; get next shifter bit in low bit of a
+shfbit:
+  DEFS 1
+shfbyt:
+  DEFS 2
+
+nxtsbit:
+  push bc
+  push hl
+  ld   hl,(shfbyt)
+  ld   b,(hl)
+  ld   hl,shfbit
+  ld   a,(hl)
+  ld   c,a
+  rlca
+  ld   (hl),a
+  cp   1
+  jp   nz,nsb1
+  ld   hl,(shfbyt)
+  inc  hl
+  ld   (shfbyt),hl
+nsb1:
+  ld   a,b
+  and  c
+  pop  hl
+  pop  bc
+  ret  z
+  ld   a,1
+  ret
+
+; clear memory at hl, bc bytes
+clrmem:
+  push af
+  push bc
+  push de
+  push hl
+  ld   (hl),0
+  ld   d,h
+  ld   e,l
+  inc  de
+  dec  bc
+  ldir
+  pop  hl
+  pop  de
+  pop  bc
+  pop  af
+  ret
+
+; initialise counter or shifter
+; de = pointer to work area for counter or shifter
+; hl = pointer to mask
+initmask:
+  push de
+  ex   de,hl
+  ld   bc,40
+  call clrmem          ; clear work area
+  ex   de,hl
+  ld   b,20            ; byte counter
+  ld   c,1             ; first bit
+  ld   d,0             ; bit counter
+imlp:
+  ld   e,(hl)
+imlp1:
+  ld   a,e
+  and  c
+  jp   z,imlp2
+  inc  d
+imlp2:
+  ld   a,c
+  rlca
+  ld   c,a
+  cp   1
+  jp   nz,imlp1
+  inc  hl
+  dec  b
+  jp   nz,imlp
+; got number of 1-bits in mask in reg d
+  ld   a,d
+  and  0xf8
+  rrca
+  rrca
+  rrca                    ; divide by 8 (get byte offset)
+  ld   l,a
+  ld   h,0
+  ld   a,d
+  and  7             ; bit offset
+  inc  a
+  ld   b,a
+  ld   a,0x80
+imlp3:
+  rlca
+  dec  b
+  jp   nz,imlp3
+  pop  de
+  add  hl,de
+  ld   de,20
+  add  hl,de
+  ld   (hl),a
+  ret
+
+; multi-byte counter
+count:
+  push bc
+  push de
+  push hl
+  ld   hl,counter      ; 20 byte counter starts here
+  ld   de,20           ; somewhere in here is the stop bit
+  ex   de,hl
+  add  hl,de
+  ex   de,hl
+cntlp:
+  inc  (hl)
+  ld   a,(hl)
+  cp   0
+  jp   z,cntlp1        ; overflow to next byte
+  ld   b,a
+  ld   a,(de)
+  and  b             ; test for terminal value
+  jp   z,cntend
+  ld   (hl),0          ; reset to zero
+cntend:
+  pop  bc
+  pop  de
+  pop  hl
+  ret
+
+cntlp1:
+  inc  hl
+  inc  de
+  jp   cntlp
+
+; multi-byte shifter
+shift:
+  push bc
+  push de
+  push hl
+  ld   hl,shifter      ; 20 byte shift register starts here
+  ld   de,20           ; somewhere in here is the stop bit
+  ex   de,hl
+  add  hl,de
+  ex   de,hl
+shflp:
+  ld   a,(hl)
+  or   a
+  jp   z,shflp1
+  ld   b,a
+  ld   a,(de)
+  and  b
+  jp   nz,shlpe
+  ld   a,b
+  rlca
+  cp   1
+  jp   nz,shflp2
+  ld   (hl),0
+  inc  hl
+  inc  de
+shflp2:
+  ld   (hl),a
+  xor  a               ; set Z
+shlpe:
+  pop  hl
+  pop  de
+  pop  bc
+  ret
+shflp1:
+  inc  hl
+  inc  de
+  jp   shflp
+
+counter:
+  DEFS 40
+shifter:
+  DEFS 40
+
+; test harness
+test:
+  push af
+  push bc
+  push de
+  push hl
+#if 0
+  ld   de,crlf
+  ld   c,9
+  call bdos
+  ld   hl,iut
+  ld   b,4
+  call hexstr
+  ld   e,' '
+  ld   c,2
+  call bdos
+  ld   b,16
+  ld   hl,msbt
+  call hexstr
+#endif
+  di                   ; disable interrupts
+  ld   (spsav),sp      ; save stack pointer
+  ld   sp,msbt+2       ; point to test-case machine state
+  pop  iy              ; and load all regs
+  pop  ix
+  pop  hl
+  pop  de
+  pop  bc
+  pop  af
+  ld   sp,(spbt)
+iut:
+  DEFS 4               ; max 4 byte instruction under test
+  ld   (spat),sp       ; save stack pointer
+  ld   sp,spat
+  push af              ; save other registers
+  push bc
+  push de
+  push hl
+  push ix
+  push iy
+  ld   sp,(spsav)      ; restore stack pointer
+  ei                   ; enable interrupts
+  ld   hl,(msbt)       ; copy memory operand
+  ld   (msat),hl
+  ld   hl,flgsat       ; flags after test
+  ld   a,(hl)
+flgmsk:
+  and  0xd7          ; mask-out irrelevant bits (self-modified code!)
+  ld   (hl),a
+  ld   b,16            ; total of 16 bytes of state
+  ld   de,msat
+  ld   hl,crcval
+tcrc:
+  ld   a,(de)
+  inc  de
+  call updcrc          ; accumulate crc of this test case
+  dec  b
+  jp   nz,tcrc
+#if 0
+  ld   e,' '
+  ld   c,2
+  call bdos
+  ld   hl,crcval
+  call phex8
+  ld   de,crlf
+  ld   c,9
+  call bdos
+  ld   hl,msat
+  ld   b,16
+  call hexstr
+  ld   de,crlf
+  ld   c,9
+  call bdos
+#endif
+  pop  hl
+  pop  de
+  pop  bc
+  pop  af
+  ret
+
+; machine state after test
+msat:
+  DEFS 14      ; memop,iy,ix,hl,de,bc,af
+spat:
+  DEFS 2       ; stack pointer after test
+flgsat:
+  equ  spat-2  ; flags
+
+spsav:
+  DEFS 2       ; saved stack pointer
+
+; display hex string (pointer in hl, byte count in b)
+hexstr:
+  ld   a,(hl)
+  call phex2
+  inc  hl
+  dec  b
+  jp   nz,hexstr
+  ret
+
+; display hex
+; display the big-endian 32-bit value pointed to by hl
+phex8:
+  push af
+  push bc
+  push hl
+  ld   b,4
+ph8lp:
+  ld   a,(hl)
+  call phex2
+  inc  hl
+  dec  b
+  jp   nz,ph8lp
+  pop  hl
+  pop  bc
+  pop  af
+  ret
+
+; display byte in a
+phex2:
+  push af
+  rrca
+  rrca
+  rrca
+  rrca
+  call phex1
+  pop  af
+; fall through
+
+; display low nibble in a
+phex1:
+  push af
+  push bc
+  push de
+  push hl
+  and  0x0f
+  cp   10
+  jp   c,ph11
+  add  a,39 ; 'a'-'9'-1
+ph11:
+  add  a,'0'
+  ld   e,a
+  ld   c,2
+  call bdos
+  pop  hl
+  pop  de
+  pop  bc
+  pop  af
+  ret
+
+bdos:
+  push af
+  push bc
+  push de
+  push hl
+  call bdos1
+  pop  hl
+  pop  de
+  pop  bc
+  pop  af
+  ret
+
+bdos1:
+  ld   a,c
+  cp   2
+  jr   z,bdos_write
+  cp   9
+  jr   z,bdos_writestr
+  ret
+
+bdos_write:
+  ld   a,e
+  PRINT_A_CHAR
+  ret
+
+bdos_writestr:
+  ld   a,(de)
+  cp   '$'
+  ret  z
+  PRINT_A_CHAR
+  inc  de
+  jr   bdos_writestr
+
+msg1:
+  DEFB 'Z80 instruction exerciser'
+  DEFB 10,13
+  DEFB '$'
+msg2:
+  DEFB 'Tests complete'
+  DEFB 10,13
+  DEFB '$'
+okmsg:
+  DEFB '  OK'
+  DEFB 10,13
+  DEFB '$'
+ermsg1:
+  DEFB '  ERROR **** crc expected:$'
+ermsg2:
+  DEFB ' found:$'
+crlf:
+  DEFB 10,13
+  DEFB '$'
+
+; compare crc
+; hl points to value to compare to crcval
+cmpcrc:
+  push bc
+  push de
+  push hl
+  ld   de,crcval
+  ld   b,4
+cclp:
+  ld   a,(de)
+  cp   (hl)
+  jp   nz,cce
+  inc  hl
+  inc  de
+  dec  b
+  jp   nz,cclp
+cce:
+  pop  hl
+  pop  de
+  pop  bc
+  ret
+
+; 32-bit crc routine
+; entry: a contains next byte, hl points to crc
+; exit:  crc updated
+updcrc:
+  push af
+  push bc
+  push de
+  push hl
+  push hl
+  ld   de,3
+  add  hl,de   ; point to low byte of old crc
+  xor  (hl)  ; xor with new byte
+  ld   l,a
+  ld   h,0
+  add  hl,hl   ; use result as index into table of 4 byte entries
+  add  hl,hl
+  ex   de,hl
+  ld   hl,crctab
+  add  hl,de   ; point to selected entry in crctab
+  ex   de,hl
+  pop  hl
+  ld   bc,4    ; c = byte count, b = accumulator
+crclp:
+  ld   a,(de)
+  xor  b
+  ld   b,(hl)
+  ld   (hl),a
+  inc  de
+  inc  hl
+  dec  c
+  jp   nz,crclp
+#if 0
+  ld   hl,crcval
+  call phex8
+  ld   de,crlf
+  ld   c,9
+  call bdos
+#endif
+  pop  hl
+  pop  de
+  pop  bc
+  pop  af
+  ret
+
+initcrc:
+  push af
+  push bc
+  push hl
+  ld   hl,crcval
+  ld   a,0xff
+  ld   b,4
+icrclp:
+  ld   (hl),a
+  inc  hl
+  dec  b
+  jp   nz,icrclp
+  pop  hl
+  pop  bc
+  pop  af
+  ret
+
+crcval:
+  DEFS 4
+
+crctab:
+  DEFB 0x00,0x00,0x00,0x00
+  DEFB 0x77,0x07,0x30,0x96
+  DEFB 0xee,0x0e,0x61,0x2c
+  DEFB 0x99,0x09,0x51,0xba
+  DEFB 0x07,0x6d,0xc4,0x19
+  DEFB 0x70,0x6a,0xf4,0x8f
+  DEFB 0xe9,0x63,0xa5,0x35
+  DEFB 0x9e,0x64,0x95,0xa3
+  DEFB 0x0e,0xdb,0x88,0x32
+  DEFB 0x79,0xdc,0xb8,0xa4
+  DEFB 0xe0,0xd5,0xe9,0x1e
+  DEFB 0x97,0xd2,0xd9,0x88
+  DEFB 0x09,0xb6,0x4c,0x2b
+  DEFB 0x7e,0xb1,0x7c,0xbd
+  DEFB 0xe7,0xb8,0x2d,0x07
+  DEFB 0x90,0xbf,0x1d,0x91
+  DEFB 0x1d,0xb7,0x10,0x64
+  DEFB 0x6a,0xb0,0x20,0xf2
+  DEFB 0xf3,0xb9,0x71,0x48
+  DEFB 0x84,0xbe,0x41,0xde
+  DEFB 0x1a,0xda,0xd4,0x7d
+  DEFB 0x6d,0xdd,0xe4,0xeb
+  DEFB 0xf4,0xd4,0xb5,0x51
+  DEFB 0x83,0xd3,0x85,0xc7
+  DEFB 0x13,0x6c,0x98,0x56
+  DEFB 0x64,0x6b,0xa8,0xc0
+  DEFB 0xfd,0x62,0xf9,0x7a
+  DEFB 0x8a,0x65,0xc9,0xec
+  DEFB 0x14,0x01,0x5c,0x4f
+  DEFB 0x63,0x06,0x6c,0xd9
+  DEFB 0xfa,0x0f,0x3d,0x63
+  DEFB 0x8d,0x08,0x0d,0xf5
+  DEFB 0x3b,0x6e,0x20,0xc8
+  DEFB 0x4c,0x69,0x10,0x5e
+  DEFB 0xd5,0x60,0x41,0xe4
+  DEFB 0xa2,0x67,0x71,0x72
+  DEFB 0x3c,0x03,0xe4,0xd1
+  DEFB 0x4b,0x04,0xd4,0x47
+  DEFB 0xd2,0x0d,0x85,0xfd
+  DEFB 0xa5,0x0a,0xb5,0x6b
+  DEFB 0x35,0xb5,0xa8,0xfa
+  DEFB 0x42,0xb2,0x98,0x6c
+  DEFB 0xdb,0xbb,0xc9,0xd6
+  DEFB 0xac,0xbc,0xf9,0x40
+  DEFB 0x32,0xd8,0x6c,0xe3
+  DEFB 0x45,0xdf,0x5c,0x75
+  DEFB 0xdc,0xd6,0x0d,0xcf
+  DEFB 0xab,0xd1,0x3d,0x59
+  DEFB 0x26,0xd9,0x30,0xac
+  DEFB 0x51,0xde,0x00,0x3a
+  DEFB 0xc8,0xd7,0x51,0x80
+  DEFB 0xbf,0xd0,0x61,0x16
+  DEFB 0x21,0xb4,0xf4,0xb5
+  DEFB 0x56,0xb3,0xc4,0x23
+  DEFB 0xcf,0xba,0x95,0x99
+  DEFB 0xb8,0xbd,0xa5,0x0f
+  DEFB 0x28,0x02,0xb8,0x9e
+  DEFB 0x5f,0x05,0x88,0x08
+  DEFB 0xc6,0x0c,0xd9,0xb2
+  DEFB 0xb1,0x0b,0xe9,0x24
+  DEFB 0x2f,0x6f,0x7c,0x87
+  DEFB 0x58,0x68,0x4c,0x11
+  DEFB 0xc1,0x61,0x1d,0xab
+  DEFB 0xb6,0x66,0x2d,0x3d
+  DEFB 0x76,0xdc,0x41,0x90
+  DEFB 0x01,0xdb,0x71,0x06
+  DEFB 0x98,0xd2,0x20,0xbc
+  DEFB 0xef,0xd5,0x10,0x2a
+  DEFB 0x71,0xb1,0x85,0x89
+  DEFB 0x06,0xb6,0xb5,0x1f
+  DEFB 0x9f,0xbf,0xe4,0xa5
+  DEFB 0xe8,0xb8,0xd4,0x33
+  DEFB 0x78,0x07,0xc9,0xa2
+  DEFB 0x0f,0x00,0xf9,0x34
+  DEFB 0x96,0x09,0xa8,0x8e
+  DEFB 0xe1,0x0e,0x98,0x18
+  DEFB 0x7f,0x6a,0x0d,0xbb
+  DEFB 0x08,0x6d,0x3d,0x2d
+  DEFB 0x91,0x64,0x6c,0x97
+  DEFB 0xe6,0x63,0x5c,0x01
+  DEFB 0x6b,0x6b,0x51,0xf4
+  DEFB 0x1c,0x6c,0x61,0x62
+  DEFB 0x85,0x65,0x30,0xd8
+  DEFB 0xf2,0x62,0x00,0x4e
+  DEFB 0x6c,0x06,0x95,0xed
+  DEFB 0x1b,0x01,0xa5,0x7b
+  DEFB 0x82,0x08,0xf4,0xc1
+  DEFB 0xf5,0x0f,0xc4,0x57
+  DEFB 0x65,0xb0,0xd9,0xc6
+  DEFB 0x12,0xb7,0xe9,0x50
+  DEFB 0x8b,0xbe,0xb8,0xea
+  DEFB 0xfc,0xb9,0x88,0x7c
+  DEFB 0x62,0xdd,0x1d,0xdf
+  DEFB 0x15,0xda,0x2d,0x49
+  DEFB 0x8c,0xd3,0x7c,0xf3
+  DEFB 0xfb,0xd4,0x4c,0x65
+  DEFB 0x4d,0xb2,0x61,0x58
+  DEFB 0x3a,0xb5,0x51,0xce
+  DEFB 0xa3,0xbc,0x00,0x74
+  DEFB 0xd4,0xbb,0x30,0xe2
+  DEFB 0x4a,0xdf,0xa5,0x41
+  DEFB 0x3d,0xd8,0x95,0xd7
+  DEFB 0xa4,0xd1,0xc4,0x6d
+  DEFB 0xd3,0xd6,0xf4,0xfb
+  DEFB 0x43,0x69,0xe9,0x6a
+  DEFB 0x34,0x6e,0xd9,0xfc
+  DEFB 0xad,0x67,0x88,0x46
+  DEFB 0xda,0x60,0xb8,0xd0
+  DEFB 0x44,0x04,0x2d,0x73
+  DEFB 0x33,0x03,0x1d,0xe5
+  DEFB 0xaa,0x0a,0x4c,0x5f
+  DEFB 0xdd,0x0d,0x7c,0xc9
+  DEFB 0x50,0x05,0x71,0x3c
+  DEFB 0x27,0x02,0x41,0xaa
+  DEFB 0xbe,0x0b,0x10,0x10
+  DEFB 0xc9,0x0c,0x20,0x86
+  DEFB 0x57,0x68,0xb5,0x25
+  DEFB 0x20,0x6f,0x85,0xb3
+  DEFB 0xb9,0x66,0xd4,0x09
+  DEFB 0xce,0x61,0xe4,0x9f
+  DEFB 0x5e,0xde,0xf9,0x0e
+  DEFB 0x29,0xd9,0xc9,0x98
+  DEFB 0xb0,0xd0,0x98,0x22
+  DEFB 0xc7,0xd7,0xa8,0xb4
+  DEFB 0x59,0xb3,0x3d,0x17
+  DEFB 0x2e,0xb4,0x0d,0x81
+  DEFB 0xb7,0xbd,0x5c,0x3b
+  DEFB 0xc0,0xba,0x6c,0xad
+  DEFB 0xed,0xb8,0x83,0x20
+  DEFB 0x9a,0xbf,0xb3,0xb6
+  DEFB 0x03,0xb6,0xe2,0x0c
+  DEFB 0x74,0xb1,0xd2,0x9a
+  DEFB 0xea,0xd5,0x47,0x39
+  DEFB 0x9d,0xd2,0x77,0xaf
+  DEFB 0x04,0xdb,0x26,0x15
+  DEFB 0x73,0xdc,0x16,0x83
+  DEFB 0xe3,0x63,0x0b,0x12
+  DEFB 0x94,0x64,0x3b,0x84
+  DEFB 0x0d,0x6d,0x6a,0x3e
+  DEFB 0x7a,0x6a,0x5a,0xa8
+  DEFB 0xe4,0x0e,0xcf,0x0b
+  DEFB 0x93,0x09,0xff,0x9d
+  DEFB 0x0a,0x00,0xae,0x27
+  DEFB 0x7d,0x07,0x9e,0xb1
+  DEFB 0xf0,0x0f,0x93,0x44
+  DEFB 0x87,0x08,0xa3,0xd2
+  DEFB 0x1e,0x01,0xf2,0x68
+  DEFB 0x69,0x06,0xc2,0xfe
+  DEFB 0xf7,0x62,0x57,0x5d
+  DEFB 0x80,0x65,0x67,0xcb
+  DEFB 0x19,0x6c,0x36,0x71
+  DEFB 0x6e,0x6b,0x06,0xe7
+  DEFB 0xfe,0xd4,0x1b,0x76
+  DEFB 0x89,0xd3,0x2b,0xe0
+  DEFB 0x10,0xda,0x7a,0x5a
+  DEFB 0x67,0xdd,0x4a,0xcc
+  DEFB 0xf9,0xb9,0xdf,0x6f
+  DEFB 0x8e,0xbe,0xef,0xf9
+  DEFB 0x17,0xb7,0xbe,0x43
+  DEFB 0x60,0xb0,0x8e,0xd5
+  DEFB 0xd6,0xd6,0xa3,0xe8
+  DEFB 0xa1,0xd1,0x93,0x7e
+  DEFB 0x38,0xd8,0xc2,0xc4
+  DEFB 0x4f,0xdf,0xf2,0x52
+  DEFB 0xd1,0xbb,0x67,0xf1
+  DEFB 0xa6,0xbc,0x57,0x67
+  DEFB 0x3f,0xb5,0x06,0xdd
+  DEFB 0x48,0xb2,0x36,0x4b
+  DEFB 0xd8,0x0d,0x2b,0xda
+  DEFB 0xaf,0x0a,0x1b,0x4c
+  DEFB 0x36,0x03,0x4a,0xf6
+  DEFB 0x41,0x04,0x7a,0x60
+  DEFB 0xdf,0x60,0xef,0xc3
+  DEFB 0xa8,0x67,0xdf,0x55
+  DEFB 0x31,0x6e,0x8e,0xef
+  DEFB 0x46,0x69,0xbe,0x79
+  DEFB 0xcb,0x61,0xb3,0x8c
+  DEFB 0xbc,0x66,0x83,0x1a
+  DEFB 0x25,0x6f,0xd2,0xa0
+  DEFB 0x52,0x68,0xe2,0x36
+  DEFB 0xcc,0x0c,0x77,0x95
+  DEFB 0xbb,0x0b,0x47,0x03
+  DEFB 0x22,0x02,0x16,0xb9
+  DEFB 0x55,0x05,0x26,0x2f
+  DEFB 0xc5,0xba,0x3b,0xbe
+  DEFB 0xb2,0xbd,0x0b,0x28
+  DEFB 0x2b,0xb4,0x5a,0x92
+  DEFB 0x5c,0xb3,0x6a,0x04
+  DEFB 0xc2,0xd7,0xff,0xa7
+  DEFB 0xb5,0xd0,0xcf,0x31
+  DEFB 0x2c,0xd9,0x9e,0x8b
+  DEFB 0x5b,0xde,0xae,0x1d
+  DEFB 0x9b,0x64,0xc2,0xb0
+  DEFB 0xec,0x63,0xf2,0x26
+  DEFB 0x75,0x6a,0xa3,0x9c
+  DEFB 0x02,0x6d,0x93,0x0a
+  DEFB 0x9c,0x09,0x06,0xa9
+  DEFB 0xeb,0x0e,0x36,0x3f
+  DEFB 0x72,0x07,0x67,0x85
+  DEFB 0x05,0x00,0x57,0x13
+  DEFB 0x95,0xbf,0x4a,0x82
+  DEFB 0xe2,0xb8,0x7a,0x14
+  DEFB 0x7b,0xb1,0x2b,0xae
+  DEFB 0x0c,0xb6,0x1b,0x38
+  DEFB 0x92,0xd2,0x8e,0x9b
+  DEFB 0xe5,0xd5,0xbe,0x0d
+  DEFB 0x7c,0xdc,0xef,0xb7
+  DEFB 0x0b,0xdb,0xdf,0x21
+  DEFB 0x86,0xd3,0xd2,0xd4
+  DEFB 0xf1,0xd4,0xe2,0x42
+  DEFB 0x68,0xdd,0xb3,0xf8
+  DEFB 0x1f,0xda,0x83,0x6e
+  DEFB 0x81,0xbe,0x16,0xcd
+  DEFB 0xf6,0xb9,0x26,0x5b
+  DEFB 0x6f,0xb0,0x77,0xe1
+  DEFB 0x18,0xb7,0x47,0x77
+  DEFB 0x88,0x08,0x5a,0xe6
+  DEFB 0xff,0x0f,0x6a,0x70
+  DEFB 0x66,0x06,0x3b,0xca
+  DEFB 0x11,0x01,0x0b,0x5c
+  DEFB 0x8f,0x65,0x9e,0xff
+  DEFB 0xf8,0x62,0xae,0x69
+  DEFB 0x61,0x6b,0xff,0xd3
+  DEFB 0x16,0x6c,0xcf,0x45
+  DEFB 0xa0,0x0a,0xe2,0x78
+  DEFB 0xd7,0x0d,0xd2,0xee
+  DEFB 0x4e,0x04,0x83,0x54
+  DEFB 0x39,0x03,0xb3,0xc2
+  DEFB 0xa7,0x67,0x26,0x61
+  DEFB 0xd0,0x60,0x16,0xf7
+  DEFB 0x49,0x69,0x47,0x4d
+  DEFB 0x3e,0x6e,0x77,0xdb
+  DEFB 0xae,0xd1,0x6a,0x4a
+  DEFB 0xd9,0xd6,0x5a,0xdc
+  DEFB 0x40,0xdf,0x0b,0x66
+  DEFB 0x37,0xd8,0x3b,0xf0
+  DEFB 0xa9,0xbc,0xae,0x53
+  DEFB 0xde,0xbb,0x9e,0xc5
+  DEFB 0x47,0xb2,0xcf,0x7f
+  DEFB 0x30,0xb5,0xff,0xe9
+  DEFB 0xbd,0xbd,0xf2,0x1c
+  DEFB 0xca,0xba,0xc2,0x8a
+  DEFB 0x53,0xb3,0x93,0x30
+  DEFB 0x24,0xb4,0xa3,0xa6
+  DEFB 0xba,0xd0,0x36,0x05
+  DEFB 0xcd,0xd7,0x06,0x93
+  DEFB 0x54,0xde,0x57,0x29
+  DEFB 0x23,0xd9,0x67,0xbf
+  DEFB 0xb3,0x66,0x7a,0x2e
+  DEFB 0xc4,0x61,0x4a,0xb8
+  DEFB 0x5d,0x68,0x1b,0x02
+  DEFB 0x2a,0x6f,0x2b,0x94
+  DEFB 0xb4,0x0b,0xbe,0x37
+  DEFB 0xc3,0x0c,0x8e,0xa1
+  DEFB 0x5a,0x05,0xdf,0x1b
+  DEFB 0x2d,0x02,0xef,0x8d

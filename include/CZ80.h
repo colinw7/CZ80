@@ -6,127 +6,65 @@
 #include <vector>
 #include <list>
 #include <cstring>
+#include <cassert>
 #include <iostream>
 
-#include <CKeyType.h>
+//-----------------
+
+#include <CBits.h>
+#include <CStrUtil.h>
 
 //-----------------
 
-#define SET_FLAG(v,f)  ((v) |=  (f))
-#define RST_FLAG(v,f)  ((v) &= ~(f))
-#define TST_FLAG(v,f) (((v) &   (f)) ? true : false)
-
-#define RESET_FLAG(v,f) RST_FLAG(v,f)
-#define IS_FLAG(v,f)    TST_FLAG(v,f)
-
-#define SET_BIT(v,n) SET_FLAG(v,1<<(n))
-#define RST_BIT(v,n) RST_FLAG(v,1<<(n))
-#define TST_BIT(v,n) TST_FLAG(v,1<<(n))
-
-#define RESET_BIT(v,n) RST_BIT(v,n)
-#define IS_BIT(v,n)    TST_BIT(v,n)
-
-//-----------------
-
-typedef signed char    schar;
-typedef unsigned char  uchar;
-typedef signed short   sshort;
-typedef unsigned short ushort;
-typedef unsigned int   uint;
-typedef unsigned long  ulong;
+#include <CZ80Types.h>
 
 // Flags
-//  76543210
-//  SZYHXPNC
+enum class CZ80Flag {
+  // 76543210
+  // SZYHXPNC
+  NONE=-1,
 
-enum CZ80Flag {
-  CZ80_FLAG_NONE=-1,
+  C=0,      // Carry
+  N=1,      // Last Op was Subtract
+  P=2, V=2, // Parity
+  X=3,      // Unused ?
+  H=4,      // Half Carry
+  Y=5,      // Unused ?
+  Z=6,      // Zero
+  S=7,      // Sign
 
-  CZ80_FLAG_C=0,
-  CZ80_FLAG_N=1,
-  CZ80_FLAG_P=2,
-  CZ80_FLAG_V=2,
-  CZ80_FLAG_X=3,
-  CZ80_FLAG_H=4,
-  CZ80_FLAG_Y=5,
-  CZ80_FLAG_Z=6,
-  CZ80_FLAG_S=7,
+  INV=(1<<30),
 
-  CZ80_FLAG_INV=(1<<30),
-
-  CZ80_FLAG_NC=(CZ80_FLAG_C|CZ80_FLAG_INV),
-  CZ80_FLAG_NN=(CZ80_FLAG_N|CZ80_FLAG_INV),
-  CZ80_FLAG_NP=(CZ80_FLAG_P|CZ80_FLAG_INV),
-  CZ80_FLAG_NV=(CZ80_FLAG_V|CZ80_FLAG_INV),
-  CZ80_FLAG_NX=(CZ80_FLAG_X|CZ80_FLAG_INV),
-  CZ80_FLAG_NH=(CZ80_FLAG_H|CZ80_FLAG_INV),
-  CZ80_FLAG_NY=(CZ80_FLAG_Y|CZ80_FLAG_INV),
-  CZ80_FLAG_NZ=(CZ80_FLAG_Z|CZ80_FLAG_INV),
-  CZ80_FLAG_NS=(CZ80_FLAG_S|CZ80_FLAG_INV)
-};
-
-// Registers
-
-enum CZ80Reg {
-  CZ80_REG_NONE=0,
-
-  CZ80_REG_A    =(1<< 0),
-  CZ80_REG_B    =(1<< 1),
-  CZ80_REG_C    =(1<< 2),
-  CZ80_REG_D    =(1<< 3),
-  CZ80_REG_E    =(1<< 4),
-  CZ80_REG_F    =(1<< 5),
-  CZ80_REG_H    =(1<< 6),
-  CZ80_REG_L    =(1<< 7),
-  CZ80_REG_IXL  =(1<< 8),
-  CZ80_REG_IXH  =(1<< 9),
-  CZ80_REG_IYL  =(1<<10),
-  CZ80_REG_IYH  =(1<<11),
-  CZ80_REG_SP   =(1<<12),
-  CZ80_REG_PC   =(1<<13),
-  CZ80_REG_A1   =(1<<14),
-  CZ80_REG_B1   =(1<<15),
-  CZ80_REG_C1   =(1<<16),
-  CZ80_REG_D1   =(1<<17),
-  CZ80_REG_E1   =(1<<18),
-  CZ80_REG_F1   =(1<<19),
-  CZ80_REG_H1   =(1<<20),
-  CZ80_REG_L1   =(1<<21),
-  CZ80_REG_I    =(1<<22),
-  CZ80_REG_R    =(1<<23),
-  CZ80_REG_IM   =(1<<24),
-  CZ80_REG_IFF  =(1<<25),
-  CZ80_REG_PHL  =(1<<26),
-  CZ80_REG_PO_IX=(1<<27),
-  CZ80_REG_PO_IY=(1<<28),
-  CZ80_REG_N    =(1<<29),
-  CZ80_REG_AF   =(CZ80_REG_A  |CZ80_REG_F),
-  CZ80_REG_BC   =(CZ80_REG_B  |CZ80_REG_C),
-  CZ80_REG_DE   =(CZ80_REG_D  |CZ80_REG_E),
-  CZ80_REG_HL   =(CZ80_REG_H  |CZ80_REG_L),
-  CZ80_REG_IX   =(CZ80_REG_IXH|CZ80_REG_IXL),
-  CZ80_REG_IY   =(CZ80_REG_IYH|CZ80_REG_IYL),
-  CZ80_REG_AF1  =(CZ80_REG_A1 |CZ80_REG_F1),
-  CZ80_REG_BC1  =(CZ80_REG_B1 |CZ80_REG_C1),
-  CZ80_REG_DE1  =(CZ80_REG_D1 |CZ80_REG_E1),
-  CZ80_REG_HL1  =(CZ80_REG_H1 |CZ80_REG_L1)
+  NC=(C|INV),
+  NN=(N|INV),
+  NP=(P|INV),
+  NV=(V|INV),
+  NX=(X|INV),
+  NH=(H|INV),
+  NY=(Y|INV),
+  NZ=(Z|INV),
+  NS=(S|INV)
 };
 
 //------
 
-class  CFile;
-class  CFileBase;
-class  CFileParse;
 class  CZ80;
 struct CZ80Op;
 struct CZ80OpData;
-struct CZ80Trace;
-struct CZ80PortData;
-struct CZ80Screen;
-struct CZ80RstData;
-class  CZ80DebugData;
-class  CZ80MemData;
-struct CZ80SpeedData;
+
+class CZ80MemData;
+class CZ80ExecData;
+class CZ80PortData;
+class CZ80Trace;
+class CZ80Screen;
+class CZ80RstData;
+class CZ80DebugData;
+class CZ80SpeedData;
+
+class CFile;
+class CFileBase;
+class CFileParse;
+class CKeyEvent;
 
 typedef void (CZ80OpProc)(CZ80OpData *opData);
 
@@ -134,193 +72,48 @@ typedef CZ80OpProc *CZ80OpProcP;
 
 //------
 
-// Register Data
-//  . Separate structure so can read/write as single value)
-//  . Use unnamed unions for direct access to single or double registers
+#include <CZ80Registers.h>
+#include <CZ80AssembleData.h>
+#include <CZ80LabelData.h>
+#include <CZ80Macro.h>
+#include <CZ80Reg.h>
 
-struct CZ80Registers {
-  union { ushort af_  ; struct { uchar f_  ; uchar a_  ; }; };
-  union { ushort bc_  ; struct { uchar c_  ; uchar b_  ; }; };
-  union { ushort de_  ; struct { uchar e_  ; uchar d_  ; }; };
-  union { ushort hl_  ; struct { uchar l_  ; uchar h_  ; }; };
-  union { ushort af_1_; struct { uchar f_1_; uchar a_1_; }; };
-  union { ushort bc_1_; struct { uchar c_1_; uchar b_1_; }; };
-  union { ushort de_1_; struct { uchar e_1_; uchar d_1_; }; };
-  union { ushort hl_1_; struct { uchar l_1_; uchar h_1_; }; };
-  union { ushort ix_  ; struct { uchar ixl_; uchar ixh_; }; };
-  union { ushort iy_  ; struct { uchar iyl_; uchar iyh_; }; };
+//----------
 
-  ushort sp_, pc_;
-
-  uchar i_;
-
-  uint r_; // use uint so can use as high res count for speed debug
-
-  union { ushort iff_; struct { uchar iff1_; uchar iff2_; }; };
-
-  uchar im_;
+enum class CZ80MemType {
+  READ_WRITE   =0,
+  READ_ONLY    =(1<<0),
+  SCREEN       =(1<<1),
+  WRITE_TRIGGER=(1<<2)
 };
 
 //----------
 
-// Data only used by assembler
-
-class CZ80AssembleData {
+class CircBuffer {
  public:
-  CZ80AssembleData();
+  CircBuffer();
 
-  void init();
+  uint numValues() const { return num_; }
 
-  void initPass();
+  ushort getValue(uint ind) const;
 
-  bool isStream() const { return stream_; }
+  void addValue(ushort value);
 
-  void setStream(bool stream) { stream_ = stream; }
-
-  void nextLine(CFileParse *parse);
-
-  uint getCurrentLineNum() const { return current_line_num_; }
-
-  const std::string &getCurrentLine() const { return current_line_; }
-
-  void addValue(ushort pc, uchar c);
-
-  void setLastLabel(const std::string &str);
-
-  const std::string &getLastLabel() const { return last_label_; }
-
-  void setNameValue(const std::string &name, uint value);
-
-  void dumpValues(CFileBase *ofile);
-
-  void dumpSymbols() const;
+  void printValues(std::ostream &os) const;
 
  private:
-  typedef std::map<std::string,uint> NameValueMap;
-  typedef std::map<ushort,uchar>     PCValueMap;
+  typedef std::vector<ushort> Buffer;
 
-  bool         stream_;
-  ushort       values_pc_min_, values_pc_max_;
-  bool         values_pc_set_;
-  PCValueMap   values_;
-  std::string  current_line_;
-  uint         current_line_num_;
-  std::string  last_label_;
-  NameValueMap name_values_;
+  uint   pos_      { 0 };
+  uint   last_pos_ { 0 };
+  uint   size_     { 32 };
+  uint   num_      { 0 };
+  Buffer buffer_;
 };
 
-//----------
-
-// Label Data (used by assembler/disassemble)
-
-class CZ80LabelData {
- public:
-  typedef std::map<int,std::string> LabelValueNameMap;
-
- public:
-  CZ80LabelData() { }
-
-  void clearLabels();
-
-  bool isLabelName(const std::string &name);
-  bool isLabelValue(uint value);
-
-  void setLabelValue(const std::string &name, uint value);
-  bool getLabelValue(const std::string &name, uint *value);
-
-  void setValueLabel(uint value, const std::string &name);
-  bool getValueLabel(uint value, std::string &name);
-
- private:
-  LabelValueNameMap label_value_name_map_;
-};
-
-//----------
-
-enum CZ80MemFlag {
-  CZ80_MEM_READ_WRITE=0,
-  CZ80_MEM_READ_ONLY =(1<<0),
-  CZ80_MEM_SCREEN    =(1<<1)
-};
-
-//----------
-
-class CZ80Macro {
- public:
-  typedef std::vector<std::string> ArgList;
-
- public:
-  CZ80Macro(const std::string &name="", const ArgList &args=ArgList(), const std::string &body="") :
-   name_(name), args_(args), body_(body) {
-  }
-
-  const ArgList     &getArgs() const { return args_; }
-  const std::string &getBody() const { return body_; }
-
- private:
-  std::string name_;
-  ArgList     args_;
-  std::string body_;
-};
-
-//----------
+//--------
 
 class CZ80 {
- private:
-  class CircBuffer {
-   public:
-    CircBuffer();
-
-    void add(ushort value);
-
-    void print(std::ostream &os) const;
-
-   private:
-    uint                pos_;
-    uint                last_pos_;
-    uint                size_;
-    uint                num_;
-    std::vector<ushort> buffer_;
-  };
-
- private:
-  typedef std::map<std::string,CZ80Macro> MacroMap;
-
-  bool halt_            { false };
-  bool stop_            { false };
-  bool allowInterrupts_ { false };
-
-  uchar         *memory_ { nullptr };
-  uchar         *flags_  { nullptr };
-  CZ80Registers  registers_;
-
-  CircBuffer pc_buffer_;
-
-  double mhz_   { 4 };
-  double htz_   { 60 };
-  ushort ifreq_ { 0 };
-  ushort t_     { 0 };
-  ushort im2_   { 0 };
-
-  ushort load_pos_ { 0 };
-  uint   load_len_ { 0 };
-
-  bool verbose_ { false };
-
-  CZ80PortData  *portData_  { nullptr };
-  CZ80Screen    *screen_    { nullptr };
-  CZ80RstData   *rstData_   { nullptr };
-  CZ80DebugData *debugData_ { nullptr };
-  CZ80MemData   *memData_   { nullptr };
-  CZ80SpeedData *speedData_ { nullptr };
-
-  bool   dump_      { false };
-  CFile *dump_file_ { nullptr };
-
-  CZ80AssembleData assembleData_;
-  MacroMap         assemble_macros_;
-  CZ80LabelData    labelData_;
-
  public:
   CZ80();
  ~CZ80();
@@ -346,24 +139,25 @@ class CZ80 {
   void setVerbose(bool verbose) { verbose_ = verbose; }
   bool getVerbose() { return verbose_; }
 
+  void setExecData(CZ80ExecData *execData);
+
+  void setMemData(CZ80MemData *memData);
+
   void setPortData(CZ80PortData *portData);
 
   void setScreen(CZ80Screen *screen);
-
   CZ80Screen *getScreen() const { return screen_; }
 
   void setRstData(CZ80RstData *rstData);
 
   void setDebugData(CZ80DebugData *debugData);
 
-  void setMemData(CZ80MemData *memData);
-
   void setSpeedData(CZ80SpeedData *speedData);
 
   void setHalt(bool halt);
-  bool getHalt() const;
+  bool getHalt() const { return halt_; }
 
-  void setStop(bool stop) { stop_ = stop; }
+  void setStop(bool stop);
   bool getStop() const { return stop_; }
 
   void setAssembleStream(bool stream);
@@ -386,6 +180,11 @@ class CZ80 {
   bool isBreakpoint(ushort pc);
   void getBreakpoints(std::vector<ushort> &addrs);
 
+  void callPreStepProcs ();
+  void callPostStepProcs();
+
+  void callRegChanged(const CZ80Reg &reg);
+
   // -----------
 
   // Labels
@@ -399,16 +198,18 @@ class CZ80 {
 
   // Interrupts
 
-  void setAllowInterrups(bool allow) { allowInterrupts_ = allow; }
+  bool getAllowInterrupts() const { return allowInterrupts_; }
+  void setAllowInterrupts(bool allow) { allowInterrupts_ = allow; }
 
+  void setIM0(ushort im0) { im0_ = im0; }
   void setIM2(ushort im2) { im2_ = im2; }
 
   // -----------
 
   // Port
 
-  void keyPress  (CKeyType key_type);
-  void keyRelease(CKeyType key_type);
+  void keyPress  (const CKeyEvent &kevent);
+  void keyRelease(const CKeyEvent &kevent);
 
   // -----------
 
@@ -437,6 +238,7 @@ class CZ80 {
   uchar  getIXH () const { return registers_.ixh_ ; }
   uchar  getIYL () const { return registers_.iyl_ ; }
   uchar  getIYH () const { return registers_.iyh_ ; }
+
   ushort getIFF () const { return registers_.iff_ ; }
   uchar  getIFF1() const { return registers_.iff1_; }
   uchar  getIFF2() const { return registers_.iff2_; }
@@ -518,35 +320,35 @@ class CZ80 {
   void  resFlag(uchar bit);
   uchar tstFlag(uchar bit);
 
-  void setCFlag(bool b=true) {b ? setFlag(CZ80_FLAG_C) : resFlag(CZ80_FLAG_C);}
-  void setNFlag(bool b=true) {b ? setFlag(CZ80_FLAG_N) : resFlag(CZ80_FLAG_N);}
-  void setPFlag(bool b=true) {b ? setFlag(CZ80_FLAG_P) : resFlag(CZ80_FLAG_P);}
-  void setVFlag(bool b=true) {b ? setFlag(CZ80_FLAG_V) : resFlag(CZ80_FLAG_V);}
-  void setXFlag(bool b=true) {b ? setFlag(CZ80_FLAG_X) : resFlag(CZ80_FLAG_X);}
-  void setHFlag(bool b=true) {b ? setFlag(CZ80_FLAG_H) : resFlag(CZ80_FLAG_H);}
-  void setYFlag(bool b=true) {b ? setFlag(CZ80_FLAG_Y) : resFlag(CZ80_FLAG_Y);}
-  void setZFlag(bool b=true) {b ? setFlag(CZ80_FLAG_Z) : resFlag(CZ80_FLAG_Z);}
-  void setSFlag(bool b=true) {b ? setFlag(CZ80_FLAG_S) : resFlag(CZ80_FLAG_S);}
+  void setCFlag(bool b=true) {b ? setFlag(uchar(CZ80Flag::C)) : resFlag(uchar(CZ80Flag::C));}
+  void setNFlag(bool b=true) {b ? setFlag(uchar(CZ80Flag::N)) : resFlag(uchar(CZ80Flag::N));}
+  void setPFlag(bool b=true) {b ? setFlag(uchar(CZ80Flag::P)) : resFlag(uchar(CZ80Flag::P));}
+  void setVFlag(bool b=true) {b ? setFlag(uchar(CZ80Flag::V)) : resFlag(uchar(CZ80Flag::V));}
+  void setXFlag(bool b=true) {b ? setFlag(uchar(CZ80Flag::X)) : resFlag(uchar(CZ80Flag::X));}
+  void setHFlag(bool b=true) {b ? setFlag(uchar(CZ80Flag::H)) : resFlag(uchar(CZ80Flag::H));}
+  void setYFlag(bool b=true) {b ? setFlag(uchar(CZ80Flag::Y)) : resFlag(uchar(CZ80Flag::Y));}
+  void setZFlag(bool b=true) {b ? setFlag(uchar(CZ80Flag::Z)) : resFlag(uchar(CZ80Flag::Z));}
+  void setSFlag(bool b=true) {b ? setFlag(uchar(CZ80Flag::S)) : resFlag(uchar(CZ80Flag::S));}
 
-  void resCFlag(bool b=true) {b ? resFlag(CZ80_FLAG_C) : setFlag(CZ80_FLAG_C);}
-  void resNFlag(bool b=true) {b ? resFlag(CZ80_FLAG_N) : setFlag(CZ80_FLAG_N);}
-  void resPFlag(bool b=true) {b ? resFlag(CZ80_FLAG_P) : setFlag(CZ80_FLAG_P);}
-  void resVFlag(bool b=true) {b ? resFlag(CZ80_FLAG_V) : setFlag(CZ80_FLAG_V);}
-  void resXFlag(bool b=true) {b ? resFlag(CZ80_FLAG_X) : setFlag(CZ80_FLAG_X);}
-  void resHFlag(bool b=true) {b ? resFlag(CZ80_FLAG_H) : setFlag(CZ80_FLAG_H);}
-  void resYFlag(bool b=true) {b ? resFlag(CZ80_FLAG_Y) : setFlag(CZ80_FLAG_Y);}
-  void resZFlag(bool b=true) {b ? resFlag(CZ80_FLAG_Z) : setFlag(CZ80_FLAG_Z);}
-  void resSFlag(bool b=true) {b ? resFlag(CZ80_FLAG_S) : setFlag(CZ80_FLAG_S);}
+  void resCFlag(bool b=true) {b ? resFlag(uchar(CZ80Flag::C)) : setFlag(uchar(CZ80Flag::C));}
+  void resNFlag(bool b=true) {b ? resFlag(uchar(CZ80Flag::N)) : setFlag(uchar(CZ80Flag::N));}
+  void resPFlag(bool b=true) {b ? resFlag(uchar(CZ80Flag::P)) : setFlag(uchar(CZ80Flag::P));}
+  void resVFlag(bool b=true) {b ? resFlag(uchar(CZ80Flag::V)) : setFlag(uchar(CZ80Flag::V));}
+  void resXFlag(bool b=true) {b ? resFlag(uchar(CZ80Flag::X)) : setFlag(uchar(CZ80Flag::X));}
+  void resHFlag(bool b=true) {b ? resFlag(uchar(CZ80Flag::H)) : setFlag(uchar(CZ80Flag::H));}
+  void resYFlag(bool b=true) {b ? resFlag(uchar(CZ80Flag::Y)) : setFlag(uchar(CZ80Flag::Y));}
+  void resZFlag(bool b=true) {b ? resFlag(uchar(CZ80Flag::Z)) : setFlag(uchar(CZ80Flag::Z));}
+  void resSFlag(bool b=true) {b ? resFlag(uchar(CZ80Flag::S)) : setFlag(uchar(CZ80Flag::S));}
 
-  uchar tstCFlag() { return tstFlag(CZ80_FLAG_C); }
-  uchar tstNFlag() { return tstFlag(CZ80_FLAG_N); }
-  uchar tstPFlag() { return tstFlag(CZ80_FLAG_P); }
-  uchar tstVFlag() { return tstFlag(CZ80_FLAG_V); }
-  uchar tstXFlag() { return tstFlag(CZ80_FLAG_X); }
-  uchar tstHFlag() { return tstFlag(CZ80_FLAG_H); }
-  uchar tstYFlag() { return tstFlag(CZ80_FLAG_Y); }
-  uchar tstZFlag() { return tstFlag(CZ80_FLAG_Z); }
-  uchar tstSFlag() { return tstFlag(CZ80_FLAG_S); }
+  uchar tstCFlag() { return tstFlag(uchar(CZ80Flag::C)); }
+  uchar tstNFlag() { return tstFlag(uchar(CZ80Flag::N)); }
+  uchar tstPFlag() { return tstFlag(uchar(CZ80Flag::P)); }
+  uchar tstVFlag() { return tstFlag(uchar(CZ80Flag::V)); }
+  uchar tstXFlag() { return tstFlag(uchar(CZ80Flag::X)); }
+  uchar tstHFlag() { return tstFlag(uchar(CZ80Flag::H)); }
+  uchar tstYFlag() { return tstFlag(uchar(CZ80Flag::Y)); }
+  uchar tstZFlag() { return tstFlag(uchar(CZ80Flag::Z)); }
+  uchar tstSFlag() { return tstFlag(uchar(CZ80Flag::S)); }
 
   void setR(uchar r) { registers_.r_ = r; }
 
@@ -556,9 +358,8 @@ class CZ80 {
   void decR(uchar d);
   void incR(uchar d);
 
-  void setT(ushort t) { t_ = t; }
-
-  ushort getT() const { return t_; }
+  ulong getT() const { return t_; }
+  void setT(ulong t) { t_ = t; }
 
   void decT(ushort d);
   void incT(ushort d);
@@ -578,18 +379,29 @@ class CZ80 {
   char   getSByte(ushort pos) const { return (schar) getByte(pos); }
   short  getSWord() const { return (sshort) getWord(); }
   short  getSWord(ushort pos) const { return (sshort) getWord(pos); }
+  bool   getBit(ushort pos, uchar bit) const;
   void   getBytes(uchar *c, ushort pos, ushort len) const;
+
+  uchar getMemory(ushort pos) const;
 
   void setByte(uchar c);
   void setByte(ushort pos, uchar c);
   void setWord(ushort c);
   void setWord(ushort pos, ushort c);
+  void setBit(ushort pos, uchar bit);
+  void resetBit(ushort pos, uchar bit);
   void setBytes(uchar *c, ushort pos, ushort len);
 
-  void setMemFlags(ushort pos, ushort len, uchar flag);
+  // ------
+
+  bool isReadOnly    (ushort pos, ushort len) const;
+  bool isWriteTrigger(ushort pos, ushort len) const;
+  bool isScreen      (ushort pos, ushort len) const;
+
+  void setMemFlags  (ushort pos, ushort len, uchar flag);
   void resetMemFlags(ushort pos, ushort len, uchar flag);
 
-  // ---------
+  // -------
 
  public:
   // CPU Ops
@@ -853,6 +665,7 @@ class CZ80 {
   bool loadBin(const std::string &file);
   bool loadBin(CFile *file);
   bool loadBin(CFile *file, ushort *pos, ushort *len);
+  void loadBin(const uchar *data, size_t len);
 
  private:
   uchar addR(uchar r, uchar a);
@@ -945,6 +758,7 @@ class CZ80 {
   bool execute(ushort pos);
 
   bool next();
+  void skip();
   bool step();
   bool cont();
 
@@ -964,12 +778,12 @@ class CZ80 {
  public:
   void getOpData(CZ80OpData *opData);
 
-  void readOpData(CZ80OpData *opData);
+  bool readOpData(ushort pc, CZ80OpData *opData);
 
  private:
-  CZ80Op *readOp();
+  CZ80Op *readOp(ushort pc);
 
-  void readOpValues(CZ80Op *op, uchar *values1, uchar *num_values1,
+  void readOpValues(ushort pc, CZ80Op *op, uchar *values1, uchar *num_values1,
                     uchar *values2, uchar *num_values2);
 
   uchar getNumArgValues(uint type, uint arg);
@@ -1903,23 +1717,35 @@ class CZ80 {
 
   std::string getFlagsString();
 
-  // --------
+  // ------
 
   bool lookupOp(CZ80Op *op, CZ80Op **op1);
 
   static CZ80Op *getIndOp(uint ind);
 
-  // --------
+  // ------
+
+  static std::string hexString(const std::string &prefix, uchar);
+  static std::string hexString(const std::string &prefix, ushort);
+
+  static std::string hexString(uchar);
+  static std::string hexString(ushort);
+
+  // ------
 
   // Op Counts
 
   void dumpOpCounts(std::ostream &os);
   void resetOpCounts();
 
-  // --------
+  // ------
 
-  void tracePC();
+  void tracePC(int d, ushort to);
   void traceBack();
+
+  int traceNum() const { return pcBuffer_.numValues(); }
+
+  ushort traceValue(int i) const { return pcBuffer_.getValue(i); }
 
   // --------
 
@@ -1930,254 +1756,51 @@ class CZ80 {
 
   bool loadSnapshot(const std::string &filename);
   bool loadSnapshot(CFile *file);
-};
 
-struct CZ80Op;
+  // ------
 
-struct CZ80OpData {
-  CZ80 *   z80;
-  CZ80Op * op;
-  uchar    values1[2];
-  uchar    num_values1;
-  uchar    values2[2];
-  uchar    num_values2;
-
-  const char *getName() const;
-
-  uchar  getUByte1() const { return values1[0]; }
-  ushort getUWord1() const { return (values1[1] << 8) | values1[0]; }
-  uchar  getUByte2() const { return values2[0]; }
-  ushort getUWord2() const { return (values2[1] << 8) | values2[0]; }
-
-  char  getSByte1() const { return (schar ) getUByte1(); }
-  short getSWord1() const { return (sshort) getUWord1(); }
-  char  getSByte2() const { return (schar ) getUByte2(); }
-  short getSWord2() const { return (sshort) getUWord2(); }
-
-  void setPByte1(uchar  b) { z80->setByte(getUWord1(), b); }
-  void setPWord1(ushort w) { z80->setWord(getUWord1(), w); }
-
-  uchar  getPByte2() const { return z80->getByte(getUWord2()); }
-  ushort getPWord2() const { return z80->getWord(getUWord2()); }
-
-  uchar getPOIX1() const { return z80->getPOIX(getSByte1()); }
-  uchar getPOIY1() const { return z80->getPOIY(getSByte1()); }
-  uchar getPOIX2() const { return z80->getPOIX(getSByte2()); }
-  uchar getPOIY2() const { return z80->getPOIY(getSByte2()); }
-
-  void setPOIX1(uchar b) { z80->setPOIX(getSByte1(), b); }
-  void setPOIY1(uchar b) { z80->setPOIY(getSByte1(), b); }
-
-  ushort getRPC1() { return z80->getPC() + getSByte1(); }
-  ushort getRPC2() { return z80->getPC() + getSByte2(); }
-
-  void execute();
-
-  void dump(CFile *file);
-  bool undump(CFile *file);
-
-  void dumpTxt(std::ostream &os=std::cout);
-
-  std::string toTxt();
-
-  void toValues(uchar **values, uint *num_values);
-
-  void printStr(std::ostream &os);
-
-  std::string getOpString();
-
-  std::string getArgString(uint type, uint arg, uchar *args, ushort num_args);
-
-  uchar getSize();
-};
-
-class CZ80Trace {
  public:
-  CZ80Trace(CZ80 &z80_i) : z80(z80_i) { }
-
-  virtual ~CZ80Trace() { }
-
-  virtual void initProc() { }
-  virtual void termProc() { }
-
-  virtual void preStepProc () { }
-  virtual void postStepProc() { }
-
-  virtual void regChanged(CZ80Reg) { }
-  virtual void memChanged(ushort, ushort) { }
-
-  virtual void breakpointsChanged() { }
-
- protected:
-  CZ80 &z80;
-};
-
-class CZ80PortData {
- public:
-  CZ80PortData(CZ80 &z80_i) : z80(z80_i) { }
-
-  virtual ~CZ80PortData() { }
-
-  virtual void out(uchar, uchar) { }
-  virtual uchar in(uchar, uchar) { return 0; }
-
-  virtual void keyPress  (CKeyType) { }
-  virtual void keyRelease(CKeyType) { }
-
- protected:
-  CZ80 &z80;
-};
-
-class CZ80Screen {
- public:
-  CZ80Screen(CZ80 &z80_i) : z80(z80_i) { }
-
-  virtual ~CZ80Screen() { }
-
-  virtual void memChanged(ushort, ushort) { }
-
- protected:
-  CZ80 &z80;
-};
-
-class CZ80RstData {
- public:
-  CZ80RstData(CZ80 &z80_i) : z80(z80_i) { }
-
-  virtual ~CZ80RstData() { }
-
-  virtual void rst(ushort) { }
-
- protected:
-  CZ80 &z80;
-};
-
-class CZ80StdRstData : public CZ80RstData {
- public:
-  CZ80StdRstData(CZ80 &z80) :
-   CZ80RstData(z80), newline_(true) {
-  }
-
-  virtual ~CZ80StdRstData() { }
-
-  void rst(ushort id);
-
-  virtual void rstFwd(ushort) { }
-
- protected:
-  bool newline_;
-};
-
-class CZ80SpeedData {
- public:
-  CZ80SpeedData(CZ80 &z80) :
-   z80_(z80) {
-  }
-
-  virtual ~CZ80SpeedData() { }
-
-  double getMhz() const { return mhz_; }
-
-  virtual void init();
-
-  virtual void interrupt();
-
-  virtual void calcMhz();
-
-  virtual void output();
+  int msCycles(ulong ms) { return ms*1000/mhz_; }
 
  private:
-  CZ80   &z80_;
-  int     secs_;
-  int     usecs_;
-  double  mhz_;
-};
+  typedef std::map<std::string,CZ80Macro> MacroMap;
 
-class CZ80DebugData {
- protected:
-  typedef std::list<CZ80Trace *> TraceList;
+  bool halt_            { false };
+  bool stop_            { false };
+  bool allowInterrupts_ { true };
 
-  CZ80      &z80_;
-  uint       breakpoints_[2048];
-  TraceList  trace_list_;
+  uchar         *memory_ { nullptr };
+  uchar         *flags_  { nullptr };
+  CZ80Registers  registers_;
 
-  bool af_changed_;
-  bool bc_changed_;
-  bool de_changed_;
-  bool hl_changed_;
-  bool ix_changed_;
-  bool iy_changed_;
-  bool sp_changed_;
-  bool pc_changed_;
-  bool i_changed_;
-  bool im_changed_;
-  bool af_1_changed_;
-  bool bc_1_changed_;
-  bool de_1_changed_;
-  bool hl_1_changed_;
-  bool iff_changed_;
+  CircBuffer pcBuffer_;
 
-  bool   mem_changed_;
-  ushort mem_changed_pos1_;
-  ushort mem_changed_pos2_;
+  ulong  mhz_   { 4194304 };
+  ushort htz_   { 50 };
+  ushort ifreq_ { 1 };
+  ulong  t_     { 0 };
+  ushort im0_   { 0x38 };
+  ushort im2_   { 0xfe };
 
- public:
-  CZ80DebugData(CZ80 &z80) :
-   z80_(z80) {
-    memset(breakpoints_, 0, sizeof(breakpoints_));
-  }
+  ushort load_pos_ { 0 };
+  uint   load_len_ { 65536 };
 
-  virtual ~CZ80DebugData() { }
+  bool verbose_ { false };
 
-  void addTrace(CZ80Trace *trace);
+  CZ80ExecData  *execData_  { nullptr };
+  CZ80MemData   *memData_   { nullptr };
+  CZ80PortData  *portData_  { nullptr };
+  CZ80Screen    *screen_    { nullptr };
+  CZ80RstData   *rstData_   { nullptr };
+  CZ80DebugData *debugData_ { nullptr };
+  CZ80SpeedData *speedData_ { nullptr };
 
-  void callInitProcs();
-  void callTermProcs();
+  bool   dump_      { false };
+  CFile *dump_file_ { nullptr };
 
-  void callPreStepProcs();
-  void callPostStepProcs();
-  void callBreakpointsChangeProcs();
-
-  void addBreakpoint(ushort pc);
-  void removeBreakpoint(ushort pc);
-  void removeAllBreakpoints();
-  bool isBreakpoint(ushort pc);
-  void getBreakpoints(std::vector<ushort> &addrs);
-
-  void setAFChanged (bool flag) { af_changed_   = flag; }
-  void setBCChanged (bool flag) { bc_changed_   = flag; }
-  void setDEChanged (bool flag) { de_changed_   = flag; }
-  void setHLChanged (bool flag) { hl_changed_   = flag; }
-  void setIXChanged (bool flag) { ix_changed_   = flag; }
-  void setIYChanged (bool flag) { iy_changed_   = flag; }
-  void setSPChanged (bool flag) { sp_changed_   = flag; }
-  void setPCChanged (bool flag) { pc_changed_   = flag; }
-  void setIChanged  (bool flag) { i_changed_    = flag; }
-  void setIMChanged (bool flag) { im_changed_   = flag; }
-  void setAF1Changed(bool flag) { af_1_changed_ = flag; }
-  void setBC1Changed(bool flag) { bc_1_changed_ = flag; }
-  void setDE1Changed(bool flag) { de_1_changed_ = flag; }
-  void setHL1Changed(bool flag) { hl_1_changed_ = flag; }
-  void setIFFChanged(bool flag) { iff_changed_  = flag; }
-  void setMemChanged(bool flag) { mem_changed_  = flag; }
-
-  void memChanged(ushort pos, ushort len);
-};
-
-class CZ80MemData {
- protected:
-  CZ80 z80_;
-
- public:
-  CZ80MemData(CZ80 &z80) :
-   z80_(z80) {
-  }
-
-  virtual ~CZ80MemData() { }
-
-  virtual bool memRead(uchar *c, ushort pos, ushort len);
-
-  virtual void memWrite(const uchar *c, ushort pos, ushort len);
+  CZ80AssembleData assembleData_;
+  MacroMap         assemble_macros_;
+  CZ80LabelData    labelData_;
 };
 
 #endif

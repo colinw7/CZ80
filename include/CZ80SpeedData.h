@@ -23,8 +23,8 @@ class CZ80SpeedData {
 
  private:
   CZ80&  z80_;
-  int    secs_  { 0 };
-  int    usecs_ { 0 };
+  long   secs_  { 0 };
+  long   usecs_ { 0 };
   double mhz_   { 1 };
 };
 

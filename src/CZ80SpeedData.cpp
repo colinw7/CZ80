@@ -32,7 +32,7 @@ calcMhz()
   static int count;
   static int itime = 2000;
 
-  int secs, usecs, dsecs, dusecs;
+  long secs, usecs, dsecs, dusecs;
 
   init();
 

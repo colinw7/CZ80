@@ -20,6 +20,7 @@ CZ80Execute.cpp \
 CZ80Fn.cpp \
 CZ80LabelData.cpp \
 CZ80Load.cpp \
+CZ80MemData.cpp \
 CZ80Op.cpp \
 CZ80OpData.cpp \
 CZ80Rst.cpp \

@@ -6,16 +6,25 @@
 //  . Use unnamed unions for direct access to single or double registers
 
 struct CZ80Registers {
-  union { ushort af_  ; struct { uchar f_  ; uchar a_  ; }; };
-  union { ushort bc_  ; struct { uchar c_  ; uchar b_  ; }; };
-  union { ushort de_  ; struct { uchar e_  ; uchar d_  ; }; };
-  union { ushort hl_  ; struct { uchar l_  ; uchar h_  ; }; };
-  union { ushort af_1_; struct { uchar f_1_; uchar a_1_; }; };
-  union { ushort bc_1_; struct { uchar c_1_; uchar b_1_; }; };
-  union { ushort de_1_; struct { uchar e_1_; uchar d_1_; }; };
-  union { ushort hl_1_; struct { uchar l_1_; uchar h_1_; }; };
-  union { ushort ix_  ; struct { uchar ixl_; uchar ixh_; }; };
-  union { ushort iy_  ; struct { uchar iyl_; uchar iyh_; }; };
+  struct AF { uchar f_  ; uchar a_  ; };
+  struct BC { uchar c_  ; uchar b_  ; };
+  struct DE { uchar e_  ; uchar d_  ; };
+  struct HL { uchar l_  ; uchar h_  ; };
+  struct IX { uchar ixl_; uchar ixh_; };
+  struct IY { uchar iyl_; uchar iyh_; };
+
+  union { ushort af_; AF AF_; };
+  union { ushort bc_; BC BC_; };
+  union { ushort de_; DE DE_; };
+  union { ushort hl_; HL HL_; };
+
+  union { ushort af_1_; AF AF_1_; };
+  union { ushort bc_1_; BC BC_1_; };
+  union { ushort de_1_; DE DE_1_; };
+  union { ushort hl_1_; HL HL_1_; };
+
+  union { ushort ix_; IX IX_; };
+  union { ushort iy_; IY IY_; };
 
   ushort sp_, pc_;
 
@@ -23,7 +32,9 @@ struct CZ80Registers {
 
   uint r_; // use uint so can use as high res count for speed debug
 
-  union { ushort iff_; struct { uchar iff1_; uchar iff2_; }; };
+  struct IFF { uchar iff1_; uchar iff2_; };
+
+  union { ushort iff_; IFF IFF_; };
 
   uchar im_;
 };

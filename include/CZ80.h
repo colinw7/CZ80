@@ -216,32 +216,32 @@ class CZ80 {
  public:
   // CPU State
 
-  uchar getA() const { return registers_.a_; }
-  uchar getF() const { return registers_.f_; }
-  uchar getB() const { return registers_.b_; }
-  uchar getC() const { return registers_.c_; }
-  uchar getD() const { return registers_.d_; }
-  uchar getE() const { return registers_.e_; }
-  uchar getH() const { return registers_.h_; }
-  uchar getL() const { return registers_.l_; }
+  uchar getA() const { return registers_.AF_.a_; }
+  uchar getF() const { return registers_.AF_.f_; }
+  uchar getB() const { return registers_.BC_.b_; }
+  uchar getC() const { return registers_.BC_.c_; }
+  uchar getD() const { return registers_.DE_.d_; }
+  uchar getE() const { return registers_.DE_.e_; }
+  uchar getH() const { return registers_.HL_.h_; }
+  uchar getL() const { return registers_.HL_.l_; }
   uchar getI() const { return registers_.i_; }
 
-  ushort getAF  () const { return registers_.af_  ; }
-  ushort getBC  () const { return registers_.bc_  ; }
-  ushort getDE  () const { return registers_.de_  ; }
-  ushort getHL  () const { return registers_.hl_  ; }
-  ushort getSP  () const { return registers_.sp_  ; }
-  ushort getPC  () const { return registers_.pc_  ; }
-  ushort getIX  () const { return registers_.ix_  ; }
-  ushort getIY  () const { return registers_.iy_  ; }
-  uchar  getIXL () const { return registers_.ixl_ ; }
-  uchar  getIXH () const { return registers_.ixh_ ; }
-  uchar  getIYL () const { return registers_.iyl_ ; }
-  uchar  getIYH () const { return registers_.iyh_ ; }
+  ushort getAF  () const { return registers_.af_; }
+  ushort getBC  () const { return registers_.bc_; }
+  ushort getDE  () const { return registers_.de_; }
+  ushort getHL  () const { return registers_.hl_; }
+  ushort getSP  () const { return registers_.sp_; }
+  ushort getPC  () const { return registers_.pc_; }
+  ushort getIX  () const { return registers_.ix_; }
+  ushort getIY  () const { return registers_.iy_; }
+  uchar  getIXL () const { return registers_.IX_.ixl_ ; }
+  uchar  getIXH () const { return registers_.IX_.ixh_ ; }
+  uchar  getIYL () const { return registers_.IY_.iyl_ ; }
+  uchar  getIYH () const { return registers_.IY_.iyh_ ; }
 
-  ushort getIFF () const { return registers_.iff_ ; }
-  uchar  getIFF1() const { return registers_.iff1_; }
-  uchar  getIFF2() const { return registers_.iff2_; }
+  ushort getIFF () const { return registers_.iff_; }
+  uchar  getIFF1() const { return registers_.IFF_.iff1_; }
+  uchar  getIFF2() const { return registers_.IFF_.iff2_; }
 
   ushort getAF1() const { return registers_.af_1_ ; }
   ushort getBC1() const { return registers_.bc_1_ ; }

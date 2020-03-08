@@ -315,18 +315,18 @@ assembleParseOp(CFileParse *parse, std::string &op_str, uint pass, bool *continu
               return false;
             }
 
-            uchar c1 = parse->readChar();
+            uchar cc1 = parse->readChar();
 
-            cstr += (char) c1;
+            cstr += (char) cc1;
 
             if (parse->eol() || parse->isChar(end_char)) {
               assembleError("Missing terminator for DEFB string");
               return false;
             }
 
-            uchar c2 = parse->readChar();
+            uchar cc2 = parse->readChar();
 
-            cstr += (char) c2;
+            cstr += (char) cc2;
           }
           else if (c1 == '0') {
             if (! parse->eol() && ! parse->isChar(end_char)) {
@@ -335,27 +335,27 @@ assembleParseOp(CFileParse *parse, std::string &op_str, uint pass, bool *continu
                 return false;
               }
 
-              uchar c1 = parse->readChar();
+              uchar cc1 = parse->readChar();
 
-              cstr += (char) c1;
-
-              if (parse->eol() || parse->isChar(end_char)) {
-                assembleError("Missing terminator for DEFB string");
-                return false;
-              }
-
-              uchar c2 = parse->readChar();
-
-              cstr += (char) c2;
+              cstr += (char) cc1;
 
               if (parse->eol() || parse->isChar(end_char)) {
                 assembleError("Missing terminator for DEFB string");
                 return false;
               }
 
-              uchar c3 = parse->readChar();
+              uchar cc2 = parse->readChar();
 
-              cstr += (char) c3;
+              cstr += (char) cc2;
+
+              if (parse->eol() || parse->isChar(end_char)) {
+                assembleError("Missing terminator for DEFB string");
+                return false;
+              }
+
+              uchar cc3 = parse->readChar();
+
+              cstr += (char) cc3;
             }
           }
 
@@ -611,8 +611,8 @@ assembleParseOp(CFileParse *parse, std::string &op_str, uint pass, bool *continu
 
     uint numArgs = std::min(macroArgs.size(), args.size());
 
-    for (uint i = 0; i < numArgs; ++i)
-      macroBody1 = CStrUtil::replace(macroBody1, macroArgs[i], args[i]);
+    for (uint ii = 0; ii < numArgs; ++ii)
+      macroBody1 = CStrUtil::replace(macroBody1, macroArgs[ii], args[ii]);
 
     parse->unread(macroBody1);
 
@@ -1193,7 +1193,7 @@ assembleParseOp(CFileParse *parse, std::string &op_str, uint pass, bool *continu
 
       uint len = str1.size();
 
-      for (uint i = len; i < 18; ++i)
+      for (uint ii = len; ii < 18; ++ii)
         str1 += " ";
 
       op_str = str1 + " ; " + str2;
@@ -1205,8 +1205,8 @@ assembleParseOp(CFileParse *parse, std::string &op_str, uint pass, bool *continu
 
       opData.toValues(&values, &num_values);
 
-      for (uint i = 0; i < num_values; ++i)
-        assembleData_.addValue(getPC() + i, values[i]);
+      for (uint ii = 0; ii < num_values; ++ii)
+        assembleData_.addValue(getPC() + ii, values[ii]);
     }
 
     incPC(opData.getSize());
@@ -1315,18 +1315,18 @@ assembleParseInteger(CFileParse *parse, uint pass, uint *i)
           return false;
         }
 
-        uchar c1 = parse->readChar();
+        uchar cc1 = parse->readChar();
 
-        cstr += (char) c1;
+        cstr += (char) cc1;
 
         if (parse->eol() || parse->isChar('\'')) {
           assembleError("Missing terminator for char");
           return false;
         }
 
-        uchar c2 = parse->readChar();
+        uchar cc2 = parse->readChar();
 
-        cstr += (char) c2;
+        cstr += (char) cc2;
       }
       else if (c1 == '0') {
         if (! parse->eol() && ! parse->isChar('\'')) {
@@ -1335,27 +1335,27 @@ assembleParseInteger(CFileParse *parse, uint pass, uint *i)
             return false;
           }
 
-          uchar c1 = parse->readChar();
+          uchar cc1 = parse->readChar();
 
-          cstr += (char) c1;
-
-          if (parse->eol() || parse->isChar('\'')) {
-            assembleError("Missing terminator for char");
-            return false;
-          }
-
-          uchar c2 = parse->readChar();
-
-          cstr += (char) c2;
+          cstr += (char) cc1;
 
           if (parse->eol() || parse->isChar('\'')) {
             assembleError("Missing terminator for char");
             return false;
           }
 
-          uchar c3 = parse->readChar();
+          uchar cc2 = parse->readChar();
 
-          cstr += (char) c3;
+          cstr += (char) cc2;
+
+          if (parse->eol() || parse->isChar('\'')) {
+            assembleError("Missing terminator for char");
+            return false;
+          }
+
+          uchar cc3 = parse->readChar();
+
+          cstr += (char) cc3;
         }
       }
 

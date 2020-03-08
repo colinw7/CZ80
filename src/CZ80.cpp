@@ -345,7 +345,7 @@ void
 CZ80::
 setA(uchar a)
 {
-  registers_.a_ = a;
+  registers_.AF_.a_ = a;
 
   if (debugData_)
     debugData_->setAFChanged(true);
@@ -355,7 +355,7 @@ void
 CZ80::
 setF(uchar f)
 {
-  registers_.f_ = f;
+  registers_.AF_.f_ = f;
 
   if (debugData_)
     debugData_->setAFChanged(true);
@@ -365,7 +365,7 @@ void
 CZ80::
 setB(uchar b)
 {
-  registers_.b_ = b;
+  registers_.BC_.b_ = b;
 
   if (debugData_)
     debugData_->setBCChanged(true);
@@ -375,7 +375,7 @@ void
 CZ80::
 setC(uchar c)
 {
-  registers_.c_ = c;
+  registers_.BC_.c_ = c;
 
   if (debugData_)
     debugData_->setBCChanged(true);
@@ -385,7 +385,7 @@ void
 CZ80::
 setD(uchar d)
 {
-  registers_.d_ = d;
+  registers_.DE_.d_ = d;
 
   if (debugData_)
     debugData_->setDEChanged(true);
@@ -395,7 +395,7 @@ void
 CZ80::
 setE(uchar e)
 {
-  registers_.e_ = e;
+  registers_.DE_.e_ = e;
 
   if (debugData_)
     debugData_->setDEChanged(true);
@@ -405,7 +405,7 @@ void
 CZ80::
 setH(uchar h)
 {
-  registers_.h_ = h;
+  registers_.HL_.h_ = h;
 
   if (debugData_)
     debugData_->setHLChanged(true);
@@ -415,7 +415,7 @@ void
 CZ80::
 setL(uchar l)
 {
-  registers_.l_ = l;
+  registers_.HL_.l_ = l;
 
   if (debugData_)
     debugData_->setHLChanged(true);
@@ -517,7 +517,7 @@ void
 CZ80::
 setIXH(uchar ixh)
 {
-  registers_.ixh_ = ixh;
+  registers_.IX_.ixh_ = ixh;
 
   if (debugData_)
     debugData_->setIXChanged(true);
@@ -527,7 +527,7 @@ void
 CZ80::
 setIXL(uchar ixl)
 {
-  registers_.ixl_ = ixl;
+  registers_.IX_.ixl_ = ixl;
 
   if (debugData_)
     debugData_->setIXChanged(true);
@@ -537,7 +537,7 @@ void
 CZ80::
 setIYH(uchar iyh)
 {
-  registers_.iyh_ = iyh;
+  registers_.IY_.iyh_ = iyh;
 
   if (debugData_)
     debugData_->setIYChanged(true);
@@ -547,7 +547,7 @@ void
 CZ80::
 setIYL(uchar iyl)
 {
-  registers_.iyl_ = iyl;
+  registers_.IY_.iyl_ = iyl;
 
   if (debugData_)
     debugData_->setIYChanged(true);
@@ -569,8 +569,8 @@ void
 CZ80::
 setIFF1(uchar iff1)
 {
-  if (iff1 != registers_.iff1_) {
-    registers_.iff1_ = iff1;
+  if (iff1 != registers_.IFF_.iff1_) {
+    registers_.IFF_.iff1_ = iff1;
 
     if (debugData_)
       debugData_->setIFFChanged(true);
@@ -581,8 +581,8 @@ void
 CZ80::
 setIFF2(uchar iff2)
 {
-  if (iff2 != registers_.iff2_) {
-    registers_.iff2_ = iff2;
+  if (iff2 != registers_.IFF_.iff2_) {
+    registers_.IFF_.iff2_ = iff2;
 
     if (debugData_)
       debugData_->setIFFChanged(true);
@@ -690,7 +690,7 @@ void
 CZ80::
 setFlag(uchar bit)
 {
-  SET_BIT(registers_.f_, bit);
+  SET_BIT(registers_.AF_.f_, bit);
 
   if (debugData_)
     debugData_->setAFChanged(true);
@@ -700,7 +700,7 @@ void
 CZ80::
 resFlag(uchar bit)
 {
-  RST_BIT(registers_.f_, bit);
+  RST_BIT(registers_.AF_.f_, bit);
 
   if (debugData_)
     debugData_->setAFChanged(true);
@@ -710,7 +710,7 @@ uchar
 CZ80::
 tstFlag(uchar bit)
 {
-  return TST_BIT(registers_.f_, bit);
+  return TST_BIT(registers_.AF_.f_, bit);
 }
 
 //---------

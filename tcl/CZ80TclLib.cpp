@@ -11,16 +11,18 @@
 
 #define CZ80TclLibAppCommand(N) \
 class N : public CTclAppCommand { \
- private: \
-  CZ80TclLib *z80_; \
-\
  public: \
   N(CZ80TclLib *z80) : \
     CTclAppCommand(z80, #N), z80_(z80) { \
   } \
 \
+  CZ80TclLib *z80() const { return z80_; } \
+\
  protected: \
   bool proc(int argc, const char **argv); \
+\
+ private: \
+  CZ80TclLib *z80_ { nullptr }; \
 };
 
 CZ80TclLibAppCommand(CZ80TclLibExecute)

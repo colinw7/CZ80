@@ -2,6 +2,7 @@
 #define CZ80LabelData_H
 
 #include <map>
+#include <string>
 
 // Label Data (used by assembler/disassemble)
 

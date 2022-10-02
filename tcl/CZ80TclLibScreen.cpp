@@ -1,4 +1,3 @@
-#include <std_c++.h>
 #include <CTclCanvas/CTclCanvas.h>
 #include <CZ80TclLib/CZ80TclLib.h>
 #include <CZ80TclLib/CZ80TclLibScreen.h>
@@ -27,7 +26,7 @@ createInstance(CTclApp *)
 
   z80_->setScreenCanvas(canvas_);
 
-  return (CTclAppCanvas *) canvas_->getCanvasWidget();
+  return static_cast<CTclAppCanvas *>(canvas_->getCanvasWidget());
 }
 
 CZ80TclLibScreenCanvas::

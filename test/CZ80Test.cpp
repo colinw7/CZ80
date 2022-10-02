@@ -12,8 +12,8 @@
 struct CZ80TestTrace : public CZ80Trace {
   bool verbose;
 
-  CZ80TestTrace(CZ80 &z80, bool verbose_1) :
-    CZ80Trace(z80), verbose(verbose_1) {
+  CZ80TestTrace(CZ80 &z80_, bool verbose_) :
+    CZ80Trace(z80_), verbose(verbose_) {
   }
 
   void initProc() {
@@ -56,8 +56,8 @@ struct CZ80AtExit : public CAtExit {
 
 class CPMPortData : public CZ80PortData {
  public:
-  CPMPortData(CZ80 &z80) :
-   CZ80PortData(z80) {
+  CPMPortData(CZ80 &z80_) :
+   CZ80PortData(z80_) {
   }
 
   uchar in(uchar port, uchar qual) override {
@@ -73,12 +73,12 @@ class CPMPortData : public CZ80PortData {
         ushort de = z80.getDE();
 
         for (int i = 0; ; ++i) {
-          char c = z80.getByte(de + i);
+          char c1 = z80.getByte(ushort(de + i));
 
-          if (c == '$')
+          if (c1 == '$')
             break;
 
-          std::cerr << c;
+          std::cerr << c1;
         }
       }
     }
@@ -120,7 +120,7 @@ main(int argc, char **argv)
   bool                     v_flag      = cargs.getBooleanArg   ("-v");
   std::string              ofilename   = cargs.getStringArg    ("-o");
   std::vector<std::string> labels      = cargs.getStringListArg("-L");
-  uint                     org         = cargs.getIntegerArg   ("-org");
+  uint                     org         = uint(cargs.getIntegerArg("-org"));
   bool                     dump_flag   = cargs.getBooleanArg   ("-dump");
   bool                     undump_flag = cargs.getBooleanArg   ("-undump");
   bool                     bin_flag    = cargs.getBooleanArg   ("-bin");
@@ -221,7 +221,7 @@ main(int argc, char **argv)
         z80.assembleDumpSymbols();
     }
     else if (d_flag) {
-      ushort pos = org;
+      ushort pos = ushort(org);
       ushort len = 0;
 
       if (bin_flag) {

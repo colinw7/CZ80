@@ -163,10 +163,10 @@ class CZ80 {
   void setAssembleStream(bool stream);
 
   ushort getLoadPos() const { return load_pos_; }
-  ushort getLoadLen() const { return load_len_; }
+  uint   getLoadLen() const { return load_len_; }
 
   void setLoadPos(ushort pos) { load_pos_ = pos; }
-  void setLoadLen(ushort len) { load_len_ = len; }
+  void setLoadLen(uint   len) { load_len_ = len; }
 
   // -----------
 
@@ -266,11 +266,11 @@ class CZ80 {
   ushort getPPC2() const { return getWord(getPC()); }
   ushort getPSP2() const { return getWord(getSP()); }
 
-  uchar getPOIX(schar o) const { return getByte(getIX() + o); }
-  uchar getPOIY(schar o) const { return getByte(getIY() + o); }
+  uchar getPOIX(schar o) const { return getByte(getIX() + ushort(o)); }
+  uchar getPOIY(schar o) const { return getByte(getIY() + ushort(o)); }
 
-  ushort getPOIX2(schar o) const { return getWord(getIX() + o); }
-  ushort getPOIY2(schar o) const { return getWord(getIY() + o); }
+  ushort getPOIX2(schar o) const { return getWord(getIX() + ushort(o)); }
+  ushort getPOIY2(schar o) const { return getWord(getIY() + ushort(o)); }
 
   // TODO: Inline ?
 
@@ -375,10 +375,10 @@ class CZ80 {
   uchar  getByte(ushort pos) const;
   ushort getWord() const;
   ushort getWord(ushort pos) const;
-  char   getSByte() const { return (schar) getByte(); }
-  char   getSByte(ushort pos) const { return (schar) getByte(pos); }
-  short  getSWord() const { return (sshort) getWord(); }
-  short  getSWord(ushort pos) const { return (sshort) getWord(pos); }
+  char   getSByte() const { return schar(getByte()); }
+  char   getSByte(ushort pos) const { return schar(getByte(pos)); }
+  short  getSWord() const { return sshort(getWord()); }
+  short  getSWord(ushort pos) const { return sshort(getWord(pos)); }
   bool   getBit(ushort pos, uchar bit) const;
   void   getBytes(uchar *c, ushort pos, ushort len) const;
 
@@ -1743,9 +1743,9 @@ class CZ80 {
   void tracePC(int d, ushort to);
   void traceBack();
 
-  int traceNum() const { return pcBuffer_.numValues(); }
+  int traceNum() const { return int(pcBuffer_.numValues()); }
 
-  ushort traceValue(int i) const { return pcBuffer_.getValue(i); }
+  ushort traceValue(int i) const { return pcBuffer_.getValue(uint(i)); }
 
   // --------
 
@@ -1760,7 +1760,7 @@ class CZ80 {
   // ------
 
  public:
-  int msCycles(ulong ms) { return ms*1000/mhz_; }
+  int msCycles(ulong ms) { return int(ms*1000/mhz_); }
 
  private:
   typedef std::map<std::string,CZ80Macro> MacroMap;

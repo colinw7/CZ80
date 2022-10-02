@@ -5,7 +5,7 @@ bool
 CZ80::
 disassemble(std::ostream &os)
 {
-  return disassemble(load_pos_, load_len_, os);
+  return disassemble(load_pos_, ushort(load_len_), os);
 }
 
 bool
@@ -51,9 +51,9 @@ disassemble(ushort pos, ushort len, std::ostream &os)
     }
     else if (opData.op->id == OP_JR || opData.op->id == OP_DJNZ) {
       if      (opData.op->type1 == A_S_NUM)
-        addr = epos + opData.getSByte1();
+        addr = ushort(epos + int(opData.getSByte1()));
       else if (opData.op->type2 == A_S_NUM)
-        addr = epos + opData.getSByte2();
+        addr = ushort(epos + int(opData.getSByte2()));
 
       if (! getValueLabel(addr, str)) {
         setLabelValue("LABEL_" + CStrUtil::toString(id), addr);
@@ -93,7 +93,7 @@ disassemble(ushort pos, ushort len, std::ostream &os)
 
     os << "  " << str;
 
-    for (i = str.size(); i < 18; ++i)
+    for (i = ushort(str.size()); i < 18; ++i)
       os << " ";
 
     os << " ; ";

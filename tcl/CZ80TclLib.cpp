@@ -120,7 +120,7 @@ void
 CZ80TclLib::
 addStdRstData()
 {
-  rst_data_ = (CZ80RstData *) 1;
+  rst_data_ = reinterpret_cast<CZ80RstData *>(1);
 }
 
 void
@@ -207,11 +207,11 @@ setMemoryText()
   unsigned int pos = 0;
   unsigned int len = 65536;
 
-  unsigned short num_lines = len / 8;
+  ushort num_lines = ushort(len / 8);
 
   if ((len % 8) != 0) ++num_lines;
 
-  z80_->setPC(pos);
+  z80_->setPC(ushort(pos));
 
   std::string str;
 

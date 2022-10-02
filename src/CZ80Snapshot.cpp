@@ -8,7 +8,7 @@ saveSnapshot(const std::string &filename)
 
   file.write(memory_, 0xFFFF);
 
-  file.write((uchar *) &registers_, sizeof(registers_));
+  file.write(reinterpret_cast<uchar *>(&registers_), sizeof(registers_));
 
   return true;
 }
@@ -28,7 +28,7 @@ loadSnapshot(CFile *file)
 {
   file->read(memory_, 0xFFFF);
 
-  file->read((uchar *) &registers_, sizeof(registers_));
+  file->read(reinterpret_cast<uchar *>(&registers_), sizeof(registers_));
 
   return true;
 }

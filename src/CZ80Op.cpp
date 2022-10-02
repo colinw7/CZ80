@@ -93,22 +93,22 @@ getValues(uchar **values, uint *num_values)
   *values     = values1;
 
   if      (ind <  256)
-    (*values)[(*num_values)++] = ind;
+    (*values)[(*num_values)++] = uchar(ind);
   else if (ind <  512) {
     (*values)[(*num_values)++] = 0xCB;
-    (*values)[(*num_values)++] = ind -  256;
+    (*values)[(*num_values)++] = uchar(ind -  256);
   }
   else if (ind <  768) {
     (*values)[(*num_values)++] = 0xDD;
-    (*values)[(*num_values)++] = ind -  512;
+    (*values)[(*num_values)++] = uchar(ind -  512);
   }
   else if (ind < 1024) {
     (*values)[(*num_values)++] = 0xED;
-    (*values)[(*num_values)++] = ind -  768;
+    (*values)[(*num_values)++] = uchar(ind -  768);
   }
   else if (ind < 1280) {
     (*values)[(*num_values)++] = 0xFD;
-    (*values)[(*num_values)++] = ind - 1024;
+    (*values)[(*num_values)++] = uchar(ind - 1024);
   }
 }
 
@@ -125,13 +125,13 @@ getExtValues(uchar c, uchar **values, uint *num_values)
     (*values)[(*num_values)++] = 0xDD;
     (*values)[(*num_values)++] = 0xCB;
     (*values)[(*num_values)++] = c;
-    (*values)[(*num_values)++] = ind - 1280;
+    (*values)[(*num_values)++] = uchar(ind - 1280);
   }
   else if (ind < 1792) {
     (*values)[(*num_values)++] = 0xFD;
     (*values)[(*num_values)++] = 0xCB;
     (*values)[(*num_values)++] = c;
-    (*values)[(*num_values)++] = ind - 1536;
+    (*values)[(*num_values)++] = uchar(ind - 1536);
   }
 }
 
@@ -188,7 +188,7 @@ getSize()
     ++size;
 
   if      (type1 == A_NUM || type1 == A_S_NUM || type1 == A_P_NUM) {
-    size += arg1;
+    size += uchar(arg1);
   }
   else if (type1 == A_PO_REG   || type1 == A_PO_REG_A ||
            type1 == A_PO_REG_B || type1 == A_PO_REG_C ||
@@ -198,7 +198,7 @@ getSize()
   }
 
   if      (type2 == A_NUM || type2 == A_S_NUM || type2 == A_P_NUM) {
-    size += arg2;
+    size += uchar(arg2);
   }
   else if (type2 == A_PO_REG   || type2 == A_PO_REG_A ||
            type2 == A_PO_REG_B || type2 == A_PO_REG_C ||

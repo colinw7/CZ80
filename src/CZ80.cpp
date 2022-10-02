@@ -34,7 +34,7 @@ CZ80()
   im0_ = 0x38;
   im2_ = 0xfe;
 
-  ifreq_ = int(mhz_/htz_); // cycles per second
+  ifreq_ = ushort(mhz_/htz_); // cycles per second
 
   setWord(0x0000, 0x76);
   setWord(0x0008, 0x76);
@@ -95,15 +95,15 @@ void
 CZ80::
 initOpInds()
 {
-  uint ind = 0;
+  ushort ind = 0;
 
-  for (uint i = 0; i < 256; ++i) op_normal[i].ind = ind++;
-  for (uint i = 0; i < 256; ++i) op_cb    [i].ind = ind++;
-  for (uint i = 0; i < 256; ++i) op_dd    [i].ind = ind++;
-  for (uint i = 0; i < 256; ++i) op_ed    [i].ind = ind++;
-  for (uint i = 0; i < 256; ++i) op_fd    [i].ind = ind++;
-  for (uint i = 0; i < 256; ++i) op_dd_cb [i].ind = ind++;
-  for (uint i = 0; i < 256; ++i) op_fd_cb [i].ind = ind++;
+  for (ushort i = 0; i < 256; ++i) op_normal[i].ind = ind++;
+  for (ushort i = 0; i < 256; ++i) op_cb    [i].ind = ind++;
+  for (ushort i = 0; i < 256; ++i) op_dd    [i].ind = ind++;
+  for (ushort i = 0; i < 256; ++i) op_ed    [i].ind = ind++;
+  for (ushort i = 0; i < 256; ++i) op_fd    [i].ind = ind++;
+  for (ushort i = 0; i < 256; ++i) op_dd_cb [i].ind = ind++;
+  for (ushort i = 0; i < 256; ++i) op_fd_cb [i].ind = ind++;
 }
 
 void
@@ -667,14 +667,14 @@ void
 CZ80::
 setPOIX(schar o, uchar ix)
 {
-  setByte(getIX() + o, ix);
+  setByte(ushort(getIX() + o), ix);
 }
 
 void
 CZ80::
 setPOIY(schar o, uchar iy)
 {
-  setByte(getIY() + o, iy);
+  setByte(ushort(getIY() + o), iy);
 }
 
 void
@@ -742,7 +742,7 @@ decT(ushort d)
     t_ = 0;
 
   if (execData_)
-    execData_->decT(d);
+    execData_->decT(uchar(d));
 }
 
 void
@@ -752,10 +752,10 @@ incT(ushort d)
   if (t_ + d <= ifreq_)
     t_ += d;
   else
-    t_ = interrupt();
+    t_ = ulong(interrupt());
 
   if (execData_)
-    execData_->incT(d);
+    execData_->incT(uchar(d));
 }
 
 int
@@ -804,7 +804,7 @@ interrupt()
 
     // call interrupt from I register and offset on data bus
     case 2: {
-      int addr = (getI() << 8) | im2_;
+      ushort addr = ushort((getI() << 8) | im2_);
 
       di();
 
@@ -848,7 +848,7 @@ void
 CZ80::
 setWord(ushort pos, ushort w)
 {
-  setBytes((uchar *) &w, pos, 2);
+  setBytes(reinterpret_cast<uchar *>(&w), pos, 2);
 }
 
 void
@@ -954,7 +954,7 @@ getWord(ushort pos) const
 
   getBytes(c, pos, 2);
 
-  return (c[1] << 8) | c[0];
+  return ushort(c[1] << 8) | c[0];
 }
 
 bool
@@ -1184,8 +1184,8 @@ addHL(ushort hl)
   bool p = tstPFlag();
 #endif
 
-  uchar h = (hl & 0xFF00) >> 8;
-  uchar l =  hl & 0x00FF ;
+  uchar h = uchar((hl & 0xFF00) >> 8);
+  uchar l = uchar( hl & 0x00FF      );
 
   setL(addR(getL(), l));
   setH(adcR(getH(), h));
@@ -1203,11 +1203,11 @@ uchar
 CZ80::
 addR(uchar r, uchar a)
 {
-  int sa = (int) (char)  r         + (int) (char)  a;
-  int ua = (int)         r         + (int)         a;
-  int ha = (int)        (r & 0x0F) + (int)        (a & 0x0F);
+  int sa = int(char(r)       ) + int(char(a)       );
+  int ua = int(     r        ) + int(     a        );
+  int ha = int(    (r & 0x0F)) + int(    (a & 0x0F));
 
-  setVFlag(sa != (char) ua);
+  setVFlag(sa != char(ua));
 
   setCFlag(ua > 0xFF);
   setHFlag(ha > 0x0F);
@@ -1231,8 +1231,8 @@ addIX(ushort ix)
   bool p = tstPFlag();
 #endif
 
-  uchar ixh = (ix & 0xFF00) >> 8;
-  uchar ixl =  ix & 0x00FF ;
+  uchar ixh = uchar((ix & 0xFF00) >> 8);
+  uchar ixl = uchar( ix & 0x00FF      );
 
   setIXL(addR(getIXL(), ixl));
   setIXH(adcR(getIXH(), ixh));
@@ -1256,8 +1256,8 @@ addIY(ushort iy)
   bool p = tstPFlag();
 #endif
 
-  uchar iyh = (iy & 0xFF00) >> 8;
-  uchar iyl =  iy & 0x00FF ;
+  uchar iyh = uchar((iy & 0xFF00) >> 8);
+  uchar iyl = uchar( iy & 0x00FF      );
 
   setIYL(addR(getIYL(), iyl));
   setIYH(adcR(getIYH(), iyh));
@@ -1282,8 +1282,8 @@ void
 CZ80::
 adcHL(ushort hl)
 {
-  uchar h = (hl & 0xFF00) >> 8;
-  uchar l =  hl & 0x00FF ;
+  uchar h = uchar((hl & 0xFF00) >> 8);
+  uchar l = uchar( hl & 0x00FF      );
 
   setL(adcR(getL(), l));
   setH(adcR(getH(), h));
@@ -1297,16 +1297,16 @@ adcR(uchar r, uchar a)
 {
   uchar c = tstCFlag();
 
-  int sa = (int) (char)  r         + (int) (char)  a         + (int) c;
-  int ua = (int)         r         + (int)         a         + (int) c;
-  int ha = (int)        (r & 0x0F) + (int)        (a & 0x0F) + (int) c;
+  int sa = int(char(r)       ) + int(char(a)       ) + int(c);
+  int ua = int(     r        ) + int(     a        ) + int(c);
+  int ha = int(    (r & 0x0F)) + int(    (a & 0x0F)) + int(c);
 
-  setVFlag(sa != (char) ua);
+  setVFlag(sa != char(ua));
 
   setCFlag(ua > 0xFF);
   setHFlag(ha > 0x0F);
 
-  r += a + c;
+  r += uchar(a + c);
 
   setRFlags(r);
 
@@ -1328,11 +1328,11 @@ uchar
 CZ80::
 subR(uchar r, uchar a)
 {
-  int sd = (int) (char)  r        - (int) (char)  a;
-  int ud = (int)         r        - (int)         a;
-  int hd = (int)        (r & 0xF) - (int)        (a & 0x0F);
+  int sd = int(char(r)      ) - int(char(a)       );
+  int ud = int(     r       ) - int(     a        );
+  int hd = int(    (r & 0xF)) - int(    (a & 0x0F));
 
-  setVFlag(sd != (char) ud);
+  setVFlag(sd != char(ud));
 
   setCFlag(ud < 0x00);
   setHFlag(hd < 0x00);
@@ -1357,8 +1357,8 @@ void
 CZ80::
 sbcHL(ushort hl)
 {
-  uchar h = (hl & 0xFF00) >> 8;
-  uchar l =  hl & 0x00FF ;
+  uchar h = uchar((hl & 0xFF00) >> 8);
+  uchar l = uchar( hl & 0x00FF      );
 
   setL(sbcR(getL(), l));
   setH(sbcR(getH(), h));
@@ -1372,16 +1372,16 @@ sbcR(uchar r, uchar a)
 {
   uchar c = tstCFlag();
 
-  int sd = (int) (char)  r         - (int) (char)  a         - (int) c;
-  int ud = (int)         r         - (int)         a         - (int) c;
-  int hd = (int)        (r & 0x0F) - (int)        (a & 0x0F) - (int) c;
+  int sd = int(char(r)       ) - int(char(a)       ) - int(c);
+  int ud = int(     r        ) - int(     a        ) - int(c);
+  int hd = int(    (r & 0x0F)) - int(    (a & 0x0F)) - int(c);
 
-  setVFlag(sd != (char) ud);
+  setVFlag(sd != char(ud));
 
   setCFlag(ud <  0x00);
   setHFlag(hd <  0x00);
 
-  r -= a + c;
+  r -= uchar(a + c);
 
   setRFlags(r);
 
@@ -1515,7 +1515,7 @@ void
 CZ80::
 incPC(sshort o)
 {
-  setPC(getPC() + o);
+  setPC(ushort(getPC() + o));
 }
 
 void
@@ -1664,7 +1664,7 @@ void
 CZ80::
 decPC(sshort o)
 {
-  setPC(getPC() - o);
+  setPC(ushort(getPC() - o));
 }
 
 void
@@ -2360,7 +2360,7 @@ rlca()
 
   uchar s = (r & 0x80) ? 0x01 : 0x00;
 
-  r = (r << 1) | s;
+  r = uchar((r << 1) | s);
 
   setA(r);
 
@@ -2378,7 +2378,7 @@ rlc(uchar r)
 {
   uchar s = (r & 0x80) ? 0x01 : 0x00;
 
-  r = (r << 1) | s;
+  r = uchar((r << 1) | s);
 
   setBRFlags(r);
 
@@ -2399,7 +2399,7 @@ rla()
   uchar s  = (r & 0x80) ? 0x01 : 0x00;
   uchar s1 = tstCFlag() ? 0x01 : 0x00;
 
-  r = (r << 1) | s1;
+  r = uchar((r << 1) | s1);
 
   setA(r);
 
@@ -2418,7 +2418,7 @@ rl(uchar r)
   uchar s  = (r & 0x80) ? 0x01 : 0x00;
   uchar s1 = tstCFlag() ? 0x01 : 0x00;
 
-  r = (r << 1) | s1;
+  r = uchar((r << 1) | s1);
 
   setBRFlags(r);
 
@@ -2438,7 +2438,7 @@ rrca()
 
   uchar s = (r & 0x01) ? 0x80 : 0x00;
 
-  r = (r >> 1) | s;
+  r = uchar((r >> 1) | s);
 
   setA(r);
 
@@ -2456,7 +2456,7 @@ rrc(uchar r)
 {
   uchar s = (r & 0x01) ? 0x80 : 0x00;
 
-  r = (r >> 1) | s;
+  r = uchar((r >> 1) | s);
 
   setBRFlags(r);
 
@@ -2477,7 +2477,7 @@ rra()
   uchar s  = (r & 0x01) ? 0x01 : 0x00;
   uchar s1 = tstCFlag() ? 0x80 : 0x00;
 
-  r = (r >> 1) | s1;
+  r = uchar((r >> 1) | s1);
 
   setA(r);
 
@@ -2496,7 +2496,7 @@ rr(uchar r)
   uchar s  = (r & 0x01) ? 0x01 : 0x00;
   uchar s1 = tstCFlag() ? 0x80 : 0x00;
 
-  r = (r >> 1) | s1;
+  r = uchar((r >> 1) | s1);
 
   setBRFlags(r);
 
@@ -2586,10 +2586,10 @@ rld()
   uchar hl = getPHL();
   uchar a  = getA  ();
 
-  uchar b1 = (hl & 0x0F) << 4;
-  uchar b2 = (hl & 0xF0) >> 4;
-  uchar b3 = (a  & 0x0F);
-  uchar b4 = (a  & 0xF0);
+  uchar b1 = uchar((hl & 0x0F) << 4);
+  uchar b2 = uchar((hl & 0xF0) >> 4);
+  uchar b3 = uchar(a  & 0x0F);
+  uchar b4 = uchar(a  & 0xF0);
 
   setPHL(b1 | b3);
   setA  (b4 | b2);
@@ -2606,10 +2606,10 @@ rrd()
   uchar hl = getPHL();
   uchar a  = getA  ();
 
-  uchar b1 = (hl & 0x0F);
-  uchar b2 = (hl & 0xF0) >> 4;
-  uchar b3 = (a  & 0x0F) << 4;
-  uchar b4 = (a  & 0xF0);
+  uchar b1 = uchar(hl & 0x0F);
+  uchar b2 = uchar((hl & 0xF0) >> 4);
+  uchar b3 = uchar((a  & 0x0F) << 4);
+  uchar b4 = uchar(a  & 0xF0);
 
   setPHL(b3 | b2);
   setA  (b4 | b1);
@@ -2712,7 +2712,7 @@ tstBitPOIX(schar o, uchar bit, bool is_phl)
 {
   uint r = getPOIX(o);
 
-  tstBitR(r, bit, is_phl);
+  tstBitR(uchar(r), bit, is_phl);
 }
 
 void
@@ -2721,7 +2721,7 @@ tstBitPOIY(schar o, uchar bit, bool is_phl)
 {
   uint r = getPOIY(o);
 
-  tstBitR(r, bit, is_phl);
+  tstBitR(uchar(r), bit, is_phl);
 }
 
 void
@@ -3144,9 +3144,9 @@ void
 CZ80::
 ldi()
 {
-  setPDE(getPHL2());
+  setPDE(uchar(getPHL2()));
 
-  uchar r = getA() + getPHL2();
+  uchar r = uchar(getA() + getPHL2());
 
   setXFlag(r & 0x08);
   setYFlag(r & 0x02);
@@ -3185,9 +3185,9 @@ void
 CZ80::
 ldd()
 {
-  setPDE(getPHL2());
+  setPDE(uchar(getPHL2()));
 
-  uchar r = getA() + getPHL2();
+  uchar r = uchar(getA() + getPHL2());
 
   setXFlag(r & 0x08);
   setYFlag(r & 0x02);
@@ -3485,7 +3485,7 @@ CZ80Op *
 CZ80::
 readOp(ushort pc)
 {
-  int len = 0;
+  ushort len = 0;
 
   uchar c = getByte(pc + len);
 
@@ -3544,7 +3544,7 @@ readOp(ushort pc)
     }
   }
 
-  op->len = len;
+  op->len = uchar(len);
 
   return op;
 }
@@ -3554,7 +3554,7 @@ CZ80::
 readOpValues(ushort pc, CZ80Op *op, uchar *values1, uchar *num_values1,
              uchar *values2, uchar *num_values2)
 {
-  int len = op->len;
+  ushort len = op->len;
 
   if (op->type1 != 0) {
     *num_values1 = getNumArgValues(op->type1, op->arg1);
@@ -3590,7 +3590,7 @@ readOpValues(ushort pc, CZ80Op *op, uchar *values1, uchar *num_values1,
     *num_values2 = 0;
   }
 
-  op->len = len;
+  op->len = uchar(len);
 }
 
 uchar
@@ -3599,13 +3599,13 @@ getNumArgValues(uint type, uint arg)
 {
   switch (type) {
     case A_NUM:
-      return arg;
+      return uchar(arg);
     case A_S_NUM:
-      return arg;
+      return uchar(arg);
     case A_P_REG:
       return 0;
     case A_P_NUM:
-      return arg;
+      return uchar(arg);
     case A_PO_REG:
       return 1;
     case A_FLAG:
@@ -3976,7 +3976,7 @@ void
 CZ80::
 tracePC(int d, ushort /*to*/)
 {
-  ushort from = registers_.pc_ - d;
+  ushort from = ushort(registers_.pc_ - d);
 
   pcBuffer_.addValue(from);
 
@@ -4003,12 +4003,12 @@ ushort
 CircBuffer::
 getValue(uint ind) const
 {
-  int pos = last_pos_ - ind;
+  int pos = int(last_pos_ - ind);
 
   if (pos < 0)
     pos += size_ - 1;
 
-  return buffer_[pos];
+  return buffer_[uint(pos)];
 }
 
 void

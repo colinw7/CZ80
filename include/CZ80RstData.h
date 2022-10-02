@@ -17,8 +17,8 @@ class CZ80RstData {
 
 class CZ80StdRstData : public CZ80RstData {
  public:
-  CZ80StdRstData(CZ80 &z80) :
-   CZ80RstData(z80), newline_(true) {
+  CZ80StdRstData(CZ80 &z80_) :
+   CZ80RstData(z80_), newline_(true) {
   }
 
   void rst(ushort id) override;

@@ -14,7 +14,7 @@ bool
 CZ80::
 assemble(CFile *ifile, CFile *ofile)
 {
-  return assemble(ifile, (CFileBase *) ofile);
+  return assemble(ifile, static_cast<CFileBase *>(ofile));
 }
 
 bool
@@ -171,9 +171,9 @@ assembleParseOp(CFileParse *parse, std::string &op_str, uint pass, bool *continu
     std::string expr;
 
     while (! parse->eol() && ! parse->isChar(';')) {
-      uchar c = parse->readChar();
+      uchar c = uchar(parse->readChar());
 
-      expr += c;
+      expr += char(c);
     }
 
     if (! assembleEvalExpr(expr, &i)) {
@@ -208,7 +208,7 @@ assembleParseOp(CFileParse *parse, std::string &op_str, uint pass, bool *continu
     }
 #endif
 
-    setPC(i);
+    setPC(ushort(i));
 
     if (set_op_str) {
       str1 = "";
@@ -249,9 +249,9 @@ assembleParseOp(CFileParse *parse, std::string &op_str, uint pass, bool *continu
     parse->skipSpace();
 
     while (! parse->eol() && ! parse->isChar(';') && ! parse->isChar('|')) {
-      uchar c = parse->readChar();
+      uchar c = uchar(parse->readChar());
 
-      expr += c;
+      expr += char(c);
     }
 
     if (assembleData_.getLastLabel() == "") {
@@ -285,77 +285,77 @@ assembleParseOp(CFileParse *parse, std::string &op_str, uint pass, bool *continu
     parse->skipSpace();
 
     if (parse->isChar('\"') || parse->isChar('\'')) {
-      uchar end_char = parse->readChar();
+      uchar end_char = uchar(parse->readChar());
 
       if (set_op_str) {
         str2 += ' ';
-        str2 += end_char;
+        str2 += char(end_char);
       }
 
-      while (! parse->eol() && ! parse->isChar(end_char)) {
-        uchar c =  parse->readChar();
+      while (! parse->eol() && ! parse->isChar(char(end_char))) {
+        uchar c =  uchar(parse->readChar());
 
         if (c == '\\') {
-          if (parse->eol() || parse->isChar(end_char)) {
+          if (parse->eol() || parse->isChar(char(end_char))) {
             assembleError("Missing terminator for DEFB string");
             return false;
           }
 
           std::string cstr;
 
-          cstr += (char) c;
+          cstr += char(c);
 
-          uchar c1 = parse->readChar();
+          uchar c1 = uchar(parse->readChar());
 
-          cstr += (char) c1;
+          cstr += char(c1);
 
           if      (c1 == 'x') {
-            if (parse->eol() || parse->isChar(end_char)) {
+            if (parse->eol() || parse->isChar(char(end_char))) {
               assembleError("Missing terminator for DEFB string");
               return false;
             }
 
-            uchar cc1 = parse->readChar();
+            uchar cc1 = uchar(parse->readChar());
 
-            cstr += (char) cc1;
+            cstr += char(cc1);
 
-            if (parse->eol() || parse->isChar(end_char)) {
+            if (parse->eol() || parse->isChar(char(end_char))) {
               assembleError("Missing terminator for DEFB string");
               return false;
             }
 
-            uchar cc2 = parse->readChar();
+            uchar cc2 = uchar(parse->readChar());
 
-            cstr += (char) cc2;
+            cstr += char(cc2);
           }
           else if (c1 == '0') {
-            if (! parse->eol() && ! parse->isChar(end_char)) {
-              if (parse->eol() || parse->isChar(end_char)) {
+            if (! parse->eol() && ! parse->isChar(char(end_char))) {
+              if (parse->eol() || parse->isChar(char(end_char))) {
                 assembleError("Missing terminator for DEFB string");
                 return false;
               }
 
-              uchar cc1 = parse->readChar();
+              uchar cc1 = uchar(parse->readChar());
 
-              cstr += (char) cc1;
+              cstr += char(cc1);
 
-              if (parse->eol() || parse->isChar(end_char)) {
+              if (parse->eol() || parse->isChar(char(end_char))) {
                 assembleError("Missing terminator for DEFB string");
                 return false;
               }
 
-              uchar cc2 = parse->readChar();
+              uchar cc2 = uchar(parse->readChar());
 
-              cstr += (char) cc2;
+              cstr += char(cc2);
 
-              if (parse->eol() || parse->isChar(end_char)) {
+              if (parse->eol() || parse->isChar(char(end_char))) {
                 assembleError("Missing terminator for DEFB string");
                 return false;
               }
 
-              uchar cc3 = parse->readChar();
+              uchar cc3 = uchar(parse->readChar());
 
-              cstr += (char) cc3;
+              cstr += char(cc3);
             }
           }
 
@@ -366,12 +366,12 @@ assembleParseOp(CFileParse *parse, std::string &op_str, uint pass, bool *continu
             return false;
           }
 
-          c = c2;
+          c = uchar(c2);
         }
 
         if (set_op_str) {
           str1 += " " + hexString(c);
-          str2 += c;
+          str2 += char(c);
         }
 
         if (pass == 2 && assembleData_.isStream())
@@ -388,7 +388,7 @@ assembleParseOp(CFileParse *parse, std::string &op_str, uint pass, bool *continu
       parse->skipChar();
 
       if (set_op_str)
-        str2 += (char) end_char;
+        str2 += char(end_char);
     }
     else {
       do {
@@ -508,10 +508,10 @@ assembleParseOp(CFileParse *parse, std::string &op_str, uint pass, bool *continu
 
     if (pass == 2 && assembleData_.isStream()) {
       for (uint i1 = 0; i1 < i; ++i1)
-        assembleData_.addValue(getPC() + i1, j);
+        assembleData_.addValue(getPC() + ushort(i1), uchar(j));
     }
 
-    incPC(i);
+    incPC(sshort(i));
 
     if (set_op_str) {
       while (str1.size() < 18)
@@ -582,14 +582,14 @@ assembleParseOp(CFileParse *parse, std::string &op_str, uint pass, bool *continu
     std::string argsStr;
 
     while (! parse->eol() && ! parse->isChar(';')) {
-      uchar c = parse->readChar();
+      uchar c = uchar(parse->readChar());
 
-      argsStr += c;
+      argsStr += char(c);
     }
 
     argsStr = CStrUtil::stripSpaces(argsStr);
 
-    uint argsLen = argsStr.size();
+    auto argsLen = argsStr.size();
 
     if (argsLen > 0 && argsStr[0] == '(') {
       argsStr = CStrUtil::stripSpaces(argsStr.substr(1));
@@ -609,7 +609,7 @@ assembleParseOp(CFileParse *parse, std::string &op_str, uint pass, bool *continu
 
     std::string macroBody1 = macroBody;
 
-    uint numArgs = std::min(macroArgs.size(), args.size());
+    auto numArgs = std::min(macroArgs.size(), args.size());
 
     for (uint ii = 0; ii < numArgs; ++ii)
       macroBody1 = CStrUtil::replace(macroBody1, macroArgs[ii], args[ii]);
@@ -634,7 +634,7 @@ assembleParseOp(CFileParse *parse, std::string &op_str, uint pass, bool *continu
       return false;
     }
 
-    op.id = (CZ80OpId) op_id;
+    op.id = CZ80OpId(op_id);
 
     if      (parse->isIdentifier()) {
       if (! parse->readIdentifier(str)) {
@@ -656,13 +656,13 @@ assembleParseOp(CFileParse *parse, std::string &op_str, uint pass, bool *continu
                op.id == OP_CALL || op.id == OP_RET) {
         if      (assembleStringToFlagId(str, &flag_id)) {
           op.type1 = A_FLAG;
-          op.arg1  = flag_id;
+          op.arg1  = ushort(flag_id);
 
           opData.num_values1 = 0;
         }
         else if (assembleStringToRegisterId(str, &reg_id)) {
           op.type1 = A_REG;
-          op.arg1  = reg_id;
+          op.arg1  = ushort(reg_id);
 
           opData.num_values1 = 0;
         }
@@ -671,9 +671,9 @@ assembleParseOp(CFileParse *parse, std::string &op_str, uint pass, bool *continu
 
           if (assembleParseInteger(parse, pass, &i)) {
             if (op.id == OP_JR) {
-              char o = i - getPC() - 2;
+              char o = char(i - getPC() - 2);
 
-              i = *(uchar *) &o;
+              i = *reinterpret_cast<uchar *>(&o);
 
               op.type1 = A_S_NUM;
               op.arg1  = 2;
@@ -700,7 +700,7 @@ assembleParseOp(CFileParse *parse, std::string &op_str, uint pass, bool *continu
       else {
         if      (assembleStringToRegisterId(str, &reg_id)) {
           op.type1 = A_REG;
-          op.arg1  = reg_id;
+          op.arg1  = ushort(reg_id);
 
           opData.num_values1 = 0;
         }
@@ -709,9 +709,9 @@ assembleParseOp(CFileParse *parse, std::string &op_str, uint pass, bool *continu
 
           if (assembleParseInteger(parse, pass, &i)) {
             if (op.id == OP_DJNZ) {
-              char o = i - getPC() - 2;
+              char o = char(i - getPC() - 2);
 
-              i = *(uchar *) &o;
+              i = *reinterpret_cast<uchar *>(&o);
 
               op.type1 = A_S_NUM;
               op.arg1  = 2;
@@ -747,9 +747,9 @@ assembleParseOp(CFileParse *parse, std::string &op_str, uint pass, bool *continu
       if (! assembleParseInteger(parse, pass, &i))
         return false;
 
-      int si = i*sign;
+      int si = int(i)*sign;
 
-      i = *(uint *) &si;
+      i = *reinterpret_cast<uint *>(&si);
 
       if (op.id == OP_JR || op.id == OP_DJNZ) {
         op.type1 = A_S_NUM;
@@ -778,9 +778,9 @@ assembleParseOp(CFileParse *parse, std::string &op_str, uint pass, bool *continu
         op.arg1  = i & 0x0FF;
       }
       else if (op.id == OP_JR || op.id == OP_DJNZ) {
-        char o = i - getPC() - 2;
+        char o = char(i - getPC() - 2);
 
-        i = *(uchar *) &o;
+        i = *reinterpret_cast<uchar *>(&o);
 
         op.type1 = A_S_NUM;
         op.arg1  = 2;
@@ -818,21 +818,21 @@ assembleParseOp(CFileParse *parse, std::string &op_str, uint pass, bool *continu
           if (reg_id == R_IX || reg_id == R_IY) {
             if (assembleParseInteger(parse, pass, &i)) {
               op.type1 = A_PO_REG;
-              op.arg1  = reg_id;
+              op.arg1  = ushort(reg_id);
 
               opData.num_values1 = 1;
               opData.values1[0]  = LO_WORD(i);
             }
             else {
               op.type1 = A_P_REG;
-              op.arg1  = reg_id;
+              op.arg1  = ushort(reg_id);
 
               opData.num_values1 = 0;
             }
           }
           else {
             op.type1 = A_P_REG;
-            op.arg1  = reg_id;
+            op.arg1  = ushort(reg_id);
 
             opData.num_values1 = 0;
           }
@@ -940,7 +940,7 @@ assembleParseOp(CFileParse *parse, std::string &op_str, uint pass, bool *continu
 
           if      (assembleStringToRegisterId(str, &reg_id)) {
             op.type2 = A_REG;
-            op.arg2  = reg_id;
+            op.arg2  = ushort(reg_id);
 
             opData.num_values2 = 0;
           }
@@ -949,9 +949,9 @@ assembleParseOp(CFileParse *parse, std::string &op_str, uint pass, bool *continu
 
             if (assembleParseInteger(parse, pass, &i)) {
               if (op.id == OP_JR) {
-                char o = i - getPC() - 2;
+                char o = char(i - getPC() - 2);
 
-                i = *(uchar *) &o;
+                i = *reinterpret_cast<uchar *>(&o);
 
                 op.type2 = A_S_NUM;
                 op.arg2  = 2;
@@ -986,9 +986,9 @@ assembleParseOp(CFileParse *parse, std::string &op_str, uint pass, bool *continu
           if (! assembleParseInteger(parse, pass, &i))
             return false;
 
-          int si = i*sign;
+          int si = int(i)*sign;
 
-          i = *(uint *) &si;
+          i = *reinterpret_cast<uint *>(&si);
 
           if (op.id == OP_JR || op.id == OP_DJNZ) {
             op.type2 = A_S_NUM;
@@ -1015,9 +1015,9 @@ assembleParseOp(CFileParse *parse, std::string &op_str, uint pass, bool *continu
             op.arg2  = LO_WORD(i);
           }
           else if (op.id == OP_JR || op.id == OP_DJNZ) {
-            char o = i - getPC() - 2;
+            char o = char(i - getPC() - 2);
 
-            i = *(uchar *) &o;
+            i = *reinterpret_cast<uchar *>(&o);
 
             op.type2 = A_S_NUM;
             op.arg2  = 2;
@@ -1055,21 +1055,21 @@ assembleParseOp(CFileParse *parse, std::string &op_str, uint pass, bool *continu
               if (reg_id == R_IX || reg_id == R_IY) {
                 if (assembleParseInteger(parse, pass, &i)) {
                   op.type2 = A_PO_REG;
-                  op.arg2  = reg_id;
+                  op.arg2  = ushort(reg_id);
 
                   opData.num_values2 = 1;
                   opData.values2[0]  = LO_WORD(i);
                 }
                 else {
                   op.type2 = A_P_REG;
-                  op.arg2  = reg_id;
+                  op.arg2  = ushort(reg_id);
 
                   opData.num_values2 = 0;
                 }
               }
               else {
                 op.type2 = A_P_REG;
-                op.arg2  = reg_id;
+                op.arg2  = ushort(reg_id);
 
                 opData.num_values2 = 0;
               }
@@ -1182,18 +1182,18 @@ assembleParseOp(CFileParse *parse, std::string &op_str, uint pass, bool *continu
     opData.op = op1;
 
     if (opData.op->type1 == A_NUM || opData.op->type1 == A_S_NUM)
-      opData.num_values1 = opData.op->arg1;
+      opData.num_values1 = uchar(opData.op->arg1);
 
     if (opData.op->type2 == A_NUM || opData.op->type2 == A_S_NUM)
-      opData.num_values2 = opData.op->arg2;
+      opData.num_values2 = uchar(opData.op->arg2);
 
     if (set_op_str) {
       str1 = hexString(getPC()) + " " + opData.toTxt();
       str2 = opData.getOpString(getPC());
 
-      uint len = str1.size();
+      auto len = str1.size();
 
-      for (uint ii = len; ii < 18; ++ii)
+      for (uint ii = uint(len); ii < 18; ++ii)
         str1 += " ";
 
       op_str = str1 + " ; " + str2;
@@ -1206,7 +1206,7 @@ assembleParseOp(CFileParse *parse, std::string &op_str, uint pass, bool *continu
       opData.toValues(&values, &num_values);
 
       for (uint ii = 0; ii < num_values; ++ii)
-        assembleData_.addValue(getPC() + ii, values[ii]);
+        assembleData_.addValue(getPC() + ushort(ii), values[ii]);
     }
 
     incPC(opData.getSize());
@@ -1276,9 +1276,9 @@ assembleParseInteger(CFileParse *parse, uint pass, uint *i)
       if (! assembleParseInteger(parse, pass, &d))
         return false;
 
-      int si = *i + d*sign;
+      int si = int(*i) + int(d)*sign;
 
-      *i = *(uint *) &si;
+      *i = *reinterpret_cast<uint *>(&si);
     }
 
     //--------
@@ -1293,7 +1293,7 @@ assembleParseInteger(CFileParse *parse, uint pass, uint *i)
       return false;
     }
 
-    uchar c = parse->readChar();
+    uchar c = uchar(parse->readChar());
 
     if (c == '\\') {
       if (parse->eol() || parse->isChar('\'')) {
@@ -1303,11 +1303,11 @@ assembleParseInteger(CFileParse *parse, uint pass, uint *i)
 
       std::string cstr;
 
-      cstr += (char) c;
+      cstr += char(c);
 
-      uchar c1 = parse->readChar();
+      uchar c1 = uchar(parse->readChar());
 
-      cstr += (char) c1;
+      cstr += char(c1);
 
       if      (c1 == 'x') {
         if (parse->eol() || parse->isChar('\'')) {
@@ -1315,18 +1315,18 @@ assembleParseInteger(CFileParse *parse, uint pass, uint *i)
           return false;
         }
 
-        uchar cc1 = parse->readChar();
+        uchar cc1 = uchar(parse->readChar());
 
-        cstr += (char) cc1;
+        cstr += char(cc1);
 
         if (parse->eol() || parse->isChar('\'')) {
           assembleError("Missing terminator for char");
           return false;
         }
 
-        uchar cc2 = parse->readChar();
+        uchar cc2 = uchar(parse->readChar());
 
-        cstr += (char) cc2;
+        cstr += char(cc2);
       }
       else if (c1 == '0') {
         if (! parse->eol() && ! parse->isChar('\'')) {
@@ -1335,27 +1335,27 @@ assembleParseInteger(CFileParse *parse, uint pass, uint *i)
             return false;
           }
 
-          uchar cc1 = parse->readChar();
+          uchar cc1 = uchar(parse->readChar());
 
-          cstr += (char) cc1;
-
-          if (parse->eol() || parse->isChar('\'')) {
-            assembleError("Missing terminator for char");
-            return false;
-          }
-
-          uchar cc2 = parse->readChar();
-
-          cstr += (char) cc2;
+          cstr += char(cc1);
 
           if (parse->eol() || parse->isChar('\'')) {
             assembleError("Missing terminator for char");
             return false;
           }
 
-          uchar cc3 = parse->readChar();
+          uchar cc2 = uchar(parse->readChar());
 
-          cstr += (char) cc3;
+          cstr += char(cc2);
+
+          if (parse->eol() || parse->isChar('\'')) {
+            assembleError("Missing terminator for char");
+            return false;
+          }
+
+          uchar cc3 = uchar(parse->readChar());
+
+          cstr += char(cc3);
         }
       }
 
@@ -1366,7 +1366,7 @@ assembleParseInteger(CFileParse *parse, uint pass, uint *i)
         return false;
       }
 
-      c = c2;
+      c = uchar(c2);
     }
 
     if (parse->eol()) {
@@ -1405,9 +1405,9 @@ assembleParseInteger(CFileParse *parse, uint pass, uint *i)
         return false;
       }
 
-      si = (*i)*sign;
+      si = int(*i)*sign;
 
-      *i = *(uint *) &si;
+      *i = *reinterpret_cast<uint *>(&si);
 
       return true;
     }
@@ -1417,9 +1417,9 @@ assembleParseInteger(CFileParse *parse, uint pass, uint *i)
         return false;
       }
 
-      si = (*i)*sign;
+      si = int(*i)*sign;
 
-      *i = *(uint *) &si;
+      *i = *reinterpret_cast<uint *>(&si);
 
       return true;
     }
@@ -1452,7 +1452,7 @@ assembleSetLabelValue(const std::string &name, uint value)
   setLabelValue(name, value);
 
 #ifdef CL_PARSER
-  ClParserValuePtr pval = ClParserValueMgrInst->createValue((long) value);
+  ClParserValuePtr pval = ClParserValueMgrInst->createValue(long(value));
 
   if (! ClParserInst->isVariable(name))
     ClParserInst->createVar(name, pval);
@@ -1468,7 +1468,7 @@ CZ80::
 assembleEvalExpr(const std::string &expr, uint *value)
 {
 #ifdef CL_PARSER
-  ClParserValuePtr pcVal = ClParserValueMgrInst->createValue((long) getPC());
+  ClParserValuePtr pcVal = ClParserValueMgrInst->createValue(long(getPC()));
 
   if (! ClParserInst->isVariable("PC"))
     ClParserInst->createVar("PC", pcVal);
@@ -1487,7 +1487,7 @@ assembleEvalExpr(const std::string &expr, uint *value)
   if (! pvalue->integerValue(&l))
     return false;
 
-  *value = l;
+  *value = uint(l);
 
   return true;
 #else
@@ -1719,7 +1719,7 @@ dumpValues(CFileBase *ofile)
     str = CStrUtil::toHexString(pc, 4);
 
     for (uint j = 0; j < 8; ++j, ++pc)
-      str += " " + CStrUtil::toHexString(values_[pc], 2);
+      str += " " + CStrUtil::toHexString(values_[ushort(pc)], 2);
 
     str += "\n";
 
@@ -1732,7 +1732,7 @@ dumpValues(CFileBase *ofile)
     uint d = values_pc_max_ - pc + 1;
 
     for (uint j = 0; j < d; ++j, ++pc)
-      str += " " + CStrUtil::toHexString(values_[pc], 2);
+      str += " " + CStrUtil::toHexString(values_[ushort(pc)], 2);
 
     for ( ; d < 8; ++d)
       str += " " + CStrUtil::toHexString(0, 2);

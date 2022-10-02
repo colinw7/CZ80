@@ -67,7 +67,7 @@ load(CFile *file, ushort *pos, ushort *len)
     if (! CStrUtil::decodeHexString(words[0], &addr))
       continue;
 
-    setPC(addr);
+    setPC(ushort(addr));
 
     if (! pos_set) {
       *pos = getPC();
@@ -79,7 +79,7 @@ load(CFile *file, ushort *pos, ushort *len)
       if (! CStrUtil::decodeHexString(words[i], &value))
         continue;
 
-      setByte(value);
+      setByte(uchar(value));
 
       incPC();
     }
@@ -104,7 +104,7 @@ loadBin(CFile *file, ushort *pos, ushort *len)
   setPC(pos1);
 
   while (! file->eof()) {
-    file->read((uchar *) &b, 1);
+    file->read(static_cast<uchar *>(&b), 1);
 
     setByte(b);
 

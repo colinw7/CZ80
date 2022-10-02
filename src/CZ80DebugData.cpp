@@ -84,7 +84,7 @@ callPostStepProcs()
     if (hl_1_changed_) trace->regChanged(CZ80Reg::HL1);
 
     if (memChanged_)
-      trace->memChanged(memChangedPos1_, memChangedPos2_ - memChangedPos1_ + 1);
+      trace->memChanged(memChangedPos1_, ushort(memChangedPos2_ - memChangedPos1_ + 1));
 
     trace->postStepProc();
   }
@@ -174,7 +174,7 @@ void
 CZ80DebugData::
 memPostWrite(ushort pos, ushort len)
 {
-  ushort pos2 = pos + len - 1;
+  ushort pos2 = ushort(pos + len - 1);
 
   if (! memChanged_) {
     memChanged_     = true;

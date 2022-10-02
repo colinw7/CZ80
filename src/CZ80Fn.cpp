@@ -435,84 +435,84 @@ void
 CZ80::
 f_bit_a_n(CZ80OpData *opData)
 {
-  opData->z80->tstBitA(opData->op->arg1);
+  opData->z80->tstBitA(uchar(opData->op->arg1));
 }
 
 void
 CZ80::
 f_bit_b_n(CZ80OpData *opData)
 {
-  opData->z80->tstBitB(opData->op->arg1);
+  opData->z80->tstBitB(uchar(opData->op->arg1));
 }
 
 void
 CZ80::
 f_bit_c_n(CZ80OpData *opData)
 {
-  opData->z80->tstBitC(opData->op->arg1);
+  opData->z80->tstBitC(uchar(opData->op->arg1));
 }
 
 void
 CZ80::
 f_bit_d_n(CZ80OpData *opData)
 {
-  opData->z80->tstBitD(opData->op->arg1);
+  opData->z80->tstBitD(uchar(opData->op->arg1));
 }
 
 void
 CZ80::
 f_bit_e_n(CZ80OpData *opData)
 {
-  opData->z80->tstBitE(opData->op->arg1);
+  opData->z80->tstBitE(uchar(opData->op->arg1));
 }
 
 void
 CZ80::
 f_bit_h_n(CZ80OpData *opData)
 {
-  opData->z80->tstBitH(opData->op->arg1);
+  opData->z80->tstBitH(uchar(opData->op->arg1));
 }
 
 void
 CZ80::
 f_bit_l_n(CZ80OpData *opData)
 {
-  opData->z80->tstBitL(opData->op->arg1);
+  opData->z80->tstBitL(uchar(opData->op->arg1));
 }
 
 void
 CZ80::
 f_bit_p_hl_n(CZ80OpData *opData)
 {
-  opData->z80->tstBitPHL(opData->op->arg1);
+  opData->z80->tstBitPHL(uchar(opData->op->arg1));
 }
 
 void
 CZ80::
 f_bit_po_ix_n(CZ80OpData *opData)
 {
-  opData->z80->tstBitPOIX(opData->getSByte2(), opData->op->arg1, false);
+  opData->z80->tstBitPOIX(opData->getSByte2(), uchar(opData->op->arg1), false);
 }
 
 void
 CZ80::
 f_bit_po_ix_ns(CZ80OpData *opData)
 {
-  opData->z80->tstBitPOIX(opData->getSByte2(), opData->op->arg1, true);
+  opData->z80->tstBitPOIX(opData->getSByte2(), uchar(opData->op->arg1), true);
 }
 
 void
 CZ80::
 f_bit_po_iy_n(CZ80OpData *opData)
 {
-  opData->z80->tstBitPOIY(opData->getSByte2(), opData->op->arg1, false);
+  opData->z80->tstBitPOIY(opData->getSByte2(), uchar(opData->op->arg1), false);
 }
 
 void
 CZ80::
 f_bit_po_iy_ns(CZ80OpData *opData)
 {
-  opData->z80->tstBitPOIY(opData->getSByte2(), opData->op->arg1, true);
+  opData->z80->tstBitPOIY(opData->getSByte2(), uchar(opData->op->arg1), true);
 }
 
 void
@@ -1004,7 +1004,7 @@ void
 CZ80::
 f_im_n(CZ80OpData *opData)
 {
-  opData->z80->setIM(opData->op->arg1);
+  opData->z80->setIM(uchar(opData->op->arg1));
 }
 
 //-----------
@@ -2955,7 +2955,7 @@ void
 CZ80::
 f_out_p_c_n(CZ80OpData *opData)
 {
-  opData->z80->outC(opData->op->arg2);
+  opData->z80->outC(uchar(opData->op->arg2));
 }
 
 void
@@ -3094,168 +3094,168 @@ void
 CZ80::
 f_res_po_ix_n(CZ80OpData *opData)
 {
-  opData->z80->resBitPOIX(opData->getSByte2(), opData->op->arg1);
+  opData->z80->resBitPOIX(opData->getSByte2(), uchar(opData->op->arg1));
 }
 
 void
 CZ80::
 f_res_po_iy_n(CZ80OpData *opData)
 {
-  opData->z80->resBitPOIY(opData->getSByte2(), opData->op->arg1);
+  opData->z80->resBitPOIY(opData->getSByte2(), uchar(opData->op->arg1));
 }
 
 void
 CZ80::
 f_res_a_n(CZ80OpData *opData)
 {
-  opData->z80->resBitA(opData->op->arg1);
+  opData->z80->resBitA(uchar(opData->op->arg1));
 }
 
 void
 CZ80::
 f_res_b_n(CZ80OpData *opData)
 {
-  opData->z80->resBitB(opData->op->arg1);
+  opData->z80->resBitB(uchar(opData->op->arg1));
 }
 
 void
 CZ80::
 f_res_c_n(CZ80OpData *opData)
 {
-  opData->z80->resBitC(opData->op->arg1);
+  opData->z80->resBitC(uchar(opData->op->arg1));
 }
 
 void
 CZ80::
 f_res_d_n(CZ80OpData *opData)
 {
-  opData->z80->resBitD(opData->op->arg1);
+  opData->z80->resBitD(uchar(opData->op->arg1));
 }
 
 void
 CZ80::
 f_res_e_n(CZ80OpData *opData)
 {
-  opData->z80->resBitE(opData->op->arg1);
+  opData->z80->resBitE(uchar(opData->op->arg1));
 }
 
 void
 CZ80::
 f_res_h_n(CZ80OpData *opData)
 {
-  opData->z80->resBitH(opData->op->arg1);
+  opData->z80->resBitH(uchar(opData->op->arg1));
 }
 
 void
 CZ80::
 f_res_l_n(CZ80OpData *opData)
 {
-  opData->z80->resBitL(opData->op->arg1);
+  opData->z80->resBitL(uchar(opData->op->arg1));
 }
 
 void
 CZ80::
 f_res_p_hl_n(CZ80OpData *opData)
 {
-  opData->z80->resBitPHL(opData->op->arg1);
+  opData->z80->resBitPHL(uchar(opData->op->arg1));
 }
 
 void
 CZ80::
 f_res_po_ix_a_n(CZ80OpData *opData)
 {
-  f_res_po_ix_a_n(opData, opData->op->arg1);
+  f_res_po_ix_a_n(opData, uchar(opData->op->arg1));
 }
 
 void
 CZ80::
 f_res_po_ix_b_n(CZ80OpData *opData)
 {
-  f_res_po_ix_b_n(opData, opData->op->arg1);
+  f_res_po_ix_b_n(opData, uchar(opData->op->arg1));
 }
 
 void
 CZ80::
 f_res_po_ix_c_n(CZ80OpData *opData)
 {
-  f_res_po_ix_c_n(opData, opData->op->arg1);
+  f_res_po_ix_c_n(opData, uchar(opData->op->arg1));
 }
 
 void
 CZ80::
 f_res_po_ix_d_n(CZ80OpData *opData)
 {
-  f_res_po_ix_d_n(opData, opData->op->arg1);
+  f_res_po_ix_d_n(opData, uchar(opData->op->arg1));
 }
 
 void
 CZ80::
 f_res_po_ix_e_n(CZ80OpData *opData)
 {
-  f_res_po_ix_e_n(opData, opData->op->arg1);
+  f_res_po_ix_e_n(opData, uchar(opData->op->arg1));
 }
 
 void
 CZ80::
 f_res_po_ix_h_n(CZ80OpData *opData)
 {
-  f_res_po_ix_h_n(opData, opData->op->arg1);
+  f_res_po_ix_h_n(opData, uchar(opData->op->arg1));
 }
 
 void
 CZ80::
 f_res_po_ix_l_n(CZ80OpData *opData)
 {
-  f_res_po_ix_l_n(opData, opData->op->arg1);
+  f_res_po_ix_l_n(opData, uchar(opData->op->arg1));
 }
 
 void
 CZ80::
 f_res_po_iy_a_n(CZ80OpData *opData)
 {
-  f_res_po_iy_a_n(opData, opData->op->arg1);
+  f_res_po_iy_a_n(opData, uchar(opData->op->arg1));
 }
 
 void
 CZ80::
 f_res_po_iy_b_n(CZ80OpData *opData)
 {
-  f_res_po_iy_b_n(opData, opData->op->arg1);
+  f_res_po_iy_b_n(opData, uchar(opData->op->arg1));
 }
 
 void
 CZ80::
 f_res_po_iy_c_n(CZ80OpData *opData)
 {
-  f_res_po_iy_c_n(opData, opData->op->arg1);
+  f_res_po_iy_c_n(opData, uchar(opData->op->arg1));
 }
 
 void
 CZ80::
 f_res_po_iy_d_n(CZ80OpData *opData)
 {
-  f_res_po_iy_d_n(opData, opData->op->arg1);
+  f_res_po_iy_d_n(opData, uchar(opData->op->arg1));
 }
 
 void
 CZ80::
 f_res_po_iy_e_n(CZ80OpData *opData)
 {
-  f_res_po_iy_e_n(opData, opData->op->arg1);
+  f_res_po_iy_e_n(opData, uchar(opData->op->arg1));
 }
 
 void
 CZ80::
 f_res_po_iy_h_n(CZ80OpData *opData)
 {
-  f_res_po_iy_h_n(opData, opData->op->arg1);
+  f_res_po_iy_h_n(opData, uchar(opData->op->arg1));
 }
 
 void
 CZ80::
 f_res_po_iy_l_n(CZ80OpData *opData)
 {
-  f_res_po_iy_l_n(opData, opData->op->arg1);
+  f_res_po_iy_l_n(opData, uchar(opData->op->arg1));
 }
 
 void
@@ -4766,168 +4766,168 @@ void
 CZ80::
 f_set_po_ix_n(CZ80OpData *opData)
 {
-  opData->z80->setBitPOIX(opData->getSByte2(), opData->op->arg1);
+  opData->z80->setBitPOIX(opData->getSByte2(), uchar(opData->op->arg1));
 }
 
 void
 CZ80::
 f_set_po_iy_n(CZ80OpData *opData)
 {
-  opData->z80->setBitPOIY(opData->getSByte2(), opData->op->arg1);
+  opData->z80->setBitPOIY(opData->getSByte2(), uchar(opData->op->arg1));
 }
 
 void
 CZ80::
 f_set_a_n(CZ80OpData *opData)
 {
-  opData->z80->setBitA(opData->op->arg1);
+  opData->z80->setBitA(uchar(opData->op->arg1));
 }
 
 void
 CZ80::
 f_set_b_n(CZ80OpData *opData)
 {
-  opData->z80->setBitB(opData->op->arg1);
+  opData->z80->setBitB(uchar(opData->op->arg1));
 }
 
 void
 CZ80::
 f_set_c_n(CZ80OpData *opData)
 {
-  opData->z80->setBitC(opData->op->arg1);
+  opData->z80->setBitC(uchar(opData->op->arg1));
 }
 
 void
 CZ80::
 f_set_d_n(CZ80OpData *opData)
 {
-  opData->z80->setBitD(opData->op->arg1);
+  opData->z80->setBitD(uchar(opData->op->arg1));
 }
 
 void
 CZ80::
 f_set_e_n(CZ80OpData *opData)
 {
-  opData->z80->setBitE(opData->op->arg1);
+  opData->z80->setBitE(uchar(opData->op->arg1));
 }
 
 void
 CZ80::
 f_set_h_n(CZ80OpData *opData)
 {
-  opData->z80->setBitH(opData->op->arg1);
+  opData->z80->setBitH(uchar(opData->op->arg1));
 }
 
 void
 CZ80::
 f_set_l_n(CZ80OpData *opData)
 {
-  opData->z80->setBitL(opData->op->arg1);
+  opData->z80->setBitL(uchar(opData->op->arg1));
 }
 
 void
 CZ80::
 f_set_p_hl_n(CZ80OpData *opData)
 {
-  opData->z80->setBitPHL(opData->op->arg1);
+  opData->z80->setBitPHL(uchar(opData->op->arg1));
 }
 
 void
 CZ80::
 f_set_po_ix_a_n(CZ80OpData *opData)
 {
-  f_set_po_ix_a_n(opData, opData->op->arg1);
+  f_set_po_ix_a_n(opData, uchar(opData->op->arg1));
 }
 
 void
 CZ80::
 f_set_po_ix_b_n(CZ80OpData *opData)
 {
-  f_set_po_ix_b_n(opData, opData->op->arg1);
+  f_set_po_ix_b_n(opData, uchar(opData->op->arg1));
 }
 
 void
 CZ80::
 f_set_po_ix_c_n(CZ80OpData *opData)
 {
-  f_set_po_ix_c_n(opData, opData->op->arg1);
+  f_set_po_ix_c_n(opData, uchar(opData->op->arg1));
 }
 
 void
 CZ80::
 f_set_po_ix_d_n(CZ80OpData *opData)
 {
-  f_set_po_ix_d_n(opData, opData->op->arg1);
+  f_set_po_ix_d_n(opData, uchar(opData->op->arg1));
 }
 
 void
 CZ80::
 f_set_po_ix_e_n(CZ80OpData *opData)
 {
-  f_set_po_ix_e_n(opData, opData->op->arg1);
+  f_set_po_ix_e_n(opData, uchar(opData->op->arg1));
 }
 
 void
 CZ80::
 f_set_po_ix_h_n(CZ80OpData *opData)
 {
-  f_set_po_ix_h_n(opData, opData->op->arg1);
+  f_set_po_ix_h_n(opData, uchar(opData->op->arg1));
 }
 
 void
 CZ80::
 f_set_po_ix_l_n(CZ80OpData *opData)
 {
-  f_set_po_ix_l_n(opData, opData->op->arg1);
+  f_set_po_ix_l_n(opData, uchar(opData->op->arg1));
 }
 
 void
 CZ80::
 f_set_po_iy_a_n(CZ80OpData *opData)
 {
-  f_set_po_iy_a_n(opData, opData->op->arg1);
+  f_set_po_iy_a_n(opData, uchar(opData->op->arg1));
 }
 
 void
 CZ80::
 f_set_po_iy_b_n(CZ80OpData *opData)
 {
-  f_set_po_iy_b_n(opData, opData->op->arg1);
+  f_set_po_iy_b_n(opData, uchar(opData->op->arg1));
 }
 
 void
 CZ80::
 f_set_po_iy_c_n(CZ80OpData *opData)
 {
-  f_set_po_iy_c_n(opData, opData->op->arg1);
+  f_set_po_iy_c_n(opData, uchar(opData->op->arg1));
 }
 
 void
 CZ80::
 f_set_po_iy_d_n(CZ80OpData *opData)
 {
-  f_set_po_iy_d_n(opData, opData->op->arg1);
+  f_set_po_iy_d_n(opData, uchar(opData->op->arg1));
 }
 
 void
 CZ80::
 f_set_po_iy_e_n(CZ80OpData *opData)
 {
-  f_set_po_iy_e_n(opData, opData->op->arg1);
+  f_set_po_iy_e_n(opData, uchar(opData->op->arg1));
 }
 
 void
 CZ80::
 f_set_po_iy_h_n(CZ80OpData *opData)
 {
-  f_set_po_iy_h_n(opData, opData->op->arg1);
+  f_set_po_iy_h_n(opData, uchar(opData->op->arg1));
 }
 
 void
 CZ80::
 f_set_po_iy_l_n(CZ80OpData *opData)
 {
-  f_set_po_iy_l_n(opData, opData->op->arg1);
+  f_set_po_iy_l_n(opData, uchar(opData->op->arg1));
 }
 
 void

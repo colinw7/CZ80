@@ -137,8 +137,8 @@ step1(bool notify)
     t = opData.op->t;
   }
 
-  incR(r);
-  incT(t);
+  incR(uchar(r));
+  incT(uchar(t));
 
   if (execData_)
     execData_->postStep();

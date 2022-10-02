@@ -8,7 +8,7 @@
 
 class CZ80LabelData {
  public:
-  typedef std::map<int,std::string> LabelValueNameMap;
+  typedef std::map<uint, std::string> LabelValueNameMap;
 
  public:
   CZ80LabelData() { }

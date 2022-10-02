@@ -43,7 +43,7 @@ calcMhz()
   long dusecs1 = dusecs + 1000000*dsecs;
 
   if (dusecs1 < itime) {
-    COSTimer::msleep(itime - dusecs1);
+    COSTimer::msleep(uint(itime - dusecs1));
 
     COSTime::getHRTime(&secs, &usecs);
 
@@ -57,7 +57,7 @@ calcMhz()
 
   // calc cycles per second
 
-  mhz_ = (1.0*z80_.getIFreq())/dusecs1;
+  mhz_ = (1.0*z80_.getIFreq())/double(dusecs1);
 
   if (count == 50) {
     output();

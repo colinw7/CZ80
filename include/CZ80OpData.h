@@ -21,14 +21,14 @@ struct CZ80OpData {
   const char *getName() const;
 
   uchar  getUByte1() const { assert(num_values1 > 0); return values1[0]; }
-  ushort getUWord1() const { assert(num_values1 > 1); return (values1[1] << 8) | values1[0]; }
+  ushort getUWord1() const { assert(num_values1 > 1); return ushort(values1[1] << 8 | values1[0]); }
   uchar  getUByte2() const { assert(num_values2 > 0); return values2[0]; }
-  ushort getUWord2() const { assert(num_values2 > 1); return (values2[1] << 8) | values2[0]; }
+  ushort getUWord2() const { assert(num_values2 > 1); return ushort(values2[1] << 8 | values2[0]); }
 
-  char  getSByte1() const { return (schar ) getUByte1(); }
-  short getSWord1() const { return (sshort) getUWord1(); }
-  char  getSByte2() const { return (schar ) getUByte2(); }
-  short getSWord2() const { return (sshort) getUWord2(); }
+  char  getSByte1() const { return schar (getUByte1()); }
+  short getSWord1() const { return sshort(getUWord1()); }
+  char  getSByte2() const { return schar (getUByte2()); }
+  short getSWord2() const { return sshort(getUWord2()); }
 
   void setPByte1(uchar  b) { z80->setByte(getUWord1(), b); }
   void setPWord1(ushort w) { z80->setWord(getUWord1(), w); }
@@ -44,8 +44,8 @@ struct CZ80OpData {
   void setPOIX1(uchar b) { z80->setPOIX(getSByte1(), b); }
   void setPOIY1(uchar b) { z80->setPOIY(getSByte1(), b); }
 
-  ushort getRPC1() { return z80->getPC() + getSByte1(); }
-  ushort getRPC2() { return z80->getPC() + getSByte2(); }
+  ushort getRPC1() { return z80->getPC() + ushort(getSByte1()); }
+  ushort getRPC2() { return z80->getPC() + ushort(getSByte2()); }
 
   void execute();
 

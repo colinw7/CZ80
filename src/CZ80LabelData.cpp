@@ -45,7 +45,7 @@ setLabelValue(const std::string &name, uint value)
 #ifdef CL_PARSER
   ClParserVarPtr var = ClParserInst->getVariable(name, true);
 
-  var->setValue(ClParserValueMgrInst->createValue((long) value));
+  var->setValue(ClParserValueMgrInst->createValue(long(value)));
 #endif
 
   label_value_name_map_[value] = name;
@@ -66,7 +66,7 @@ getLabelValue(const std::string &name, uint *value)
   if (! pvalue->integerValue(&value1))
     return false;
 
-  *value = value1;
+  *value = uint(value1);
 
   return true;
 #else

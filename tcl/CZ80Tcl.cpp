@@ -1,5 +1,4 @@
-#include <std_c++.h>
-#include <CZ80TclLib/CZ80TclLib.h>
+#include <CZ80TclLib.h>
 
 int
 main(int argc, char **argv)

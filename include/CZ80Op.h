@@ -164,9 +164,9 @@ struct CZ80Op {
 
   CZ80Op() { }
 
-  CZ80Op(CZ80OpId id, CZ80OpProcP func, ushort arg1, ushort type1, ushort arg2, ushort type2,
-         uchar r, ushort t) :
-   id(id), func(func), arg1(arg1), type1(type1), arg2(arg2), type2(type2), r(r), t(t) {
+  CZ80Op(CZ80OpId id1, CZ80OpProcP func1, ushort arg11, ushort type11, ushort arg21, ushort type21,
+         uchar r1, ushort t1) :
+   id(id1), func(func1), arg1(arg11), type1(type11), arg2(arg21), type2(type21), r(r1), t(t1) {
   }
 
   const char *getName() const;

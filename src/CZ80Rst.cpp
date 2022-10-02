@@ -58,7 +58,7 @@ rst(ushort id)
           break;
         }
         case 0x89: { // PRINT_FZ
-          std::cout << "Z = " << (int) z80.tstZFlag();
+          std::cout << "Z = " << int(z80.tstZFlag());
           if (newline_) std::cout << std::endl;
           break;
         }
@@ -109,17 +109,17 @@ rst(ushort id)
           break;
         }
         case 0x99: { // PRINT_PO_IX
-          short o = (short) z80.getByte(pc); pc += 1;
+          short o = short(z80.getByte(pc)); pc += 1;
 
-          std::cout << "(IX+" << o << ") = " << CZ80::hexString(z80.getPOIX(o));
+          std::cout << "(IX+" << o << ") = " << CZ80::hexString(z80.getPOIX(schar(o)));
           if (newline_) std::cout << std::endl;
 
           break;
         }
         case 0x9A: { // PRINT_PO_IY
-          short o = (short) z80.getByte(pc); pc += 1;
+          short o = short(z80.getByte(pc)); pc += 1;
 
-          std::cout << "(IY+" << o << ") = " << CZ80::hexString(z80.getPOIY(o));
+          std::cout << "(IY+" << o << ") = " << CZ80::hexString(z80.getPOIY(schar(o)));
           if (newline_) std::cout << std::endl;
 
           break;
@@ -150,7 +150,7 @@ rst(ushort id)
           std::cout << CZ80::hexString(a) << " =";
 
           for (uint i = 0; i < n; ++i) {
-            uchar d = z80.getByte(a + i);
+            uchar d = z80.getByte(uchar(a + i));
 
             std::cout << " " << CZ80::hexString(d);
           }
@@ -166,7 +166,7 @@ rst(ushort id)
           std::cout << CZ80::hexString(a) << " =";
 
           for (uint i = 0; i < n; ++i) {
-            ushort d = z80.getWord(a + 2*i);
+            ushort d = z80.getWord(ushort(a + 2*i));
 
             std::cout << " " << CZ80::hexString(d);
           }
@@ -200,7 +200,7 @@ rst(ushort id)
         }
 
         case 0xA6: { // PRINT_A_CHAR
-          std::cout << (char) z80.getA();
+          std::cout << char(z80.getA());
 
           std::cout.flush();
 
@@ -361,8 +361,8 @@ rst(ushort id)
         }
         case 0xD1: { // CMP_PWORD
           ushort pw = z80.getWord(pc); pc += 2;
-          uchar  w1 = z80.getWord(pw);
-          uchar  w2 = z80.getWord(pc); pc += 2;
+          ushort w1 = z80.getWord(pw);
+          ushort w2 = z80.getWord(pc); pc += 2;
 
           if (w1 != w2)
             std::cerr << "Error " << CZ80::hexString(w1) << " != " <<
@@ -377,7 +377,7 @@ rst(ushort id)
           uchar c = z80.getByte(pc++);
 
           while (c != '\0') {
-            str += c;
+            str += char(c);
 
             c = z80.getByte(pc++);
           }

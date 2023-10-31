@@ -1,5 +1,6 @@
 #include <CZ80Assemble.h>
 #include <CZ80OpData.h>
+#include <CFile.h>
 
 bool
 CZ80::
@@ -1174,9 +1175,22 @@ assembleParseOp(CFileParse *parse, std::string &op_str, uint pass, bool *continu
   }
 
   if (is_op) {
-    if (! lookupOp(&op, &op1)) {
-      assembleError("Invalid operator data");
-      return false;
+    auto rc = lookupOp(&op, &op1);
+
+    if (! rc) {
+      if (op.id == OP_SUB && opData.op->type1 == A_REG && opData.op->arg1 == 0) {
+         opData.op->type1 = opData.op->type2;
+         opData.op->arg1  = opData.op->arg2;
+         opData.op->type2 = 0;
+         opData.op->arg2  = 0;
+
+         rc = lookupOp(&op, &op1);
+      }
+
+      if (! rc) {
+        assembleError("Invalid operator data");
+        return false;
+      }
     }
 
     opData.op = op1;

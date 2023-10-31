@@ -113,21 +113,21 @@ main(int argc, char **argv)
 
   cargs.parse(&argc, argv);
 
-  bool                     A_flag      = cargs.getBooleanArg   ("-A");
-  bool                     a_flag      = cargs.getBooleanArg   ("-a");
-  bool                     d_flag      = cargs.getBooleanArg   ("-d");
-  bool                     e_flag      = cargs.getBooleanArg   ("-e");
-  bool                     v_flag      = cargs.getBooleanArg   ("-v");
-  std::string              ofilename   = cargs.getStringArg    ("-o");
-  std::vector<std::string> labels      = cargs.getStringListArg("-L");
-  uint                     org         = uint(cargs.getIntegerArg("-org"));
-  bool                     dump_flag   = cargs.getBooleanArg   ("-dump");
-  bool                     undump_flag = cargs.getBooleanArg   ("-undump");
-  bool                     bin_flag    = cargs.getBooleanArg   ("-bin");
-  bool                     stream_flag = cargs.getBooleanArg   ("-stream");
-  bool                     icount_flag = cargs.getBooleanArg   ("-icount");
-  bool                     dsym_flag   = cargs.getBooleanArg   ("-dsym");
-  bool                     cpm_flag    = cargs.getBooleanArg   ("-cpm");
+  auto A_flag      = cargs.getBooleanArg   ("-A");
+  auto a_flag      = cargs.getBooleanArg   ("-a");
+  auto d_flag      = cargs.getBooleanArg   ("-d");
+  auto e_flag      = cargs.getBooleanArg   ("-e");
+  auto v_flag      = cargs.getBooleanArg   ("-v");
+  auto ofilename   = cargs.getStringArg    ("-o");
+  auto labels      = cargs.getStringListArg("-L");
+  auto org         = uint(cargs.getIntegerArg("-org"));
+  auto dump_flag   = cargs.getBooleanArg   ("-dump");
+  auto undump_flag = cargs.getBooleanArg   ("-undump");
+  auto bin_flag    = cargs.getBooleanArg   ("-bin");
+  auto stream_flag = cargs.getBooleanArg   ("-stream");
+  auto icount_flag = cargs.getBooleanArg   ("-icount");
+  auto dsym_flag   = cargs.getBooleanArg   ("-dsym");
+  auto cpm_flag    = cargs.getBooleanArg   ("-cpm");
 
   if (dump_flag)
     z80.setDump(true);
@@ -147,32 +147,29 @@ main(int argc, char **argv)
     return 0;
   }
 
-  std::vector<std::string>::iterator p1 = labels.begin();
-  std::vector<std::string>::iterator p2 = labels.end  ();
-
-  for ( ; p1 != p2; ++p1) {
-    std::string::size_type pos = (*p1).find('=');
+  for (const auto &label : labels) {
+    auto pos = label.find('=');
 
     if (pos == std::string::npos) {
-      std::cerr << "Invalid Label Define " << *p1 << std::endl;
+      std::cerr << "Invalid Label Define " << label << "\n";
       continue;
     }
 
-    std::string lhs = (*p1).substr(0, pos);
-    std::string rhs = (*p1).substr(pos + 1);
+    auto lhs = label.substr(0, pos);
+    auto rhs = label.substr(pos + 1);
 
     uint i;
 
     if (rhs.size() > 2 &&
         (rhs.substr(0, 2) == "0x" || rhs.substr(0, 2) == "0X")) {
       if (! CStrUtil::decodeHexString(rhs.substr(2), &i)) {
-        std::cerr << "Invalid Label Define " << *p1 << std::endl;
+        std::cerr << "Invalid Label Define " << label << "\n";
         continue;
       }
     }
     else {
       if (! CStrUtil::toInteger(rhs, &i)) {
-        std::cerr << "Invalid Label Define " << *p1 << std::endl;
+        std::cerr << "Invalid Label Define " << label << "\n";
         continue;
       }
     }
@@ -187,7 +184,7 @@ main(int argc, char **argv)
     CFile file(argv[i]);
 
     if (! file.exists() && ! file.isRegular()) {
-      std::cerr << "Invalid File: " << argv[i] << std::endl;
+      std::cerr << "Invalid File: " << argv[i] << "\n";
       continue;
     }
 
